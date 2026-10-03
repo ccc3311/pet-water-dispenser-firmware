@@ -1,0 +1,29 @@
+# Keil build outputs and user-local project state
+Objects/
+Listings/
+Output/
+Debug/
+Release/
+*.obj
+*.o
+*.d
+*.lst
+*.m51
+*.map
+*.hex
+*.bin
+*.axf
+*.elf
+*.lnp
+*.plg
+*.build_log.htm
+*.uvopt
+*.uvoptx
+*.uvgui.*
+*.bak
+*.tmp
+# Local editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

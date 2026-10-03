@@ -1,0 +1,6 @@
+# Preserve supplied C source bytes and raw uploads, including CRLF.
+*.c -text
+*.h -text
+archive/** -text
+*.md text eol=lf
+*.json text eol=lf
