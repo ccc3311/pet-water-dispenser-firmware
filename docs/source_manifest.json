@@ -4,11 +4,21 @@
   "files": [
     {
       "path": "User/main.c",
-      "source_name": "粘贴的文本 (1).txt",
-      "source_kind": "uploaded_file",
-      "transform": "none",
-      "sha256": "8c9e07b0ffd7d468e0c356669a65fff15636234017525164084a02a03b5508d4",
-      "source_sha256": "8c9e07b0ffd7d468e0c356669a65fff15636234017525164084a02a03b5508d4"
+      "source_name": "2026-10-09 user code message",
+      "source_kind": "conversation_transcription",
+      "transform": "preserve historical header; transcribe supplied code body; retain commented HAL_LPD_Init call; normalize final newline",
+      "sha256": "8598132c9795edd4c5977fbceb98a371340e0acef743a13ca3c7eeba8ed0e492",
+      "confirmed_date": "2026-10-09",
+      "compared_to_commit": "e3b0968dc7acf1077aafe83b09304233792f6635",
+      "behavior_change": "main no longer explicitly calls HAL_LPD_Init; other active code unchanged",
+      "original_source": {
+        "path": "User/main.c",
+        "source_name": "粘贴的文本 (1).txt",
+        "source_kind": "uploaded_file",
+        "transform": "none",
+        "sha256": "8c9e07b0ffd7d468e0c356669a65fff15636234017525164084a02a03b5508d4",
+        "source_sha256": "8c9e07b0ffd7d468e0c356669a65fff15636234017525164084a02a03b5508d4"
+      }
     },
     {
       "path": "User/SC_Init.c",
@@ -116,11 +126,21 @@
     },
     {
       "path": "HAL/hal_power.c",
-      "source_name": "粘贴的 Markdown (1).md",
-      "source_kind": "markdown_upload",
-      "transform": "decode Markdown escapes and HTML whitespace; split concatenated source units; normalize line endings",
-      "sha256": "db9b7f837f67903d24b584b8867bd565bcf6243eef2645cdc726b91dff499bd2",
-      "source_sha256": "8487beabfa61d804e559f9b85ea0808fc686d5f5be1e7ec353fe8b658fcca16a"
+      "source_name": "2026-10-09 user code message",
+      "source_kind": "conversation_transcription",
+      "transform": "transcribe supplied source; preserve code behavior; retain supplied whitespace and comment formatting",
+      "sha256": "00736e814e14555ad72bc0c953b1195315696cb7210d1883491814a7dace11a9",
+      "confirmed_date": "2026-10-09",
+      "compared_to_commit": "e3b0968dc7acf1077aafe83b09304233792f6635",
+      "behavior_change": "none; active code matches baseline",
+      "original_source": {
+        "path": "HAL/hal_power.c",
+        "source_name": "粘贴的 Markdown (1).md",
+        "source_kind": "markdown_upload",
+        "transform": "decode Markdown escapes and HTML whitespace; split concatenated source units; normalize line endings",
+        "sha256": "db9b7f837f67903d24b584b8867bd565bcf6243eef2645cdc726b91dff499bd2",
+        "source_sha256": "8487beabfa61d804e559f9b85ea0808fc686d5f5be1e7ec353fe8b658fcca16a"
+      }
     },
     {
       "path": "HAL/hal_lpd.c",
@@ -164,11 +184,21 @@
     },
     {
       "path": "User/SC_it.c",
-      "source_name": "2026-09-30 user code message",
+      "source_name": "2026-10-09 user code message",
       "source_kind": "conversation_transcription",
-      "transform": "split into source units; whitespace normalization during transcription; preserve code behavior",
-      "sha256": "a0aa03d287ed503d702cc06e133fc7e86a2b2f4ae1f08cb040755acc2bd95ec8",
-      "transcription_path": "archive/chat_transcription/SC_it.c"
+      "transform": "transcribe supplied source; preserve code behavior; retain supplied whitespace and comment formatting",
+      "sha256": "c599d232db83a92eb16ba57f1b8c41e1eca9b1cdd4acb7ef9b9d817661abc14e",
+      "confirmed_date": "2026-10-09",
+      "compared_to_commit": "e3b0968dc7acf1077aafe83b09304233792f6635",
+      "behavior_change": "none; active code matches baseline",
+      "original_source": {
+        "path": "User/SC_it.c",
+        "source_name": "2026-09-30 user code message",
+        "source_kind": "conversation_transcription",
+        "transform": "split into source units; whitespace normalization during transcription; preserve code behavior",
+        "sha256": "a0aa03d287ed503d702cc06e133fc7e86a2b2f4ae1f08cb040755acc2bd95ec8",
+        "transcription_path": "archive/chat_transcription/SC_it.c"
+      }
     },
     {
       "path": "HAL/hal_buzzer.c",
@@ -194,5 +224,6 @@
       "sha256": "4b20c6330b01fe148938837518c9cb05cb0b27220698785706d00ea659437122",
       "transcription_path": "archive/chat_transcription/hal_pwm.c"
     }
-  ]
+  ],
+  "latest_source_update_date": "2026-10-09"
 }

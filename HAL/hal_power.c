@@ -172,7 +172,6 @@ void HAL_Power_Input_ISR(void)
 {
     /*
      * 锁存事件。
-     *
      * 此处不直接置g_Device.ir_triggered，
      * 因为同一个INT2入口还包含主触摸。
      *

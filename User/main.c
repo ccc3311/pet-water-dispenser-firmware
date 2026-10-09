@@ -697,7 +697,7 @@ void main(void)
 #endif
 
     /* 保持原有初始化顺序和上电等待。 */
-    HAL_LPD_Init();
+//    HAL_LPD_Init();
     P00 = 0;
     HAL_UART_Init();
     HAL_Buzzer_Init();
