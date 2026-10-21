@@ -1,0 +1,229 @@
+{
+  "snapshot_date": "2026-10-03",
+  "source_submission_date": "2026-09-30",
+  "files": [
+    {
+      "path": "User/main.c",
+      "source_name": "2026-10-09 user code message",
+      "source_kind": "conversation_transcription",
+      "transform": "preserve historical header; transcribe supplied code body; retain commented HAL_LPD_Init call; normalize final newline",
+      "sha256": "8598132c9795edd4c5977fbceb98a371340e0acef743a13ca3c7eeba8ed0e492",
+      "confirmed_date": "2026-10-09",
+      "compared_to_commit": "e3b0968dc7acf1077aafe83b09304233792f6635",
+      "behavior_change": "main no longer explicitly calls HAL_LPD_Init; other active code unchanged",
+      "original_source": {
+        "path": "User/main.c",
+        "source_name": "粘贴的文本 (1).txt",
+        "source_kind": "uploaded_file",
+        "transform": "none",
+        "sha256": "8c9e07b0ffd7d468e0c356669a65fff15636234017525164084a02a03b5508d4",
+        "source_sha256": "8c9e07b0ffd7d468e0c356669a65fff15636234017525164084a02a03b5508d4"
+      }
+    },
+    {
+      "path": "User/SC_Init.c",
+      "source_name": "粘贴的文本 (2).txt",
+      "source_kind": "uploaded_file",
+      "transform": "none",
+      "sha256": "caa64a3bd418a7c2e25a2d5e0c0e0338153547cabb68436059f99fbb23c05564",
+      "source_sha256": "caa64a3bd418a7c2e25a2d5e0c0e0338153547cabb68436059f99fbb23c05564"
+    },
+    {
+      "path": "App/app_fsm.c",
+      "source_name": "粘贴的文本 (3).txt",
+      "source_kind": "uploaded_file",
+      "transform": "none",
+      "sha256": "ec0fa58a7d71b87b3ce19b4eca43faceca92f20433c7f2c39e30d0710af59f3e",
+      "source_sha256": "ec0fa58a7d71b87b3ce19b4eca43faceca92f20433c7f2c39e30d0710af59f3e"
+    },
+    {
+      "path": "HAL/hal_adc.c",
+      "source_name": "粘贴的文本 (4).txt",
+      "source_kind": "uploaded_file",
+      "transform": "none",
+      "sha256": "4a8a41b62a7e5d3014cd40b807d8f9c426e07285c2c2372961432448cbe9c440",
+      "source_sha256": "4a8a41b62a7e5d3014cd40b807d8f9c426e07285c2c2372961432448cbe9c440"
+    },
+    {
+      "path": "TuyaMCUSDK/mcu_api.c",
+      "source_name": "粘贴的文本 (5).txt",
+      "source_kind": "uploaded_file",
+      "transform": "none",
+      "sha256": "28d08ccc4a0889fdd569efe28e1efc49d945bfd5acf24ff4bcae70345ee219a4",
+      "source_sha256": "28d08ccc4a0889fdd569efe28e1efc49d945bfd5acf24ff4bcae70345ee219a4"
+    },
+    {
+      "path": "TuyaMCUSDK/mcu_api.h",
+      "source_name": "粘贴的文本 (6).txt",
+      "source_kind": "uploaded_file",
+      "transform": "none",
+      "sha256": "895a06e93b9a4d89cdc049dd7455e56dd58d533050f7c9948e79d42de25046ec",
+      "source_sha256": "895a06e93b9a4d89cdc049dd7455e56dd58d533050f7c9948e79d42de25046ec"
+    },
+    {
+      "path": "TuyaMCUSDK/protocol.c",
+      "source_name": "粘贴的文本 (7).txt",
+      "source_kind": "uploaded_file",
+      "transform": "none",
+      "sha256": "da4d511a6e25a224ec60c6ccad7e2f3ba98f98326da259cffb2d9a21d8e28f1d",
+      "source_sha256": "da4d511a6e25a224ec60c6ccad7e2f3ba98f98326da259cffb2d9a21d8e28f1d"
+    },
+    {
+      "path": "TuyaMCUSDK/protocol.h",
+      "source_name": "粘贴的文本 (8).txt",
+      "source_kind": "uploaded_file",
+      "transform": "none",
+      "sha256": "83300bd3fcec5c2f11596f2c022da83d0f966e6e3ffeeaf4a24d3697081f8774",
+      "source_sha256": "83300bd3fcec5c2f11596f2c022da83d0f966e6e3ffeeaf4a24d3697081f8774"
+    },
+    {
+      "path": "TuyaMCUSDK/system.c",
+      "source_name": "粘贴的文本 (9).txt",
+      "source_kind": "uploaded_file",
+      "transform": "none",
+      "sha256": "3c80e4bbb64d9e7e36de54b9fb0b374f5b34a457b57ea3f6db12f618298d7996",
+      "source_sha256": "3c80e4bbb64d9e7e36de54b9fb0b374f5b34a457b57ea3f6db12f618298d7996"
+    },
+    {
+      "path": "Drivers/SC89601/sc89601.c",
+      "source_name": "粘贴的文本 (10).txt",
+      "source_kind": "uploaded_file",
+      "transform": "none",
+      "sha256": "6080fef75b5ba49673a914d26afb68a56e2df6ff5cefc04067c85608a597e1b9",
+      "source_sha256": "6080fef75b5ba49673a914d26afb68a56e2df6ff5cefc04067c85608a597e1b9"
+    },
+    {
+      "path": "App/app_wifi.c",
+      "source_name": "粘贴的文本 (11).txt",
+      "source_kind": "uploaded_file",
+      "transform": "none",
+      "sha256": "674e0ec9ad51f5564cbe865a076b061141b020f7beaa975458c0c8821a6e9ee5",
+      "source_sha256": "674e0ec9ad51f5564cbe865a076b061141b020f7beaa975458c0c8821a6e9ee5"
+    },
+    {
+      "path": "TuyaMCUSDK/system.h",
+      "source_name": "粘贴的文本 (1)(1).txt",
+      "source_kind": "uploaded_file",
+      "transform": "none",
+      "sha256": "6e2295d2816582ca05b10f7f6328b9f59ec4c4fdab1b756bc97139d9ca9a269d",
+      "source_sha256": "6e2295d2816582ca05b10f7f6328b9f59ec4c4fdab1b756bc97139d9ca9a269d"
+    },
+    {
+      "path": "TuyaMCUSDK/wifi.h",
+      "source_name": "wifi.h",
+      "source_kind": "saved_header",
+      "transform": "none",
+      "sha256": "9db185d0a92098560313e059ff8399a7de4cb63243708375c35cb4415d900812",
+      "source_sha256": "9db185d0a92098560313e059ff8399a7de4cb63243708375c35cb4415d900812"
+    },
+    {
+      "path": "Drivers/SC89601/sc89601.h",
+      "source_name": "sc89601.h",
+      "source_kind": "saved_header",
+      "transform": "none",
+      "sha256": "7d9394213c587ae1c978211208e458f25efe726512c16dea7dd7c5b47e963734",
+      "source_sha256": "7d9394213c587ae1c978211208e458f25efe726512c16dea7dd7c5b47e963734"
+    },
+    {
+      "path": "HAL/hal_power.c",
+      "source_name": "2026-10-09 user code message",
+      "source_kind": "conversation_transcription",
+      "transform": "transcribe supplied source; preserve code behavior; retain supplied whitespace and comment formatting",
+      "sha256": "00736e814e14555ad72bc0c953b1195315696cb7210d1883491814a7dace11a9",
+      "confirmed_date": "2026-10-09",
+      "compared_to_commit": "e3b0968dc7acf1077aafe83b09304233792f6635",
+      "behavior_change": "none; active code matches baseline",
+      "original_source": {
+        "path": "HAL/hal_power.c",
+        "source_name": "粘贴的 Markdown (1).md",
+        "source_kind": "markdown_upload",
+        "transform": "decode Markdown escapes and HTML whitespace; split concatenated source units; normalize line endings",
+        "sha256": "db9b7f837f67903d24b584b8867bd565bcf6243eef2645cdc726b91dff499bd2",
+        "source_sha256": "8487beabfa61d804e559f9b85ea0808fc686d5f5be1e7ec353fe8b658fcca16a"
+      }
+    },
+    {
+      "path": "HAL/hal_lpd.c",
+      "source_name": "粘贴的 Markdown (1).md",
+      "source_kind": "markdown_upload",
+      "transform": "decode Markdown escapes and HTML whitespace; split concatenated source units; normalize line endings",
+      "sha256": "1633c27e59c968bc712cb943b55a903f7155e81367f370c5f901d00fc3e0d16d",
+      "source_sha256": "8487beabfa61d804e559f9b85ea0808fc686d5f5be1e7ec353fe8b658fcca16a"
+    },
+    {
+      "path": "HAL/hal_eeprom.c",
+      "source_name": "粘贴的 Markdown (1).md",
+      "source_kind": "markdown_upload",
+      "transform": "decode Markdown escapes and HTML whitespace; split concatenated source units; normalize line endings",
+      "sha256": "cce09757f2344e7402a2baa3140dd116c3869612e82274e3bb314f836c83a7c8",
+      "source_sha256": "8487beabfa61d804e559f9b85ea0808fc686d5f5be1e7ec353fe8b658fcca16a"
+    },
+    {
+      "path": "HAL/hal_uart.c",
+      "source_name": "粘贴的 Markdown (1).md",
+      "source_kind": "markdown_upload",
+      "transform": "decode Markdown escapes and HTML whitespace; split concatenated source units; normalize line endings",
+      "sha256": "cbaf6daa9daff6231cc5070edca6f0d992741033c0c9a2074225a76765f0db2c",
+      "source_sha256": "8487beabfa61d804e559f9b85ea0808fc686d5f5be1e7ec353fe8b658fcca16a"
+    },
+    {
+      "path": "HAL/hal_touch.c",
+      "source_name": "粘贴的 Markdown (1).md",
+      "source_kind": "markdown_upload",
+      "transform": "decode Markdown escapes and HTML whitespace; split concatenated source units; normalize line endings",
+      "sha256": "b3b182b808d92d94f186ed115987f2182a9187ba0f40e55546ceb1993fef85bf",
+      "source_sha256": "8487beabfa61d804e559f9b85ea0808fc686d5f5be1e7ec353fe8b658fcca16a"
+    },
+    {
+      "path": "HAL/hal_tm1650.c",
+      "source_name": "粘贴的 Markdown (1).md",
+      "source_kind": "markdown_upload",
+      "transform": "decode Markdown escapes and HTML whitespace; split concatenated source units; normalize line endings",
+      "sha256": "d92e88746ee142a9c271611394c8675d13f8e8b909a613ddfd51f20ffa86946d",
+      "source_sha256": "8487beabfa61d804e559f9b85ea0808fc686d5f5be1e7ec353fe8b658fcca16a"
+    },
+    {
+      "path": "User/SC_it.c",
+      "source_name": "2026-10-09 user code message",
+      "source_kind": "conversation_transcription",
+      "transform": "transcribe supplied source; preserve code behavior; retain supplied whitespace and comment formatting",
+      "sha256": "c599d232db83a92eb16ba57f1b8c41e1eca9b1cdd4acb7ef9b9d817661abc14e",
+      "confirmed_date": "2026-10-09",
+      "compared_to_commit": "e3b0968dc7acf1077aafe83b09304233792f6635",
+      "behavior_change": "none; active code matches baseline",
+      "original_source": {
+        "path": "User/SC_it.c",
+        "source_name": "2026-09-30 user code message",
+        "source_kind": "conversation_transcription",
+        "transform": "split into source units; whitespace normalization during transcription; preserve code behavior",
+        "sha256": "a0aa03d287ed503d702cc06e133fc7e86a2b2f4ae1f08cb040755acc2bd95ec8",
+        "transcription_path": "archive/chat_transcription/SC_it.c"
+      }
+    },
+    {
+      "path": "HAL/hal_buzzer.c",
+      "source_name": "2026-09-30 user code message",
+      "source_kind": "conversation_transcription",
+      "transform": "split into source units; whitespace normalization during transcription; preserve code behavior",
+      "sha256": "395ddafb7c722183cd139056f31aa00c2cc847d28925d2c55c3174e91c5423d1",
+      "transcription_path": "archive/chat_transcription/hal_buzzer.c"
+    },
+    {
+      "path": "HAL/hal_ir.c",
+      "source_name": "2026-09-30 user code message",
+      "source_kind": "conversation_transcription",
+      "transform": "split into source units; whitespace normalization during transcription; preserve code behavior",
+      "sha256": "3f76450a7f5a24939a00d2045f54d87c2f0143f06b6cb0420b164b9b2206efad",
+      "transcription_path": "archive/chat_transcription/hal_ir.c"
+    },
+    {
+      "path": "HAL/hal_pwm.c",
+      "source_name": "2026-09-30 user code message",
+      "source_kind": "conversation_transcription",
+      "transform": "split into source units; whitespace normalization during transcription; preserve code behavior",
+      "sha256": "4b20c6330b01fe148938837518c9cb05cb0b27220698785706d00ea659437122",
+      "transcription_path": "archive/chat_transcription/hal_pwm.c"
+    }
+  ],
+  "latest_source_update_date": "2026-10-09"
+}

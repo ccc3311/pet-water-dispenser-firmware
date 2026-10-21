@@ -1,86 +1,86 @@
 #include "hal_adc.h"
-#include "app_fsm.h"     // 借用 WATER_GOOD 等枚举
+#include "app_fsm.h"     // ���� WATER_GOOD ��ö��
 #include "hal_buzzer.h"
-#include <stdio.h>    // ！！！必须包含 stdio.h 才能用 printf ！！！
+#include <stdio.h>    // ������������� stdio.h ������ printf ������
 
 // ==========================================
-// 调试开关：无视缺水保护 (投产时务必改为 0 ！)
+// ���Կ��أ�����ȱˮ���� (Ͷ��ʱ��ظ�Ϊ 0 ��)
 // ==========================================
-#define DEBUG_IGNORE_WATER_EMPTY  1  // 1: 开启缺水调试(无视缺水), 0: 关闭
+#define DEBUG_IGNORE_WATER_EMPTY  1  // 1: ����ȱˮ����(����ȱˮ), 0: �ر�
 
 // ==========================================
-// 硬件参数配置区 (需根据实际 PCB 调整)
+// Ӳ������������ (�����ʵ�� PCB ����)
 // ==========================================
-// SC92F8462B 的 ADC 是 12位 (0~4095)
+// SC92F8462B �� ADC �� 12λ (0~4095)
 #define ADC_RESOLUTION      4095
 
-// 假设 ADC 参考电压设定为内部 VDD (比如 5.0V) -> 5000mV
+// ���� ADC �ο���ѹ�趨Ϊ�ڲ� VDD (���� 5.0V) -> 5000mV
 #define VREF_MV             2400 
 //#define VREF_MV             5000 
 
-// 电池/适配器分压电路的比例 (非常重要！)
-// 真实电压 = ADC引脚电压 * (R1+R2)/R2 = ADC引脚电压 * 6
-// TL2为300k和150k分压增益为3
+// ���/��������ѹ��·�ı��� (�ǳ���Ҫ��)
+// ��ʵ��ѹ = ADC���ŵ�ѹ * (R1+R2)/R2 = ADC���ŵ�ѹ * 6
+// TL2Ϊ300k��150k��ѹ����Ϊ3
 #define VOLTAGE_DIV_RATIO   3 
 
 #define BAT_ADC_CHANNEL 0u
 
-//adc超时
+//adc��ʱ
 static uint8_t s_adc_read_failed = 0;
 
-// 用于缓存算出来的真实 PPM 数值
+// ���ڻ������������ʵ PPM ��ֵ
 static uint16_t cached_tds_ppm = 0;
 static uint32_t numerator;
 static uint32_t denominator;
-// ！！！新增：缺水检测专属 GPIO 引脚定义 ！！！
-#define WATER_EMPTY_PIN     P01  // 在调试完其他功能后再引入缺水功能
+// ������������ȱˮ���ר�� GPIO ���Ŷ��� ������
+#define WATER_EMPTY_PIN     P01  // �ڵ������������ܺ�������ȱˮ����
 
-// TDS 缺水与水质判定阈值 (需要等板子回来后实测微调)
-#define TDS_GOOD_THRESHOLD  150  // ADC < 1500 认为是纯净水（此处判断为算法值）
+// TDS ȱˮ��ˮ���ж���ֵ (��Ҫ�Ȱ��ӻ�����ʵ��΢��)
+#define TDS_GOOD_THRESHOLD  150  // ADC < 1500 ��Ϊ�Ǵ���ˮ���˴��ж�Ϊ�㷨ֵ��
 
 // ==========================================
-// 内部静态变量 (用于数据缓存和滤波计数)
+// �ڲ���̬���� (�������ݻ�����˲�����)
 // ==========================================
  uint16_t cached_sys_voltage_mv = 0;
 static uint8_t  cached_water_quality = WATER_GOOD;
-// 新增：温度缓存变量 (默认 25℃)
+// �������¶Ȼ������ (Ĭ�� 25��)
  int8_t   cached_temperature_c = 25;
 // ==========================================
-// 新版电池电量三档定义 (映射为百分比兼容云端)(对应涂鸦枚举 High=0, Middle=1, Low=2)：
+// �°��ص����������� (ӳ��Ϊ�ٷֱȼ����ƶ�)(��ӦͿѻö�� High=0, Middle=1, Low=2)��
 // ==========================================
-#define BAT_TIER_HIGH  0  // 高电量 (>3.9V)
-#define BAT_TIER_MID   1   // 中电量 (3.5V ~ 3.9V)
-#define BAT_TIER_LOW   2   // 低电量 (<3.5V)
+#define BAT_TIER_HIGH  0  // �ߵ��� (>3.9V)
+#define BAT_TIER_MID   1   // �е��� (3.5V ~ 3.9V)
+#define BAT_TIER_LOW   2   // �͵��� (<3.5V)
 
 // ==========================================
-// 负载与充电电压补偿参数
+// ���������ѹ��������
 // ==========================================
-#define PUMP_SAG_MV_OFFSET     1   // 水泵抽水时的内阻压降补偿
-#define CHARGE_RISE_MV_OFFSET  1  // 充电时 1A 电流带来的内阻压升补偿 (根据日志得出)
-// 水泵满载时导致电池电压瞬间被拉低的补偿值 (单位: mV)
-// 你可以在水泵启动时，观察串口打印的电压下降了多少，填到这里
-// 用于缓存算出来的真实电池百分比 (0-100)
+#define PUMP_SAG_MV_OFFSET     1   // ˮ�ó�ˮʱ������ѹ������
+#define CHARGE_RISE_MV_OFFSET  1  // ���ʱ 1A ��������������ѹ������ (������־�ó�)
+// ˮ������ʱ���µ�ص�ѹ˲�䱻���͵Ĳ���ֵ (��λ: mV)
+// �������ˮ������ʱ���۲촮�ڴ�ӡ�ĵ�ѹ�½��˶��٣������
+// ���ڻ������������ʵ��ذٷֱ� (0-100)
 static uint8_t cached_bat_soc = 100; 
 
 // ==========================================
 // ========================================================
-// [升级] 连续进行 10 次独立的防极化采样
+// [����] �������� 10 �ζ����ķ���������
 // ========================================================
 #define TDS_SAMPLE_NUM 6
 uint16_t tds_samples[TDS_SAMPLE_NUM];
 
 // ==========================================
-// [51优化版] NTC 温度计算逻辑 (支持 BAT 电压波动)
-// 纯 uint32_t 运算，绝无 uint64，适配 100K NTC + 510K 上拉
+// [51�Ż���] NTC �¶ȼ����߼� (֧�� BAT ��ѹ����)
+// �� uint32_t ���㣬���� uint64������ 100K NTC + 510K ����
 // ==========================================
 
-// --- 硬件参数配置 ---
-#define NTC_PULLUP_RESISTOR_OHM     510000UL  // R13 上拉电阻: 510K
-#define NTC_NOMINAL_RESISTANCE_OHM  100000UL  // NTC 标称阻值: 100K (25℃时)
+// --- Ӳ���������� ---
+#define NTC_PULLUP_RESISTOR_OHM     510000UL  // R13 ��������: 510K
+#define NTC_NOMINAL_RESISTANCE_OHM  100000UL  // NTC �����ֵ: 100K (25��ʱ)
 
-// --- 100K B=3950 NTC 标准阻值表 ---
-// 格式: { 温度(℃), 阻值(欧姆) }
-// 使用 uint32_t 存储，最大 32 万，不会溢出
+// --- 100K B=3950 NTC ��׼��ֵ�� ---
+// ��ʽ: { �¶�(��), ��ֵ(ŷķ) }
+// ʹ�� uint32_t �洢����� 32 �򣬲������
 typedef struct {
     int8_t temp;
     uint32_t resistance;
@@ -90,7 +90,7 @@ static const NTC_Res_Table_t NTC_RES_LUT[] = {
     {0,   326500UL}, 
     {10,  200800UL}, 
     {20,  126300UL}, 
-    {25,  100000UL}, // 25度基准点
+    {25,  100000UL}, // 25�Ȼ�׼��
     {30,  79900UL}, 
     {40,  51300UL}, 
     {50,  33600UL}, 
@@ -104,9 +104,9 @@ static const NTC_Res_Table_t NTC_RES_LUT[] = {
 #define NTC_RES_TABLE_SIZE (sizeof(NTC_RES_LUT) / sizeof(NTC_RES_LUT[0]))
 
 /**
- * @brief  [51优化版] 通过实时 BAT 电压和 ADC 值计算 100K NTC 温度
- * @param  adc_val: ADC 原始读数 (0-4095)
- * @retval 温度值 (℃)
+ * @brief  [51�Ż���] ͨ��ʵʱ BAT ��ѹ�� ADC ֵ���� 100K NTC �¶�
+ * @param  adc_val: ADC ԭʼ���� (0-4095)
+ * @retval �¶�ֵ (��)
  */
 static int8_t Convert_NTC_ADC_To_Temp(uint16_t adc_val) {
     uint32_t v_adc_mv;
@@ -116,87 +116,87 @@ static int8_t Convert_NTC_ADC_To_Temp(uint16_t adc_val) {
     int8_t temp_calc;
 		uint32_t numerator;
 		uint32_t denominator;
-    // 1. 获取实时 BAT 电压 (全局变量，单位 mV)
-		v_bat_mv = 3300;//现在方案温度改为固定3.3V
-    // 2. 计算 ADC 引脚上的实际电压 (mV)
-    // 公式: V_adc = ADC_val * VREF / 4095
-    // 注意：adc_val * 2400 最大约 982 万，uint32_t 完全够用
+    // 1. ��ȡʵʱ BAT ��ѹ (ȫ�ֱ�������λ mV)
+		v_bat_mv = 3300;//���ڷ����¶ȸ�Ϊ�̶�3.3V
+    // 2. ���� ADC �����ϵ�ʵ�ʵ�ѹ (mV)
+    // ��ʽ: V_adc = ADC_val * VREF / 4095
+    // ע�⣺adc_val * 2400 ���Լ 982 ��uint32_t ��ȫ����
     v_adc_mv = ((uint32_t)adc_val * VREF_MV) / ADC_RESOLUTION;
 
-    // 3. 硬件容错 1：ADC 读数饱和 (>= 4090)
-    // 说明 NTC 阻值极大 (断路或极冷)，或者输入电压超过了 VREF(2400mV)
+    // 3. Ӳ���ݴ� 1��ADC �������� (>= 4090)
+    // ˵�� NTC ��ֵ���� (��·����)�����������ѹ������ VREF(2400mV)
     if (adc_val >= 4090) {
-        return 100; // 故意返回假高温，触发 FSM 停止加热防灾 (保持你原代码逻辑)
+        return 100; // ���ⷵ�ؼٸ��£����� FSM ֹͣ���ȷ��� (������ԭ�����߼�)
     }
     
-    // 4. 硬件容错 2：防止分母为 0 或负数
-    // 如果 V_adc >= V_bat，说明物理电路异常或 ADC 读数错乱
+    // 4. Ӳ���ݴ� 2����ֹ��ĸΪ 0 ����
+    // ��� V_adc >= V_bat��˵��������·�쳣�� ADC ��������
     if (v_adc_mv >= v_bat_mv) {
-        return 100; // 异常高温保护
+        return 100; // �쳣���±���
     }
 
-    // 5. 计算 NTC 实时阻值 (核心公式)
-    // 公式: R_ntc = (R_pullup * V_adc) / (V_bat - V_adc)
-    // 分子最大: 510,000 * 2400 = 1,224,000,000 (12.24亿)
-    // uint32_t 最大值: 4,294,967,295 (42.9亿) -> 绝对不会溢出！
+    // 5. ���� NTC ʵʱ��ֵ (���Ĺ�ʽ)
+    // ��ʽ: R_ntc = (R_pullup * V_adc) / (V_bat - V_adc)
+    // �������: 510,000 * 2400 = 1,224,000,000 (12.24��)
+    // uint32_t ���ֵ: 4,294,967,295 (42.9��) -> ���Բ��������
      numerator = NTC_PULLUP_RESISTOR_OHM * v_adc_mv;
      denominator = v_bat_mv - v_adc_mv;
     
     r_ntc = numerator / denominator;
 
-    // 6. 查阻值表 -> 温度 (线性插值)
-    // 表中阻值是降序排列的 (326K -> 5.6K)
+    // 6. ����ֵ�� -> �¶� (���Բ�ֵ)
+    // ������ֵ�ǽ������е� (326K -> 5.6K)
     
-    // 边界检查：阻值过大 (太冷，超出表格下限)
+    // �߽��飺��ֵ���� (̫�䣬������������)
     if (r_ntc >= NTC_RES_LUT[0].resistance) {
-        return NTC_RES_LUT[0].temp; // 返回 0℃
+        return NTC_RES_LUT[0].temp; // ���� 0��
     }
     
-    // 边界检查：阻值过小 (太热，超出表格上限)
+    // �߽��飺��ֵ��С (̫�ȣ�������������)
     if (r_ntc <= NTC_RES_LUT[NTC_RES_TABLE_SIZE - 1].resistance) {
-        return NTC_RES_LUT[NTC_RES_TABLE_SIZE - 1].temp; // 返回 100℃
+        return NTC_RES_LUT[NTC_RES_TABLE_SIZE - 1].temp; // ���� 100��
     }
 
-    // 遍历寻找区间
+    // ����Ѱ������
     for (i = 0; i < NTC_RES_TABLE_SIZE - 1; i++) {
         if (r_ntc <= NTC_RES_LUT[i].resistance && r_ntc > NTC_RES_LUT[i+1].resistance) {
             
             uint32_t r_diff = NTC_RES_LUT[i].resistance - NTC_RES_LUT[i+1].resistance;
             uint32_t r_offset = NTC_RES_LUT[i].resistance - r_ntc;
-            int8_t temp_step = NTC_RES_LUT[i+1].temp - NTC_RES_LUT[i].temp; // 通常是 10 或 5
+            int8_t temp_step = NTC_RES_LUT[i+1].temp - NTC_RES_LUT[i].temp; // ͨ���� 10 �� 5
             
-            // 线性插值公式: 当前温度 = 起点温度 + (偏移比例 * 温度步长)
-            // r_offset * temp_step 最大约 12万 * 10 = 120万，uint32_t 无压力
+            // ���Բ�ֵ��ʽ: ��ǰ�¶� = ����¶� + (ƫ�Ʊ��� * �¶Ȳ���)
+            // r_offset * temp_step ���Լ 12�� * 10 = 120��uint32_t ��ѹ��
             temp_calc = NTC_RES_LUT[i].temp + ((r_offset * temp_step) / r_diff);
             return temp_calc;
         }
     }
 
-    return 25; // 兜底容错返回
+    return 25; // �����ݴ�����
 }
 
 // ==========================================
-// TDS 物理常量与标定参数配置
+// TDS ����������궨��������
 // ==========================================
-#define R_FIXED              1500UL   // 硬件分压电阻阻值 (Ω)
-#define CELL_CONSTANT         2175000UL  // 电导池常数 (放大 10^6 倍)//1179381UL   513385UL
+#define R_FIXED              1500UL   // Ӳ����ѹ������ֵ (��)
+#define CELL_CONSTANT         2175000UL  // �絼�س��� (�Ŵ� 10^6 ��)//1179381UL   513385UL
 
-#define TDS_COEFFICIENT      55UL     // TDS 转换系数 (0.55 的 100 倍)
+#define TDS_COEFFICIENT      55UL     // TDS ת��ϵ�� (0.55 �� 100 ��)
 
 /**
- * @brief  [纯整数物理模型版] TDS 转换算法
- * @param  adc_val: 滤波后的正反交替差分 ADC 值 (0~4095)
- * @param  temp_c:  实时水温 (摄氏度)
- * @retval 补偿到 25℃ 时的真实 TDS PPM 值 (0~999)
+ * @brief  [����������ģ�Ͱ�] TDS ת���㷨
+ * @param  adc_val: �˲�������������� ADC ֵ (0~4095)
+ * @param  temp_c:  ʵʱˮ�� (���϶�)
+ * @retval ������ 25�� ʱ����ʵ TDS PPM ֵ (0~999)
  */
 static uint16_t Convert_ADC_To_TDS_ppm(uint16_t adc_val, int8_t temp_c) {
-    uint32_t r_probe;       // 水体物理电阻 (Ω)
-    uint32_t conductivity;  // 未补偿电导率 (μS/cm)
-    uint32_t ec25;          // 25℃ 等效标准电导率 (μS/cm)
+    uint32_t r_probe;       // ˮ���������� (��)
+    uint32_t conductivity;  // δ�����絼�� (��S/cm)
+    uint32_t ec25;          // 25�� ��Ч��׼�絼�� (��S/cm)
     uint16_t tds_ppm;
-    int16_t  temp_coef;     // 温度补偿系数 (放大 100 倍)
+    int16_t  temp_coef;     // �¶Ȳ���ϵ�� (�Ŵ� 100 ��)
 
-    // 1. 探空与防呆保护 (离水或极纯水)
+    // 1. ̽����������� (��ˮ�򼫴�ˮ)
     if (adc_val >= 4000) {  
         return 0;
     }
@@ -204,76 +204,76 @@ static uint16_t Convert_ADC_To_TDS_ppm(uint16_t adc_val, int8_t temp_c) {
         adc_val = 1;
     }
 
-		// 2. 计算溶液物理电阻 R_probe (单位: Ω)
-    // ！！！核心修复：翻转了分子与分母，匹配探针接地端的硬件模型 ！！！
-    // 公式: R_probe = (R_FIXED * ADC) / (4095 - ADC)
+		// 2. ������Һ�������� R_probe (��λ: ��)
+    // �����������޸�����ת�˷������ĸ��ƥ��̽��ӵض˵�Ӳ��ģ�� ������
+    // ��ʽ: R_probe = (R_FIXED * ADC) / (4095 - ADC)
     r_probe = (R_FIXED * (uint32_t)adc_val) / (4095UL - (uint32_t)adc_val);
     if (r_probe == 0) r_probe = 1;
 
-    // 3. 计算实时物理电导率 (单位: μS/cm)
-    // 公式: conductivity = CELL_CONSTANT / R_probe
+    // 3. ����ʵʱ�����絼�� (��λ: ��S/cm)
+    // ��ʽ: conductivity = CELL_CONSTANT / R_probe
     conductivity = CELL_CONSTANT / r_probe;
 
-    // 4. 温度补偿 (统一折算到 25℃)
-    // 补偿公式系数: 100 + 2 * (T - 25)
+    // 4. �¶Ȳ��� (ͳһ���㵽 25��)
+    // ������ʽϵ��: 100 + 2 * (T - 25)
     temp_coef = 100 + 2 * ((int16_t)temp_c - 25);
-    if (temp_coef < 10) temp_coef = 10; // 防极寒温度下分母过小
+    if (temp_coef < 10) temp_coef = 10; // �������¶��·�ĸ��С
 
-    // 计算补偿后的电导率
-    // 溢出验证: conductivity 通常在 1000 以内，乘 100 为十万级，uint32_t 绝对安全
+    // ���㲹����ĵ絼��
+    // �����֤: conductivity ͨ���� 1000 ���ڣ��� 100 Ϊʮ�򼶣�uint32_t ���԰�ȫ
     ec25 = (conductivity * 100UL) / (uint32_t)temp_coef;
 
-    // 5. 转换为最终的 TDS PPM 值
-    // 公式: TDS = (EC25 * 55) / 100
-    // 溢出验证: EC25 * 55 同样在百万级别，不会溢出
+    // 5. ת��Ϊ���յ� TDS PPM ֵ
+    // ��ʽ: TDS = (EC25 * 55) / 100
+    // �����֤: EC25 * 55 ͬ���ڰ��򼶱𣬲������
     tds_ppm = (uint16_t)((ec25 * TDS_COEFFICIENT) / 100UL);	
 		// ========================================================
-    // [新增] 基于实测数据的线性拟合校准 (y = 0.93x - 8)
-    // 修正因探针间距误差、PCB走线寄生电容带来的系统性偏移
+    // [����] ����ʵ�����ݵ��������У׼ (y = 0.93x - 8)
+    // ������̽������PCB���߼������ݴ�����ϵͳ��ƫ��
     // ========================================================
     {
-        uint32_t calibrated_tds = ((uint32_t)tds_ppm * 93) / 100; // 乘以 0.93 的斜率
+        uint32_t calibrated_tds = ((uint32_t)tds_ppm * 93) / 100; // ���� 0.93 ��б��
         if (calibrated_tds > 8) {
-            tds_ppm = (uint16_t)(calibrated_tds - 8); // 减去 8 的截距偏移
+            tds_ppm = (uint16_t)(calibrated_tds - 8); // ��ȥ 8 �Ľؾ�ƫ��
         } else {
-            tds_ppm = 0; // 防跌落为负数
+            tds_ppm = 0; // ������Ϊ����
         }
     }
-    // 6. UI 显示限幅保护
+    // 6. UI ��ʾ�޷�����
     if (tds_ppm > 999) tds_ppm = 999;
 
     return tds_ppm;
 }
 
 /**
- * @brief  32MHz 1T 单片机专属的微秒延时 (基于 Keil O8 优化等级)
- * @param  us: 需要延时的微秒数
+ * @brief  32MHz 1T ��Ƭ��ר����΢����ʱ (���� Keil O8 �Ż��ȼ�)
+ * @param  us: ��Ҫ��ʱ��΢����
  */
 static void Delay_us(uint16_t us) {
     uint8_t i;
     while (us--) {
-        // while(us--) 判断本身约消耗 8~10 个时钟周期
-        // 还需要补充 22 个系统时钟 (32MHz 下 1us = 32 个时钟)
+        // while(us--) �жϱ���Լ���� 8~10 ��ʱ������
+        // ����Ҫ���� 22 ��ϵͳʱ�� (32MHz �� 1us = 32 ��ʱ��)
         i = 7; 
-        while (--i); // 每次 --i 约消耗 3 个时钟，7 * 3 = 21 个时钟
+        while (--i); // ÿ�� --i Լ���� 3 ��ʱ�ӣ�7 * 3 = 21 ��ʱ��
     }
 }
 
 // ==========================================
-// 负载与充电电压补偿参数
+// ���������ѹ��������
 // ==========================================
 /**
- * @brief  [新版三档算法] 计算并过滤电池电量档位
- * @param  voltage_mv:   ADC读取到的系统电压
- * @param  is_charging:  当前是否插着电源 (POWER_AC)
- * @param  pump_is_on:   当前水泵是否正在运行
- * @retval 映射后的电量百分比 (100:高, 50:中, 10:低)
+ * @brief  [�°������㷨] ���㲢���˵�ص�����λ
+ * @param  voltage_mv:   ADC��ȡ����ϵͳ��ѹ
+ * @param  is_charging:  ��ǰ�Ƿ���ŵ�Դ (POWER_AC)
+ * @param  pump_is_on:   ��ǰˮ���Ƿ���������
+ * @retval ӳ���ĵ����ٷֱ� (100:��, 50:��, 10:��)
  */
     uint8_t raw_tier;
-    static uint8_t current_tier = 0xFF; // 当前正式档位 (0xFF代表开机未初始化)
-    static uint8_t debounce_cnt = 0;    // 防抖计数器
+    static uint8_t current_tier = 0xFF; // ��ǰ��ʽ��λ (0xFF��������δ��ʼ��)
+    static uint8_t debounce_cnt = 0;    // ����������
 static uint8_t Calculate_Battery_Tier(uint16_t voltage_mv, uint8_t is_charging, uint8_t pump_is_on) {
-    // 1. 动态硬件补偿 (维持原有优秀逻辑)
+    // 1. ��̬Ӳ������ (ά��ԭ�������߼�)
     if (!is_charging && pump_is_on) {
         voltage_mv += PUMP_SAG_MV_OFFSET;
     } else if (is_charging) {
@@ -282,45 +282,45 @@ static uint8_t Calculate_Battery_Tier(uint16_t voltage_mv, uint8_t is_charging, 
         }
     }
 
-    // 2. 【核心修复】：引入区间迟滞 (Hysteresis)，彻底消除跳档 Bug
+    // 2. �������޸���������������� (Hysteresis)�������������� Bug
     if (current_tier == 0xFF) {
-        // 开机首次无条件判决
+        // �����״��������о�
         if (voltage_mv >= 3900)      raw_tier = BAT_TIER_HIGH;
         else if (voltage_mv >= 3500) raw_tier = BAT_TIER_MID;
         else                         raw_tier = BAT_TIER_LOW;
     } else {
-        // 继承当前档位，必须跨越带“死区”的阈值才能切档
+        // �̳е�ǰ��λ�������Խ��������������ֵ�����е�
         raw_tier = current_tier; 
         
         if (current_tier == BAT_TIER_HIGH) {
-            // 在高档位时：必须掉到 3800mV 以下，才降为中电量 (100mV迟滞)
+            // �ڸߵ�λʱ��������� 3800mV ���£��Ž�Ϊ�е��� (100mV����)
             if (voltage_mv < 3800) raw_tier = BAT_TIER_MID; 
         } 
         else if (current_tier == BAT_TIER_MID) {
-            // 在中档位时：向上必须充到 3950mV 算高；向下必须掉破 3400mV 算低 (100mV迟滞)
+            // ���е�λʱ�����ϱ���䵽 3950mV ��ߣ����±������ 3400mV ��� (100mV����)
             if (voltage_mv >= 3950)      raw_tier = BAT_TIER_HIGH;
             else if (voltage_mv < 3500)  raw_tier = BAT_TIER_LOW;  
         } 
         else if (current_tier == BAT_TIER_LOW) {
-            // 在低档位时：必须回升到 3550mV 以上，才算回升到中电量 (150mV迟滞)
-            // 完美吞噬 80mV 的水泵补偿！
+            // �ڵ͵�λʱ����������� 3550mV ���ϣ�����������е��� (150mV����)
+            // �������� 80mV ��ˮ�ò�����
             if (voltage_mv >= 3550) raw_tier = BAT_TIER_MID;  
         }
     }
 
-    // 3. 状态机防抖过滤
+    // 3. ״̬����������
     if (current_tier == 0xFF) {
         current_tier = raw_tier;
         return current_tier;
     }
 
-    // 只有连续 3 秒 (6 * 500ms) 稳定在新的 raw_tier 才确认切换
+    // ֻ������ 3 �� (6 * 500ms) �ȶ����µ� raw_tier ��ȷ���л�
     if (raw_tier != current_tier) {
         debounce_cnt++;
         if (debounce_cnt >= 6) {
             current_tier = raw_tier;
             debounce_cnt = 0;
-            // HAL_Buzzer_Beep_3s(); // 如果需要档位切换鸣叫，解除注释
+            // HAL_Buzzer_Beep_3s(); // �����Ҫ��λ�л����У����ע��
         }
     } else {
         debounce_cnt = 0; 
@@ -329,48 +329,48 @@ static uint8_t Calculate_Battery_Tier(uint16_t voltage_mv, uint8_t is_charging, 
     return current_tier;
 }
 /**
- * @brief  底层单次 ADC 读取函数 (阻塞式)
- * @param  channel: 对应 AINx 的通道号 (例如 AIN4 传 4)
- * @retval 12 位 ADC 转换结果 (0~4095)
+ * @brief  �ײ㵥�� ADC ��ȡ���� (����ʽ)
+ * @param  channel: ��Ӧ AINx ��ͨ���� (���� AIN4 �� 4)
+ * @retval 12 λ ADC ת����� (0~4095)
  */
 static uint16_t ADC_Read_Channel(uint8_t channel) {
     uint16_t adc_result = 0;
-		uint16_t timeout_cnt = 500; // 防卡死超时计数器 (根据主频微调，确保大于硬件转换时间)    
+		uint16_t timeout_cnt = 500; // ��������ʱ������ (������Ƶ΢����ȷ������Ӳ��ת��ʱ��)    
 	
-    // 1. 暴力切通道，绝不使用 |= ！
-    // 0x80 就是二进制 1000 0000，确保 ADCEN=1, ADCSTA=0, EOC=0
+    // 1. ������ͨ��������ʹ�� |= ��
+    // 0x80 ���Ƕ����� 1000 0000��ȷ�� ADCEN=1, ADCSTA=0, EOC=0
     ADCCON = 0x80 | (channel & 0x0F);
     
-		// 2. ！！！核心修复：给高阻抗电路充足的采样保持时间 ！！！
-    // 100k 的外部电阻，RC 常数较大，我们给它足足 50 微秒的充电时间！
-    // 这样能彻底阻断上一个通道留下的“残影电荷”
+		// 2. �����������޸��������迹��·����Ĳ�������ʱ�� ������
+    // 100k ���ⲿ���裬RC �����ϴ����Ǹ������� 50 ΢��ĳ��ʱ�䣡
+    // �����ܳ��������һ��ͨ�����µġ���Ӱ��ɡ�
     Delay_us(20);
     
-    // 3. 暴力启动转换！
-    // 0xC0 就是二进制 1100 0000，确保 ADCEN=1, ADCSTA=1 (启动), EOC=0
+    // 3. ��������ת����
+    // 0xC0 ���Ƕ����� 1100 0000��ȷ�� ADCEN=1, ADCSTA=1 (����), EOC=0
     ADCCON = 0xC0 | (channel & 0x0F);
     
-		// 4. 等待硬件回应 (加入防跑飞超时)
+		// 4. �ȴ�Ӳ����Ӧ (������ܷɳ�ʱ)
     while (!(ADCCON & 0x20)) {
         if (--timeout_cnt == 0) {
-            // 超时退出！说明硬件 ADC 模块可能受干扰死锁
-            ADCCON = 0x80 | (channel & 0x0F); // 强行复位 ADC 状态
+            // ��ʱ�˳���˵��Ӳ�� ADC ģ������ܸ�������
+            ADCCON = 0x80 | (channel & 0x0F); // ǿ�и�λ ADC ״̬
 						s_adc_read_failed = 1;
 						return 0;
         }
     }
     
-    // 5. 硬件已置位 EOC，数据已准备好，立即读取！
+    // 5. Ӳ������λ EOC��������׼���ã�������ȡ��
 //    adc_result = ((uint16_t)(ADCVH & 0x0F) << 8) | ADCVL;
 		adc_result = ((uint16_t)ADCVH << 4) | (ADCVL >> 4);    
-    // 6. 暴力清零 EOC，恢复到待命状态
+    // 6. �������� EOC���ָ�������״̬
     ADCCON = 0x80 | (channel & 0x0F);
     
     return adc_result;
 }
 
 /**
- * @brief  集中采集所有传感器数据 (每 500ms 调用一次)
+ * @brief  ���вɼ����д��������� (ÿ 500ms ����һ��)
  */
 void HAL_ADC_Sample_All(void) {
     uint16_t adc_val;
@@ -378,35 +378,35 @@ void HAL_ADC_Sample_All(void) {
     uint8_t i, j;
     uint16_t temp_swap;
     uint32_t tds_sum = 0;
- 					uint16_t adc_fwd; // 读取正向ADC
-					uint16_t adc_rev; // 读取反向ADC
+ 					uint16_t adc_fwd; // ��ȡ����ADC
+					uint16_t adc_rev; // ��ȡ����ADC
 	
 		s_adc_read_failed = 0;
     // ---------------------------------------------------------
-    // 任务 1：系统电压采集 (Pin 22 / AIN0) - 带 3 次平均滤波
+    // ���� 1��ϵͳ��ѹ�ɼ� (Pin 22 / AIN0) - �� 3 ��ƽ���˲�
     // ---------------------------------------------------------
 		adc_val  = ADC_Read_Channel(BAT_ADC_CHANNEL);
 		adc_val += ADC_Read_Channel(BAT_ADC_CHANNEL);
 		adc_val += ADC_Read_Channel(BAT_ADC_CHANNEL);
 		adc_val /= 3;
 
-    // 电压换算公式：mV = (adc_val * VREF_MV / 4095) * 分压比
+    // ��ѹ���㹫ʽ��mV = (adc_val * VREF_MV / 4095) * ��ѹ��
     temp_mv = ((uint32_t)adc_val * VREF_MV) / ADC_RESOLUTION;
     cached_sys_voltage_mv = (uint16_t)(temp_mv * VOLTAGE_DIV_RATIO);
 		// ========================================================
-    // [新增] 刷新电池电量百分比
+    // [����] ˢ�µ�ص����ٷֱ�
     // ========================================================
     {
         uint8_t is_ac = (g_Device.power_mode == POWER_AC);
-        // 判断当前水泵是否正在耗电（如果你还有 UVC 也可以算进去，看功率占比）
+        // �жϵ�ǰˮ���Ƿ����ںĵ磨����㻹�� UVC Ҳ�������ȥ��������ռ�ȣ�
         uint8_t pump_is_on = (g_Device.state == STATE_SENSING || g_Device.state == STATE_CONTINUOUS);
         
-        // 调用算法更新缓存
+        // �����㷨���»���
         cached_bat_soc = Calculate_Battery_Tier(cached_sys_voltage_mv, is_ac, pump_is_on);
     }
 
     // ---------------------------------------------------------
-    // 任务 2：NTC 温度采集 (Pin 27 / AIN5)
+    // ���� 2��NTC �¶Ȳɼ� (Pin 27 / AIN5)
     // ---------------------------------------------------------
     adc_val  = ADC_Read_Channel(5);
     adc_val += ADC_Read_Channel(5);
@@ -414,46 +414,46 @@ void HAL_ADC_Sample_All(void) {
     adc_val /= 3;
 //                    printf("adcadc  : %u \r\n", ADC_Read_Channel(3));
 
-    // 调用查表算法，刷新温度缓存
+    // ���ò���㷨��ˢ���¶Ȼ���
     cached_temperature_c = Convert_NTC_ADC_To_Temp(adc_val);
-// ！！！屏蔽内鬼：在调校 TDS 期间，强制锁定 25℃ ！！！
-//    cached_temperature_c = 25;        
+// �����������ڹ����ڵ�У TDS �ڼ䣬ǿ������ 25�� ������
+    cached_temperature_c = 25;        
     // ---------------------------------------------------------
-    // 任务 3：TDS & 缺水复用检测 - 完美防极化 + 中值滤波
+    // ���� 3��TDS & ȱˮ���ü�� - ���������� + ��ֵ�˲�
     // ---------------------------------------------------------
 
-    // a. 确保 TDSAC 引脚为推挽输出 (通常在初始化里做过了，这里加个保险)
-    // 移除了抢占 PWMCON 的代码，因为 P0.2/P0.3 在新板子上本来就不做硬件 PWM
+    // a. ȷ�� TDSAC ����Ϊ������� (ͨ���ڳ�ʼ���������ˣ�����Ӹ�����)
+    // �Ƴ�����ռ PWMCON �Ĵ��룬��Ϊ P0.2/P0.3 ���°����ϱ����Ͳ���Ӳ�� PWM
     GPIO_Init(GPIO2, GPIO_PIN_4, GPIO_MODE_OUT_PP); 
     GPIO_Init(GPIO2, GPIO_PIN_5, GPIO_MODE_OUT_PP);
 
     // ========================================================
-    // [新增] 连续进行 10 次独立的防极化采样
+    // [����] �������� 10 �ζ����ķ���������
     // ========================================================
 			for (i = 0; i < TDS_SAMPLE_NUM; i++) {
-					// 1. 正向激励
+					// 1. ������
 					P24 = 1;        
 					P25 = 0;        
 					Delay_us(800);  
-					 adc_fwd = ADC_Read_Channel(1); // 读取正向ADC
+					 adc_fwd = ADC_Read_Channel(1); // ��ȡ����ADC
 
-					// 2. 反向去极化
+					// 2. ����ȥ����
 					P24 = 0; 
 					P25 = 1; 
 					Delay_us(800);  
-					 adc_rev = ADC_Read_Channel(1); // 读取反向ADC
+					 adc_rev = ADC_Read_Channel(1); // ��ȡ����ADC
 
-					// 3. 彻底断电
+					// 3. ���׶ϵ�
 					P24 = 0;
 					P25 = 0;
 					
-					// 理论上 adc_fwd + adc_rev 应该约等于 4095。
-					// 使用双向数据可以消除内部基准电压偏移。
-					// 如果继续沿用原来的正向算法，可以用 4095 - adc_rev 来代替 adc_fwd，或者求平均：
+					// ������ adc_fwd + adc_rev Ӧ��Լ���� 4095��
+					// ʹ��˫�����ݿ��������ڲ���׼��ѹƫ�ơ�
+					// �����������ԭ���������㷨�������� 4095 - adc_rev ������ adc_fwd��������ƽ����
 					tds_samples[i] = (adc_fwd + (4095 - adc_rev)) / 2;
 			}
     // ========================================================
-    // [升级] 冒泡排序 + 去极值平均滤波
+    // [����] ð������ + ȥ��ֵƽ���˲�
     // ========================================================
     for (i = 0; i < TDS_SAMPLE_NUM - 1; i++) {
         for (j = i + 1; j < TDS_SAMPLE_NUM; j++) {
@@ -465,8 +465,8 @@ void HAL_ADC_Sample_All(void) {
         }
     }
     
-    // 剔除前 2 个最小值 (下标 0, 1) 和后 2 个最大值 (下标 8, 9)
-    // 取中间 6 个值求和算平均 (下标 2 到 7)
+    // �޳�ǰ 2 ����Сֵ (�±� 0, 1) �ͺ� 2 �����ֵ (�±� 8, 9)
+    // ȡ�м� 6 ��ֵ�����ƽ�� (�±� 2 �� 7)
     for (i = 2; i < TDS_SAMPLE_NUM - 2; i++) {
         tds_sum += tds_samples[i];
     }
@@ -474,9 +474,9 @@ void HAL_ADC_Sample_All(void) {
 //		    printf("Filtered TDS ADC: %u\r\n", adc_val);
 
     // ========================================================
-    // i. 水质判定
+    // i. ˮ���ж�
     // ========================================================
-        // 执行带有温度补偿的水质算法
+        // ִ�д����¶Ȳ�����ˮ���㷨
         cached_tds_ppm = Convert_ADC_To_TDS_ppm(adc_val, cached_temperature_c);       
             
         if (cached_tds_ppm < TDS_GOOD_THRESHOLD) {
@@ -487,10 +487,10 @@ void HAL_ADC_Sample_All(void) {
 }
 
 
-//低功耗部分代码
+//�͹��Ĳ��ִ���
 /*
- * 低功耗单次读取。
- * 返回1：成功；返回0：转换超时。
+ * �͹��ĵ��ζ�ȡ��
+ * ����1���ɹ�������0��ת����ʱ��
  */
 static uint8_t ADC_PowerReadOnce(uint8_t channel,
                                  uint16_t *value)
@@ -520,7 +520,7 @@ static uint8_t ADC_PowerReadOnce(uint8_t channel,
 
 
 /*
- * 切换通道后丢弃一次，再取三次平均。
+ * �л�ͨ������һ�Σ���ȡ����ƽ����
  */
 static uint8_t ADC_PowerReadAverage(uint8_t channel,
                                     uint16_t *value)
@@ -550,12 +550,11 @@ static uint8_t ADC_PowerReadAverage(uint8_t channel,
 
 
 /*
- * 仅低功耗状态调用。
- *
- * 不改变正常采样缓存。
- * 函数结束时关闭ADC，成功/失败路径均关闭。
+ * ���͹���״̬���á�
+ * ���ı������������档
+ * ��������ʱ�ر�ADC���ɹ�/ʧ��·�����رա�
  */
-/* 休眠巡检只测电池，退出时关闭 ADC。 */
+/* ����Ѳ��ֻ���أ��˳�ʱ�ر� ADC�� */
 uint8_t HAL_ADC_PowerPoll(uint16_t *battery_mv)
 {
     uint16_t battery_raw;
@@ -575,14 +574,14 @@ uint8_t HAL_ADC_PowerPoll(uint16_t *battery_mv)
 }
 
 // ==========================================
-// 暴露给外部获取数据的 Getter 接口
+// ��¶���ⲿ��ȡ���ݵ� Getter �ӿ�
 // ==========================================
 uint16_t HAL_ADC_Get_SystemVoltage_mV(void) { return cached_sys_voltage_mv; }
 uint8_t HAL_ADC_Get_IsEmpty(void) {
 #if DEBUG_IGNORE_WATER_EMPTY
-    return 0; // 调试模式：永远欺骗系统当前满水，水泵正常运转
+    return 0; // ����ģʽ����Զ��ƭϵͳ��ǰ��ˮ��ˮ��������ת
 #else
-    return WATER_EMPTY_PIN; // 正常模式：直接读取 P1.3 的瞬态物理电平
+    return WATER_EMPTY_PIN; // ����ģʽ��ֱ�Ӷ�ȡ P1.3 ��˲̬������ƽ
 #endif
 }
 uint8_t  HAL_ADC_Get_WaterQuality(void)     { return cached_water_quality; }

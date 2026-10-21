@@ -1,20 +1,20 @@
 #include "hal_touch.h"
 #include "app_fsm.h"
 #include "hal_buzzer.h"
-#include <stdio.h>
+#include <stdio.h> 
 #include "HeadFiles\SysFunVarDefine.h"
-#include "wifi.h"  // ã€æ–°å¢ã€‘ï¼šå¿…é¡»å¼•å…¥wifiå¤´æ–‡ä»¶ï¼Œæ‰èƒ½è°ƒç”¨ mcu_reset_wifi()
+#include "wifi.h"  // ¡¾ĞÂÔö¡¿£º±ØĞëÒıÈëwifiÍ·ÎÄ¼ş£¬²ÅÄÜµ÷ÓÃ mcu_reset_wifi()
 
-// UVC å¤–éƒ¨ä¸­æ–­æ ‡å¿—ä½ (ä¿ç•™)
+// UVC Íâ²¿ÖĞ¶Ï±êÖ¾Î» (±£Áô)
 extern uint8_t g_uvc_exti_flag;
 
 // ==========================================
-// ç¡¬ä»¶å¼•è„šæ˜ å°„
+// Ó²¼şÒı½ÅÓ³Éä
 // ==========================================
-#define TOUCH_MAIN_PIN  P07
-#define UVCING_PIN      P51
+#define TOUCH_MAIN_PIN  P07 
+#define UVCING_PIN      P51 
 
-/* Timer0æ‰«ææ›´æ–°ï¼Œä¸»å¾ªç¯è¯»å– */
+/* Timer0É¨Ãè¸üĞÂ£¬Ö÷Ñ­»·¶ÁÈ¡ */
 static volatile uint8_t s_touch_busy = 0;
 
 uint8_t HAL_Touch_IsBusy(void)
@@ -23,29 +23,29 @@ uint8_t HAL_Touch_IsBusy(void)
 }
 
 void HAL_Touch_Init(void) {
-    // åˆå§‹åŒ–é€»è¾‘ï¼ˆå¦‚æœæ²¡æœ‰å¯ç•™ç©ºï¼‰
+    // ³õÊ¼»¯Âß¼­£¨Èç¹ûÃ»ÓĞ¿ÉÁô¿Õ£©
 }
 
 /**
- * @brief  è§¦æ‘¸æŒ‰é”®æ‰«æä¸æŒ‡ä»¤è§£æ (è¢« Timer0Interrupt æ¯ 10ms è°ƒç”¨ä¸€æ¬¡)
+ * @brief  ´¥Ãş°´¼üÉ¨ÃèÓëÖ¸Áî½âÎö (±» Timer0Interrupt Ã¿ 10ms µ÷ÓÃÒ»´Î)
  */
 void HAL_Touch_Scan(void) {
     // ---------------------------------------------------------
-    // 1. ä¸»æŒ‰é”® P07 æ‰«æé€»è¾‘ (é«˜çµæ•åº¦ã€æ— é˜»å¡ã€æ”¯æŒå¤šå‡»ä¸é•¿æŒ‰)
+    // 1. Ö÷°´¼ü P07 É¨ÃèÂß¼­ (¸ßÁéÃô¶È¡¢ÎŞ×èÈû¡¢Ö§³Ö¶à»÷Óë³¤°´)
     // ---------------------------------------------------------
     static uint16_t key_press_timer = 0;
     static uint16_t key_release_timer = 0;
     static uint8_t  click_count = 0;
     static uint8_t  long_press_3s_done = 0;
     static uint8_t  long_press_5s_done = 0;
-    static uint8_t uvc_dead_timer = 0;
-		/* è®°å½•æœ¬æ¬¡æŒ‰ä¸‹æ—¶çš„çŠ¶æ€ï¼Œé¿å…é•¿æŒ‰æœŸé—´çŠ¶æ€å˜åŒ–è§¦å‘é…ç½‘ã€‚ */
+    static uint8_t uvc_dead_timer = 0;    
+		/* ¼ÇÂ¼±¾´Î°´ÏÂÊ±µÄ×´Ì¬£¬±ÜÃâ³¤°´ÆÚ¼ä×´Ì¬±ä»¯´¥·¢ÅäÍø¡£ */
 		static uint8_t key_started_off = 0;
-    // å‡è®¾æŒ‰ä¸‹ä¸ºä½ç”µå¹³
+    // ¼ÙÉè°´ÏÂÎªµÍµçÆ½
     uint8_t is_pressed = (TOUCH_MAIN_PIN == 0) ? 1 : 0;
 
-		    // ã€æ–°å¢æ ¸å¿ƒé˜²æŠ¤ã€‘ï¼šP02 æ–­ç”µä¿æŠ¤æ—¶ï¼Œå¼ºåˆ¶å±è”½æ‰€æœ‰æŒ‰é”®è¾“å…¥å¹¶æ¸…ç©ºçŠ¶æ€ç¼“å­˜
-    // é˜²æ­¢è§¦æ‘¸èŠ¯ç‰‡æ–­ç”µåå¼•è„šæµ®ç©ºï¼Œå¼•å‘â€œå¹½çµæŒ‰é”®â€å¯¼è‡´çŠ¶æ€æœºé”™ä¹±
+		    // ¡¾ĞÂÔöºËĞÄ·À»¤¡¿£ºP02 ¶Ïµç±£»¤Ê±£¬Ç¿ÖÆÆÁ±ÎËùÓĞ°´¼üÊäÈë²¢Çå¿Õ×´Ì¬»º´æ
+    // ·ÀÖ¹´¥ÃşĞ¾Æ¬¶ÏµçºóÒı½Å¸¡¿Õ£¬Òı·¢¡°ÓÄÁé°´¼ü¡±µ¼ÖÂ×´Ì¬»ú´íÂÒ
     if (P00 == 0) {
 				key_started_off = 0;
         key_press_timer = 0;
@@ -54,11 +54,11 @@ void HAL_Touch_Scan(void) {
         long_press_3s_done = 0;
         long_press_5s_done = 0;
         uvc_dead_timer = 0;
-        g_uvc_exti_flag = 0; // é¡ºä¾¿åƒæ‰ UVC çš„ä¸­æ–­æ ‡å¿—
-			    s_touch_busy = 0;       /* æ–°å¢ */
+        g_uvc_exti_flag = 0; // Ë³±ã³Ôµô UVC µÄÖĞ¶Ï±êÖ¾
+			    s_touch_busy = 0;       /* ĞÂÔö */
         return;
     }
-
+		
     if (is_pressed) {
         if (key_press_timer == 0) {
             key_started_off =
@@ -67,17 +67,17 @@ void HAL_Touch_Scan(void) {
 
         key_release_timer = 0;
 
-        /* è¾¾åˆ°æœ€é•¿åˆ¤å®šæ—¶é—´åä¿æŒï¼Œé¿å…æŒç»­æŒ‰ä½å¯¼è‡´è®¡æ•°å›ç»•ã€‚ */
+        /* ´ïµ½×î³¤ÅĞ¶¨Ê±¼äºó±£³Ö£¬±ÜÃâ³ÖĞø°´×¡µ¼ÖÂ¼ÆÊı»ØÈÆ¡£ */
         if (key_press_timer < 500U) {
             key_press_timer++;
         }
 
-        /* æ²¿ç”¨ç°æœ‰1ç§’é—¨æ§›ï¼Œæ¾æ‰‹åæäº¤å¼€å…³æœºè¯·æ±‚ã€‚ */
+        /* ÑØÓÃÏÖÓĞ1ÃëÃÅ¼÷£¬ËÉÊÖºóÌá½»¿ª¹Ø»úÇëÇó¡£ */
         if (key_press_timer == 100U) {
             long_press_3s_done = 1;
         }
 
-        /* åªæœ‰å¼€æœºæ—¶å¼€å§‹çš„é•¿æŒ‰ï¼Œæ‰å…è®¸åœ¨5ç§’è§¦å‘é…ç½‘ã€‚ */
+        /* Ö»ÓĞ¿ª»úÊ±¿ªÊ¼µÄ³¤°´£¬²ÅÔÊĞíÔÚ5Ãë´¥·¢ÅäÍø¡£ */
         if ((key_press_timer == 500U) &&
             !long_press_5s_done &&
             !key_started_off &&
@@ -92,8 +92,8 @@ void HAL_Touch_Scan(void) {
             long_press_5s_done = 1;
         }
     } else {
-        // åˆšæ¾æ‰‹ç¬é—´ç»“ç®—
-        /* æ¾æ‰‹ååŒºåˆ†çŸ­æŒ‰ä¸é•¿æŒ‰ã€‚ */
+        // ¸ÕËÉÊÖË²¼ä½áËã
+        /* ËÉÊÖºóÇø·Ö¶Ì°´Óë³¤°´¡£ */
         if (key_press_timer > 3) {
             if (!long_press_3s_done && !long_press_5s_done) {
                 click_count++;
@@ -121,8 +121,8 @@ void HAL_Touch_Scan(void) {
             } else if (long_press_3s_done &&
                        !long_press_5s_done) {
                 /*
-                 * å…³æœºå¼€å§‹çš„é•¿æŒ‰åªå…è®¸å¼€æœºï¼›
-                 * æŒ‰ä½æœŸé—´å·²è¢«APPå¼€æœºï¼Œåˆ™ä¸å†åå‘å…³æœºã€‚
+                 * ¹Ø»ú¿ªÊ¼µÄ³¤°´Ö»ÔÊĞí¿ª»ú£»
+                 * °´×¡ÆÚ¼äÒÑ±»APP¿ª»ú£¬Ôò²»ÔÙ·´Ïò¹Ø»ú¡£
                  */
                 if (!key_started_off ||
                     (g_Device.state == STATE_OFF)) {
@@ -130,23 +130,23 @@ void HAL_Touch_Scan(void) {
                 }
             }
         }
-        // æ¸…ç†æŒ‰å‹çŠ¶æ€
+        // ÇåÀí°´Ñ¹×´Ì¬
         if (key_press_timer > 0) {
-            key_press_timer = 0;
+            key_press_timer = 0; 
             long_press_3s_done = 0;
             long_press_5s_done = 0;
 					  key_started_off = 0;
 
         }
 
-        // ã€å•å‡»ç»“ç®—ã€‘ï¼šåªæœ‰å½“å¤„äºå•å‡»çŠ¶æ€ï¼Œä¸”æŒç»­æ¾æ‰‹ 250ms åï¼Œæ‰åˆ¤å®šä¸ºå•å‡»
+        // ¡¾µ¥»÷½áËã¡¿£ºÖ»ÓĞµ±´¦ÓÚµ¥»÷×´Ì¬£¬ÇÒ³ÖĞøËÉÊÖ 250ms ºó£¬²ÅÅĞ¶¨Îªµ¥»÷
         if (click_count == 1) {
             key_release_timer++;
             if (key_release_timer >= 25) {
-                // ã€æ ¸å¿ƒä¿®å¤ï¼šå…³æœºçŠ¶æ€ä¸‹å±è”½å•å‡»æ„å›¾ã€‘
-                if (g_Device.state != STATE_OFF) {
+                // ¡¾ºËĞÄĞŞ¸´£º¹Ø»ú×´Ì¬ÏÂÆÁ±Îµ¥»÷ÒâÍ¼¡¿
+                if (g_Device.state != STATE_OFF) { 
                     if (g_Device.wifi_pairing_timer_s == 0) {
-                        g_Device.req_mode_toggle = 1;
+                        g_Device.req_mode_toggle = 1; 
                     }
                 }
                 click_count = 0;
@@ -158,28 +158,28 @@ void HAL_Touch_Scan(void) {
     }
 
     // ---------------------------------------------------------
-    // 2. å¤„ç† UVC æŒ‰é”® (å¤–éƒ¨ä¸­æ–­æ ‡å¿—ä½ + å†·å´é˜²æŠ–)
-    // ---------------------------------------------------------
-    // æ¯æ¬¡è¿›å…¥ 10ms è½®è¯¢æ—¶ï¼Œå€’æ•°å†·å´æ—¶é—´
+    // 2. ´¦Àí UVC °´¼ü (Íâ²¿ÖĞ¶Ï±êÖ¾Î» + ÀäÈ´·À¶¶)
+    // ---------------------------------------------------------    
+    // Ã¿´Î½øÈë 10ms ÂÖÑ¯Ê±£¬µ¹ÊıÀäÈ´Ê±¼ä
     if (uvc_dead_timer > 0) {
-        uvc_dead_timer--;
+        uvc_dead_timer--; 
     }
 
     if (g_Device.state != STATE_OFF) {
         if (g_uvc_exti_flag) {
-            // åªæœ‰åœ¨å†·å´æœŸç»“æŸæ—¶ï¼Œæ‰è®¤ä¸ºæ˜¯ä¸€æ¬¡æœ‰æ•ˆçš„ç‚¹å‡»
+            // Ö»ÓĞÔÚÀäÈ´ÆÚ½áÊøÊ±£¬²ÅÈÏÎªÊÇÒ»´ÎÓĞĞ§µÄµã»÷
             if (uvc_dead_timer == 0) {
-                g_Device.req_uvc = 1;
-                uvc_dead_timer = 50; // å¼ºåˆ¶è¿›å…¥ 500ms å†·å´ (50 * 10ms)
-            }
-            g_uvc_exti_flag = 0; // åƒæ‰ä¸­æ–­æ ‡å¿—ä½
+                g_Device.req_uvc = 1;     
+                uvc_dead_timer = 50; // Ç¿ÖÆ½øÈë 500ms ÀäÈ´ (50 * 10ms)
+            }            
+            g_uvc_exti_flag = 0; // ³ÔµôÖĞ¶Ï±êÖ¾Î»
         }
     } else {
-        g_uvc_exti_flag = 0; // å…³æœºçŠ¶æ€ä¸¢å¼ƒ UVC æŒ‰é”®
+        g_uvc_exti_flag = 0; // ¹Ø»ú×´Ì¬¶ªÆú UVC °´¼ü
     }
 		 /*
-     * æŒ‰ä½ã€æŒ‰é”®ç»“ç®—æœªå®Œæˆï¼Œæˆ–UVCå†·å´å°šæœªç»“æŸï¼Œ
-     * éƒ½ä¿æŒæ­£å¸¸è°ƒåº¦ï¼Œæš‚ä¸ä¼‘çœ ã€‚
+     * °´×¡¡¢°´¼ü½áËãÎ´Íê³É£¬»òUVCÀäÈ´ÉĞÎ´½áÊø£¬
+     * ¶¼±£³ÖÕı³£µ÷¶È£¬Ôİ²»ĞİÃß¡£
      */
     s_touch_busy =
         is_pressed ||
@@ -189,12 +189,12 @@ void HAL_Touch_Scan(void) {
 }
 
 // ==========================================
-// UVCé©±åŠ¨åŒºåŸŸ
+// UVCÇı¶¯ÇøÓò
 // ==========================================
 void HAL_UVCING_Start(void) {
-    UVCING_PIN = 1; // æ‰“å¼€ MOS ç®¡
+    UVCING_PIN = 1; // ´ò¿ª MOS ¹Ü
 }
 
 void HAL_UVCING_Stop(void) {
-    UVCING_PIN = 0; // å…³é—­ MOS ç®¡
+    UVCING_PIN = 0; // ¹Ø±Õ MOS ¹Ü
 }

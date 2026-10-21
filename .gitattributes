@@ -4,3 +4,10 @@
 archive/** -text
 *.md text eol=lf
 *.json text eol=lf
+
+# Preserve the complete desktop project byte for byte (mixed GBK/UTF-8).
+TL2_T12/** -text
+*.LIB binary
+*.xlsx binary
+*.db binary
+*.png binary

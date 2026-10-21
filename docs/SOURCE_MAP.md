@@ -1,32 +1,38 @@
-# 文件来源
+# 文件来源与路径对应
 
-初始归档的原始附件位于 `archive/original_uploads/`，2026-09-30 对话转录副本位于 `archive/chat_transcription/`。原归档保留不变。2026-10-09 的三份工作源码以用户本次粘贴文本为当前来源；历史来源及当前 SHA-256 分别记录在 `source_manifest.json` 中。
+最新来源：2026-10-21 从桌面 `TL2_T12` 读取；以下文件均保留原始字节。完整工程位于 `TL2_T12/`，以 `Keil_C/Project/TL2_6.uvproj` 为构建入口。
 
-| 整理路径 | 来源 | 处理方式 |
-| --- | --- | --- |
-| `App/app_fsm.c` | 粘贴的文本 (3).txt | 原字节复制 |
-| `App/app_wifi.c` | 粘贴的文本 (11).txt | 原字节复制 |
-| `Drivers/SC89601/sc89601.c` | 粘贴的文本 (10).txt | 原字节复制 |
-| `Drivers/SC89601/sc89601.h` | sc89601.h | 原字节复制 |
-| `HAL/hal_adc.c` | 粘贴的文本 (4).txt | 原字节复制 |
-| `HAL/hal_buzzer.c` | 2026-09-30 user code message | 对话转录、空白排版 |
-| `HAL/hal_eeprom.c` | 粘贴的 Markdown (1).md | Markdown 还原与拆分 |
-| `HAL/hal_ir.c` | 2026-09-30 user code message | 对话转录、空白排版 |
-| `HAL/hal_lpd.c` | 粘贴的 Markdown (1).md | Markdown 还原与拆分 |
-| `HAL/hal_power.c` | 2026-10-09 user code message | 对话文本同步；有效代码与原基线一致，保留本次注释空白 |
-| `HAL/hal_pwm.c` | 2026-09-30 user code message | 对话转录、空白排版 |
-| `HAL/hal_tm1650.c` | 粘贴的 Markdown (1).md | Markdown 还原与拆分 |
-| `HAL/hal_touch.c` | 粘贴的 Markdown (1).md | Markdown 还原与拆分 |
-| `HAL/hal_uart.c` | 粘贴的 Markdown (1).md | Markdown 还原与拆分 |
-| `TuyaMCUSDK/mcu_api.c` | 粘贴的文本 (5).txt | 原字节复制 |
-| `TuyaMCUSDK/mcu_api.h` | 粘贴的文本 (6).txt | 原字节复制 |
-| `TuyaMCUSDK/protocol.c` | 粘贴的文本 (7).txt | 原字节复制 |
-| `TuyaMCUSDK/protocol.h` | 粘贴的文本 (8).txt | 原字节复制 |
-| `TuyaMCUSDK/system.c` | 粘贴的文本 (9).txt | 原字节复制 |
-| `TuyaMCUSDK/system.h` | 粘贴的文本 (1)(1).txt | 原字节复制 |
-| `TuyaMCUSDK/wifi.h` | wifi.h | 原字节复制 |
-| `User/SC_Init.c` | 粘贴的文本 (2).txt | 原字节复制 |
-| `User/SC_it.c` | 2026-10-09 user code message | 对话文本同步；有效代码与原基线一致，保留本次排版 |
-| `User/main.c` | 2026-10-09 user code message | 保留历史文件头，按本次代码主体同步；HAL_LPD_Init 调用保持注释；补齐末尾换行 |
+原仓库的 24 份源码阅读路径同步为对应桌面文件，映射如下：
 
-机器可读记录见 `source_manifest.json`，包含对应 SHA-256。整理包的全部文件哈希见根目录 `SHA256SUMS.txt`。
+| 既有阅读路径 | 桌面工程对应路径 |
+| --- | --- |
+| `User/main.c` | `TL2_T12/Keil_C/User/main.c` |
+| `User/SC_Init.c` | `TL2_T12/Keil_C/User/SC_Init.c` |
+| `App/app_fsm.c` | `TL2_T12/Keil_C/User/src/app_fsm.c` |
+| `HAL/hal_adc.c` | `TL2_T12/Keil_C/Hardware/hal_adc.c` |
+| `TuyaMCUSDK/mcu_api.c` | `TL2_T12/Keil_C/Wifi/mcu_sdk/mcu_api.c` |
+| `TuyaMCUSDK/mcu_api.h` | `TL2_T12/Keil_C/Wifi/mcu_sdk/mcu_api.h` |
+| `TuyaMCUSDK/protocol.c` | `TL2_T12/Keil_C/Wifi/mcu_sdk/protocol.c` |
+| `TuyaMCUSDK/protocol.h` | `TL2_T12/Keil_C/Wifi/mcu_sdk/protocol.h` |
+| `TuyaMCUSDK/system.c` | `TL2_T12/Keil_C/Wifi/mcu_sdk/system.c` |
+| `Drivers/SC89601/sc89601.c` | `TL2_T12/Keil_C/PWR/sc89601.c` |
+| `App/app_wifi.c` | `TL2_T12/Keil_C/PWR/app_wifi.c` |
+| `TuyaMCUSDK/system.h` | `TL2_T12/Keil_C/Wifi/mcu_sdk/system.h` |
+| `TuyaMCUSDK/wifi.h` | `TL2_T12/Keil_C/Wifi/mcu_sdk/wifi.h` |
+| `Drivers/SC89601/sc89601.h` | `TL2_T12/Keil_C/PWR/sc89601.h` |
+| `HAL/hal_power.c` | `TL2_T12/Keil_C/PWR/hal_power.c` |
+| `HAL/hal_lpd.c` | `TL2_T12/Keil_C/Hardware/hal_lpd.c` |
+| `HAL/hal_eeprom.c` | `TL2_T12/Keil_C/Hardware/hal_eeprom.c` |
+| `HAL/hal_uart.c` | `TL2_T12/Keil_C/Hardware/hal_uart.c` |
+| `HAL/hal_touch.c` | `TL2_T12/Keil_C/Hardware/hal_touch.c` |
+| `HAL/hal_tm1650.c` | `TL2_T12/Keil_C/Hardware/hal_tm1650.c` |
+| `User/SC_it.c` | `TL2_T12/Keil_C/User/SC_it.c` |
+| `HAL/hal_buzzer.c` | `TL2_T12/Keil_C/Hardware/hal_buzzer.c` |
+| `HAL/hal_ir.c` | `TL2_T12/Keil_C/Hardware/hal_ir.c` |
+| `HAL/hal_pwm.c` | `TL2_T12/Keil_C/Hardware/hal_pwm.c` |
+
+`HAL/hal_power.c` 以 `.uvproj` 实际选择的 `PWR/hal_power.c` 为来源；原始 `Hardware/hal_power.c` 仍保存在完整工程中。`Project/1.c` 为目录内未被当前目标引用的源文件，也按原样归档。
+
+原始附件及对话转录仍位于 `archive/`。上一版来源清单另存为 `archive/provenance/2026-10-09_source_manifest.json`，其路径与哈希对应旧提交 `4a3db19e16f1e9a9bd295a47ec4274f1f90baddb`。
+
+`docs/source_manifest.json` 记录本次 395 份工程文件和 24 份阅读镜像的来源、Git blob SHA 与 SHA-256；`SHA256SUMS.txt` 覆盖最终仓库除自身以外的文件。

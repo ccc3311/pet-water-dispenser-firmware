@@ -27,3 +27,10 @@ Release/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Original TL2_T12 listing and IDE scratch files
+TL2_T12/Keil_C/List/
+*.soclst
+*.SBR
+*.__i
+*._ia

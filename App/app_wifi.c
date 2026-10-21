@@ -29,7 +29,7 @@
 #define WIFI_PAIRING_HOLD_S  180U
 extern uint8_t g_reset_notify_enabled;
 extern u8 g_wifi_wake_diag;
-/* å¾…å‘é€ä½ï¼šbit0 WORK_MODEï¼Œbit1 PIRï¼Œbit2 CONTINUEã€‚ */
+/* ´ı·¢ËÍÎ»£ºbit0 WORK_MODE£¬bit1 PIR£¬bit2 CONTINUE¡£ */
 static u8 s_wifi_mode_pending = 0;
 static u8 s_wifi_mode_value = 0;
 static u8 s_wifi_mode_observed = 0;
@@ -38,10 +38,10 @@ static u8 s_wifi_mode_retry_s = 0;
 static u8 s_wifi_heat_pending = 0;
 static u8 s_wifi_heat_retry_s = 0;
 
-/* æœ¬åœ°ä¸»åŠ¨é‡æ–°é…ç½‘æœŸé—´ä¿æŒæ¨¡ç»„å·¥ä½œ */
+/* ±¾µØÖ÷¶¯ÖØĞÂÅäÍøÆÚ¼ä±£³ÖÄ£×é¹¤×÷ */
 static u8 s_wifi_pairing_hold = 0;
 static u8 s_wifi_pairing_seen_disconnect = 0;
-static u16 s_wifi_pairing_hold_s = 0;  /* ç‹¬ç«‹äºå¯è¢«ç”¨æˆ·å–æ¶ˆçš„ UI å€’è®¡æ—¶ã€‚ */
+static u16 s_wifi_pairing_hold_s = 0;  /* ¶ÀÁ¢ÓÚ¿É±»ÓÃ»§È¡ÏûµÄ UI µ¹¼ÆÊ±¡£ */
 static u8 s_wifi_reset_notify_pending = 0;
 static u8 s_wifi_reset_notify_retry_s = 0;
 static u8 s_wifi_time_pending = 0;
@@ -53,7 +53,7 @@ static u8 s_wifi_tds_stable_s = 0;
 static u16 s_wifi_tds_cooldown_s = 0;
 
 static u8 s_wifi_tds_pending = 0;
-static u8 s_wifi_tds_value = 0;  /* DPï¼š0 æ­£å¸¸ï¼Œ1 è¶…æ ‡ */
+static u8 s_wifi_tds_value = 0;  /* DP£º0 Õı³££¬1 ³¬±ê */
 static u8 s_wifi_tds_retry_s = 0;
 
 static u16 s_wifi_bat_cooldown_s = 0;
@@ -68,7 +68,7 @@ static u8 s_wifi_mute_retry_s = 0;
 static u8 s_wifi_switch_pending = 0;
 static u8 s_wifi_switch_value = 0;
 static u8 s_wifi_switch_retry_s = 0;
-/* æœ€è¿‘è§‚å¯Ÿåˆ°çš„å®é™…å¼€å…³çŠ¶æ€ï¼Œä¸ä»£è¡¨äº‘ç«¯å·²æ”¶åˆ° */
+/* ×î½ü¹Û²ìµ½µÄÊµ¼Ê¿ª¹Ø×´Ì¬£¬²»´ú±íÔÆ¶ËÒÑÊÕµ½ */
 static u8 s_wifi_switch_observed = 0;
 static u8 s_wifi_bat_observed = 0xFF;
 static u8 s_wifi_bat_pending = 0;
@@ -96,7 +96,7 @@ static u8 s_wifi_uv_observed = 0;
 static u8 s_wifi_uv_retry_s = 0;
 
 static u8 s_wifi_water_pending = 0;
-static u8 s_wifi_water_value = 1;  /* æ¶‚é¸¦ï¼š0 ç¼ºæ°´ï¼Œ1 æ­£å¸¸ */
+static u8 s_wifi_water_value = 1;  /* Í¿Ñ»£º0 È±Ë®£¬1 Õı³£ */
 static u8 s_wifi_water_retry_s = 0;
 
 static u8 s_wifi_clean_days_pending = 0;
@@ -217,7 +217,7 @@ static u8 App_Wifi_ReportPending(void)
             s_wifi_filter_days_pending) ? 1 : 0;
 }
 
-/* æ™®é€š DP å…±ç”¨å‘é€æ¡ä»¶ï¼›pending å’Œé‡è¯•é—´éš”ç”±å„æœåŠ¡åˆ¤æ–­ã€‚ */
+/* ÆÕÍ¨ DP ¹²ÓÃ·¢ËÍÌõ¼ş£»pending ºÍÖØÊÔ¼ä¸ôÓÉ¸÷·şÎñÅĞ¶Ï¡£ */
 static u8 App_Wifi_CanSendDp(void)
 {
     if (s_wifi_test_phase != WIFI_TEST_BOOT &&
@@ -272,7 +272,7 @@ static void App_Wifi_MuteService(void)
     }
 }
 
-///* ä¸´æ—¶è¯Šæ–­ï¼šä¿æŒå”¤é†’ç”µå¹³ï¼Œå•æ¬¡ç”³è¯·ä¼‘çœ ä»¥æ£€æŸ¥æ¨¡ç»„åˆ¤æ–­ã€‚ */
+///* ÁÙÊ±Õï¶Ï£º±£³Ö»½ĞÑµçÆ½£¬µ¥´ÎÉêÇëĞİÃßÒÔ¼ì²éÄ£×éÅĞ¶Ï¡£ */
 //static void App_WifiTest_Release(void)
 //{
 //    static u8 probe_sent = 0;
@@ -304,7 +304,7 @@ static void App_WifiTest_Release(void)
 {
     s_wifi_test_seconds = 0;
 
-    /* Type-C ä¸‹è¿›å…¥æ­£å¸¸é€šä¿¡é˜¶æ®µï¼Œä¿æŒæ¨¡ç»„è¿è¡Œã€‚ */
+    /* Type-C ÏÂ½øÈëÕı³£Í¨ĞÅ½×¶Î£¬±£³ÖÄ£×éÔËĞĞ¡£ */
     if (g_Device.power_mode == POWER_AC) {
         g_wifi_allow_sleep = 0;
         WiFi_Module_KeepAwake();
@@ -329,7 +329,7 @@ static void App_Wifi_BatTick1s(void)
         return;
     }
 
-    /* å·²ç»æœ‰ç”µé‡å¸§å¾…å‘é€ï¼Œç”±åŸæœ‰å‘é€å’Œé‡è¯•æµç¨‹å¤„ç† */
+    /* ÒÑ¾­ÓĞµçÁ¿Ö¡´ı·¢ËÍ£¬ÓÉÔ­ÓĞ·¢ËÍºÍÖØÊÔÁ÷³Ì´¦Àí */
     if (s_wifi_bat_pending) {
         return;
     }
@@ -446,7 +446,7 @@ void App_WifiTest_Tick1s(void)
 		if (s_wifi_reset_notify_retry_s > 0) {
 				s_wifi_reset_notify_retry_s--;
 		}
-		/* è”ç½‘åç´¯è®¡å¯åŠ¨ç­‰å¾…æ—¶é—´ã€‚ */
+		/* ÁªÍøºóÀÛ¼ÆÆô¶¯µÈ´ıÊ±¼ä¡£ */
 		if (s_wifi_test_phase == WIFI_TEST_BOOT) {
 				if (mcu_get_wifi_work_state() != WIFI_CONN_CLOUD) {
 						s_wifi_test_seconds = 0;
@@ -465,13 +465,13 @@ static void App_WifiTest_RunState(void)
 u8 wake_from_lp;
 u8 wake_from_allow;
 	
-		/* å¾…ä¸ŠæŠ¥ã€é‡æ–°é…ç½‘æˆ–æ¥å…¥ Type-C æ—¶å”¤é†’æ¨¡ç»„ã€‚ */
+		/* ´ıÉÏ±¨¡¢ÖØĞÂÅäÍø»ò½ÓÈë Type-C Ê±»½ĞÑÄ£×é¡£ */
 		if ((g_Device.power_mode == POWER_AC ||
 				 App_Wifi_ReportPending() ||
 				 g_Device.req_wifi_reset) &&
 				(s_wifi_test_phase == WIFI_TEST_WAIT_SLEEP ||
 				 s_wifi_test_phase == WIFI_TEST_SLEEP)) {
-/* ä¿å­˜åˆ‡æ¢å‰çŠ¶æ€ï¼Œä¾›å®šä½å”¤é†’è¶…æ—¶ã€‚ */
+/* ±£´æÇĞ»»Ç°×´Ì¬£¬¹©¶¨Î»»½ĞÑ³¬Ê±¡£ */
 wake_from_phase = s_wifi_test_phase;
 wake_from_lp = g_wifi_lp_state;
 wake_from_allow = g_wifi_allow_sleep;
@@ -559,13 +559,13 @@ case WIFI_TEST_WAIT_WAKE:
 //    g_wifi_allow_sleep = 0;
 
 //    if (g_wifi_lp_state == WIFI_LP_WAKE_NOTIFIED) {
-//        /* é€šçŸ¥å¯èƒ½åœ¨é‡è¯•çš„é«˜ç”µå¹³æœŸé—´åˆ°è¾¾ï¼Œå…ˆæ¢å¤ä¿æŒå·¥ä½œã€‚ */
+//        /* Í¨Öª¿ÉÄÜÔÚÖØÊÔµÄ¸ßµçÆ½ÆÚ¼äµ½´ï£¬ÏÈ»Ö¸´±£³Ö¹¤×÷¡£ */
 //        WiFi_Module_KeepAwake();
 //        s_wifi_test_phase = WIFI_TEST_ACTIVE;
 //        s_wifi_test_seconds = 0;
 //    }
 //    else if (s_wifi_test_seconds >= 11) {
-//        /* ä¸€æ¬¡é‡è¯•ä»æ— é€šçŸ¥ï¼Œä¿ç•™åŸæœ‰é”™è¯¯å¤„ç†ã€‚ */
+//        /* Ò»´ÎÖØÊÔÈÔÎŞÍ¨Öª£¬±£ÁôÔ­ÓĞ´íÎó´¦Àí¡£ */
 //        WiFi_Module_KeepAwake();
 //        s_wifi_test_error = 1;
 //        s_wifi_test_phase = WIFI_TEST_ERROR;
@@ -574,7 +574,7 @@ case WIFI_TEST_WAIT_WAKE:
 //        WiFi_Module_KeepAwake();
 //    }
 //    else if (s_wifi_test_seconds >= 5) {
-//        /* ä¸´æ—¶éªŒè¯ï¼šæ‹‰é«˜çº¦1ç§’ï¼Œä¸ºç¬¬äºŒæ¬¡ä¸‹é™æ²¿åšå‡†å¤‡ã€‚ */
+//        /* ÁÙÊ±ÑéÖ¤£ºÀ­¸ßÔ¼1Ãë£¬ÎªµÚ¶ş´ÎÏÂ½µÑØ×ö×¼±¸¡£ */
 //        WiFi_Module_Release();
 //    }
 //    break;
@@ -594,11 +594,11 @@ case WIFI_TEST_WAIT_WAKE:
 
 		case WIFI_TEST_ERROR:
 				/*
-				 * å”¤é†’è¶…æ—¶åï¼Œå¦‚æœåˆæ”¶åˆ°æ–°çš„å”¤é†’é€šçŸ¥ï¼Œ
-				 * ä¸” hibernate_fun() å·²æˆåŠŸå‘é€å”¤é†’ ACKï¼Œ
-				 * åˆ™æ¢å¤é€šä¿¡çª—å£ã€‚
+				 * »½ĞÑ³¬Ê±ºó£¬Èç¹ûÓÖÊÕµ½ĞÂµÄ»½ĞÑÍ¨Öª£¬
+				 * ÇÒ hibernate_fun() ÒÑ³É¹¦·¢ËÍ»½ĞÑ ACK£¬
+				 * Ôò»Ö¸´Í¨ĞÅ´°¿Ú¡£
 				 *
-				 * ä»…å¤„ç† err=1ï¼Œä¸å¤„ç† err=3 é‡ç½®å¸§å‘é€å¤±è´¥ã€‚
+				 * ½ö´¦Àí err=1£¬²»´¦Àí err=3 ÖØÖÃÖ¡·¢ËÍÊ§°Ü¡£
 				 */
 				if (s_wifi_test_error == 1 &&
 						g_wifi_lp_state == WIFI_LP_WAKE_NOTIFIED) {
@@ -613,7 +613,7 @@ case WIFI_TEST_WAIT_WAKE:
 						break;
 				}
 
-				/* å°šæœªæ»¡è¶³æ¢å¤æ¡ä»¶ï¼šä¿æŒå”¤é†’ï¼Œä¸å‘é€ä¸šåŠ¡æ•°æ® */
+				/* ÉĞÎ´Âú×ã»Ö¸´Ìõ¼ş£º±£³Ö»½ĞÑ£¬²»·¢ËÍÒµÎñÊı¾İ */
 				g_wifi_allow_sleep = 0;
 				WiFi_Module_KeepAwake();
 
@@ -633,8 +633,8 @@ case WIFI_TEST_WAIT_WAKE:
 
 		default:
 				break;
-		}   /* switch ç»“æŸ */
-}   /* App_WifiTest_RunState() ç»“æŸ */
+		}   /* switch ½áÊø */
+}   /* App_WifiTest_RunState() ½áÊø */
 
 static void App_Wifi_SwitchObserve(void)
 {
@@ -642,7 +642,7 @@ static void App_Wifi_SwitchObserve(void)
 
     current_on = (g_Device.state != STATE_OFF) ? 1 : 0;
 
-    /* å¯åŠ¨é˜¶æ®µç»§ç»­æ²¿ç”¨åŸæ¥çš„äº‘ç«¯åŒæ­¥ */
+    /* Æô¶¯½×¶Î¼ÌĞøÑØÓÃÔ­À´µÄÔÆ¶ËÍ¬²½ */
     if (s_wifi_test_phase == WIFI_TEST_BOOT) {
         s_wifi_switch_observed = current_on;
         return;
@@ -651,7 +651,7 @@ static void App_Wifi_SwitchObserve(void)
     if (current_on != s_wifi_switch_observed) {
         s_wifi_switch_observed = current_on;
 
-        /* åªæäº¤å®é™…çŠ¶æ€ï¼Œä¸æ“ä½œè®¾å¤‡ï¼Œä¸ç›´æ¥å‘é€ */
+        /* Ö»Ìá½»Êµ¼Ê×´Ì¬£¬²»²Ù×÷Éè±¸£¬²»Ö±½Ó·¢ËÍ */
         App_Wifi_SwitchSubmit(current_on);
     }
 }
@@ -660,7 +660,7 @@ static void App_Wifi_BatObserve(void)
 {
     u8 current_soc;
 
-    /* ä½¿ç”¨ç°æœ‰ç®—æ³•å¤„ç†åçš„æ¡£ä½ï¼š0 é«˜ã€1 ä¸­ã€2 ä½ */
+    /* Ê¹ÓÃÏÖÓĞËã·¨´¦ÀíºóµÄµµÎ»£º0 ¸ß¡¢1 ÖĞ¡¢2 µÍ */
     current_soc = HAL_ADC_Get_Battery_SOC();
 
     if (current_soc > 2) {
@@ -672,8 +672,8 @@ static void App_Wifi_BatObserve(void)
     s_wifi_bat_observed = current_soc;
 
     /*
-     * å¯åŠ¨é¦–æŠ¥ä»ç”±åŸæœ‰ä¸šåŠ¡è´Ÿè´£ã€‚
-     * å¯åŠ¨ç»“æŸåï¼Œä½ç”µé‡ç­‰å¾…ä¸€ä¸ªå®Œæ•´å‘¨æœŸå†é‡å¤ä¸ŠæŠ¥ã€‚
+     * Æô¶¯Ê×±¨ÈÔÓÉÔ­ÓĞÒµÎñ¸ºÔğ¡£
+     * Æô¶¯½áÊøºó£¬µÍµçÁ¿µÈ´ıÒ»¸öÍêÕûÖÜÆÚÔÙÖØ¸´ÉÏ±¨¡£
      */
     s_wifi_bat_cooldown_s =
         (current_soc == 2) ? WIFI_BAT_REPORT_INTERVAL_S : 0;
@@ -681,7 +681,7 @@ static void App_Wifi_BatObserve(void)
     return;
 		}
 
-		/* ç”µé‡æ¢å¤åï¼Œè§£é™¤ä½ç”µé‡é‡å¤ä¸ŠæŠ¥è®¡æ—¶ */
+		/* µçÁ¿»Ö¸´ºó£¬½â³ıµÍµçÁ¿ÖØ¸´ÉÏ±¨¼ÆÊ± */
 		if (current_soc != 2) {
 				s_wifi_bat_cooldown_s = 0;
 		}
@@ -689,7 +689,7 @@ static void App_Wifi_BatObserve(void)
     if (current_soc != s_wifi_bat_observed) {
         s_wifi_bat_observed = current_soc;
 
-        /* ç‹¬ç«‹ä¿å­˜æœ€æ–°æ¡£ä½ï¼Œå‘é€å¤±è´¥æ—¶ç»§ç»­ä¿ç•™ */
+        /* ¶ÀÁ¢±£´æ×îĞÂµµÎ»£¬·¢ËÍÊ§°ÜÊ±¼ÌĞø±£Áô */
         s_wifi_bat_value = current_soc;
         s_wifi_bat_pending = 1;
         g_wifi_allow_sleep = 0;
@@ -732,7 +732,7 @@ static void App_Wifi_TempObserve(void)
     is_high = (current_temp > 38) ? 1 : 0;
     need_report = 0;
 
-    /* å¯åŠ¨åŒæ­¥ä»ç”±åŸæœ‰ä¸šåŠ¡è´Ÿè´£ */
+    /* Æô¶¯Í¬²½ÈÔÓÉÔ­ÓĞÒµÎñ¸ºÔğ */
     if (s_wifi_test_phase == WIFI_TEST_BOOT) {
         s_wifi_temp_high_observed = is_high;
         return;
@@ -760,7 +760,7 @@ static void App_Wifi_TempObserve(void)
         g_wifi_allow_sleep = 0;
     }
 
-    /* ç­‰å¾…å”¤é†’æˆ–é‡è¯•æœŸé—´ï¼Œä¿ç•™æœ€æ–°å®é™…æ¸©åº¦ */
+    /* µÈ´ı»½ĞÑ»òÖØÊÔÆÚ¼ä£¬±£Áô×îĞÂÊµ¼ÊÎÂ¶È */
     if (s_wifi_temp_pending) {
         s_wifi_temp_value = current_temp;
     }
@@ -796,7 +796,7 @@ static void App_Wifi_WaterObserve(void)
 
     current_empty = g_Device.is_empty ? 1 : 0;
 
-    /* BOOT é˜¶æ®µç»§ç»­æ²¿ç”¨åŸæœ‰å¯åŠ¨åŒæ­¥ */
+    /* BOOT ½×¶Î¼ÌĞøÑØÓÃÔ­ÓĞÆô¶¯Í¬²½ */
     if (s_wifi_test_phase == WIFI_TEST_BOOT) {
         s_wifi_water_observed = current_empty;
         s_wifi_water_enter_count = 0;
@@ -813,23 +813,23 @@ static void App_Wifi_WaterObserve(void)
         s_wifi_water_stable_s = 0;
 
         if (current_empty) {
-            /* åªç»Ÿè®¡â€œæ­£å¸¸ -> ç¼ºæ°´â€ï¼Œæœ€å¤šç´¯è®¡åˆ° 10 */
+            /* Ö»Í³¼Æ¡°Õı³£ -> È±Ë®¡±£¬×î¶àÀÛ¼Æµ½ 10 */
             if (s_wifi_water_enter_count < 10) {
                 s_wifi_water_enter_count++;
             }
 
-            /* æ°´ä½å†æ¬¡ç¼ºæ°´ï¼Œå–æ¶ˆå°šæœªå‘å‡ºçš„è¿‡æ—¶æ¢å¤å¸§ */
+            /* Ë®Î»ÔÙ´ÎÈ±Ë®£¬È¡ÏûÉĞÎ´·¢³öµÄ¹ıÊ±»Ö¸´Ö¡ */
             if (s_wifi_water_pending &&
                 s_wifi_water_value == 1) {
                 s_wifi_water_pending = 0;
             }
         } else {
-            /* æ¢å¤æ­£å¸¸ï¼šè§£é™¤å†·å´ï¼Œä½†ä¿ç•™ç´¯è®¡è¿›å…¥æ¬¡æ•° */
+            /* »Ö¸´Õı³££º½â³ıÀäÈ´£¬µ«±£ÁôÀÛ¼Æ½øÈë´ÎÊı */
             s_wifi_water_cooldown_s = 0;
 
             /*
-             * å·²ä¸ŠæŠ¥è¿‡ç¼ºæ°´ï¼Œæˆ–å·²æœ‰æŠ¥è­¦ç­‰å¾…å‘é€æ—¶ï¼Œ
-             * æäº¤/è¦†ç›–ä¸ºæ­£å¸¸çŠ¶æ€ã€‚
+             * ÒÑÉÏ±¨¹ıÈ±Ë®£¬»òÒÑÓĞ±¨¾¯µÈ´ı·¢ËÍÊ±£¬
+             * Ìá½»/¸²¸ÇÎªÕı³£×´Ì¬¡£
              */
             if (g_Device_Shadow.is_empty != 0 ||
                 s_wifi_water_pending) {
@@ -874,7 +874,7 @@ static void App_Wifi_WaterService(void)
             (s_wifi_water_value == 0) ? 1 : 0;
 
         if (s_wifi_water_value == 0) {
-            /* ç¼ºæ°´æŠ¥è­¦æœ¬åœ°å‘é€å®Œæˆåï¼Œæ‰å¼€å§‹æ–°å‘¨æœŸ */
+            /* È±Ë®±¨¾¯±¾µØ·¢ËÍÍê³Éºó£¬²Å¿ªÊ¼ĞÂÖÜÆÚ */
             s_wifi_water_enter_count = 0;
             s_wifi_water_stable_s = 0;
             s_wifi_water_cooldown_s = WIFI_WATER_COOLDOWN_S;
@@ -913,13 +913,13 @@ static void App_Wifi_TdsObserve(void)
                 s_wifi_tds_enter_count++;
             }
 
-            /* å–æ¶ˆå°šæœªå‘é€çš„è¿‡æ—¶æ­£å¸¸çŠ¶æ€ */
+            /* È¡ÏûÉĞÎ´·¢ËÍµÄ¹ıÊ±Õı³£×´Ì¬ */
             if (s_wifi_tds_pending &&
                 s_wifi_tds_value == 0) {
                 s_wifi_tds_pending = 0;
             }
         } else {
-            /* æ¢å¤æ­£å¸¸ï¼Œä¿ç•™ç´¯è®¡è¿›å…¥è¶…æ ‡çš„æ¬¡æ•° */
+            /* »Ö¸´Õı³££¬±£ÁôÀÛ¼Æ½øÈë³¬±êµÄ´ÎÊı */
             s_wifi_tds_cooldown_s = 0;
 
             if (g_Device_Shadow.water_quality != WATER_GOOD ||
@@ -1039,7 +1039,7 @@ static u8 App_Wifi_ResetService(void)
     return 0;
 		}
 
-		/* æ¯ä¸ªé‡ç½®è¯·æ±‚åªæ‰“å°ä¸€æ¬¡ï¼Œä½äºé˜¶æ®µåˆ¤æ–­ä¹‹å‰ */
+		/* Ã¿¸öÖØÖÃÇëÇóÖ»´òÓ¡Ò»´Î£¬Î»ÓÚ½×¶ÎÅĞ¶ÏÖ®Ç° */
 		if (!s_reset_diag_printed) {
 				s_reset_diag_printed = 1;
 
@@ -1061,9 +1061,9 @@ static u8 App_Wifi_ResetService(void)
 		}
 
 		/*
-		 * æ­£å¸¸æ¥å— BOOT / ACTIVEã€‚
-		 * err=3 åï¼Œä»…åœ¨å­˜åœ¨æ–°çš„æŒ‰é”®é‡ç½®è¯·æ±‚æ—¶å…è®¸å†æ¬¡å°è¯•ã€‚
-		 * å‡½æ•°å¼€å¤´å·²ç»æ£€æŸ¥ req_wifi_resetã€‚
+		 * Õı³£½ÓÊÜ BOOT / ACTIVE¡£
+		 * err=3 ºó£¬½öÔÚ´æÔÚĞÂµÄ°´¼üÖØÖÃÇëÇóÊ±ÔÊĞíÔÙ´Î³¢ÊÔ¡£
+		 * º¯Êı¿ªÍ·ÒÑ¾­¼ì²é req_wifi_reset¡£
 		 */
 		if (s_wifi_test_phase != WIFI_TEST_BOOT &&
 				s_wifi_test_phase != WIFI_TEST_ACTIVE &&
@@ -1077,14 +1077,14 @@ static u8 App_Wifi_ResetService(void)
 		}
 
 		/*
-		 * å°šæœªå…·å¤‡å¼€å§‹æ–°å¸§çš„æ¡ä»¶ï¼š
-		 * ä¿ç•™é‡ç½®è¯·æ±‚ï¼Œäº¤è¿˜ä¸»å¾ªç¯ï¼Œç»§ç»­å¤„ç†ä¸²å£å’Œå…¶ä»–ä»»åŠ¡ã€‚
+		 * ÉĞÎ´¾ß±¸¿ªÊ¼ĞÂÖ¡µÄÌõ¼ş£º
+		 * ±£ÁôÖØÖÃÇëÇó£¬½»»¹Ö÷Ñ­»·£¬¼ÌĞø´¦Àí´®¿ÚºÍÆäËûÈÎÎñ¡£
 		 */
 		if (!WiFi_UART_IsTxReady()) {
 				return 0;
 		}
 
-		/* æ–°è¯·æ±‚å·²ç»å…·å¤‡å‘é€æ¡ä»¶ï¼Œæ¸…é™¤ä¸Šä¸€è½®é”™è¯¯è®°å½• */
+		/* ĞÂÇëÇóÒÑ¾­¾ß±¸·¢ËÍÌõ¼ş£¬Çå³ıÉÏÒ»ÂÖ´íÎó¼ÇÂ¼ */
 		s_wifi_test_error = 0;
 		s_wifi_test_error_printed = 0;
 
@@ -1101,8 +1101,8 @@ static u8 App_Wifi_ResetService(void)
 
 		if (!wifi_uart_last_frame_tx_ok()) {
 				/*
-				 * ç«‹å³è®°å½•ï¼Œé¿å…ä¸‹ä¸€å¸§ BeginFrame() åˆ·æ–°è¯Šæ–­åŸå› ã€‚
-				 * printf ä½¿ç”¨ç°æœ‰ç‹¬ç«‹è°ƒè¯•ä¸²å£ã€‚
+				 * Á¢¼´¼ÇÂ¼£¬±ÜÃâÏÂÒ»Ö¡ BeginFrame() Ë¢ĞÂÕï¶ÏÔ­Òò¡£
+				 * printf Ê¹ÓÃÏÖÓĞ¶ÀÁ¢µ÷ÊÔ´®¿Ú¡£
 				 */
 				printf(
 						"\r\n[WR-TX] reason=%u\r\n",
@@ -1122,7 +1122,7 @@ static u8 App_Wifi_ResetService(void)
     return 1;
 }
 
-/* é…ç½‘æœŸé—´ä¿æŒå·¥ä½œï¼›ç¡®è®¤é‡æ–°è¿äº‘æˆ–ä¿æŒæ—¶é—´åˆ°æœŸåï¼Œæ¢å¤æ™®é€šé€šä¿¡è°ƒåº¦ã€‚ */
+/* ÅäÍøÆÚ¼ä±£³Ö¹¤×÷£»È·ÈÏÖØĞÂÁ¬ÔÆ»ò±£³ÖÊ±¼äµ½ÆÚºó£¬»Ö¸´ÆÕÍ¨Í¨ĞÅµ÷¶È¡£ */
 static void App_Wifi_PairingTask(void)
 {
     u8 current_wifi_state;
@@ -1137,7 +1137,7 @@ static void App_Wifi_PairingTask(void)
 
     current_wifi_state = mcu_get_wifi_work_state();
 
-    /* å…ˆçœ‹åˆ°é…ç½‘æˆ–æ–­å¼€çŠ¶æ€ï¼Œé¿å…æŠŠé‡ç½®å‰çš„è¿æ¥ç¼“å­˜å½“ä½œæœ¬æ¬¡é…ç½‘æˆåŠŸã€‚ */
+    /* ÏÈ¿´µ½ÅäÍø»ò¶Ï¿ª×´Ì¬£¬±ÜÃâ°ÑÖØÖÃÇ°µÄÁ¬½Ó»º´æµ±×÷±¾´ÎÅäÍø³É¹¦¡£ */
     if (current_wifi_state == 0 ||
         current_wifi_state == 1 ||
         current_wifi_state == 2 ||
@@ -1158,12 +1158,12 @@ static void App_Wifi_PairingTask(void)
     s_wifi_pairing_seen_disconnect = 0;
     s_wifi_pairing_hold_s = 0;
 
-    /* åç»­ç”± ACTIVE çŠ¶æ€å®Œæˆå¾…å‘ä»»åŠ¡ï¼Œå¹¶æŒ‰åŸæ¥çš„ç©ºé—²æ—¶é—´é‡Šæ”¾æ¨¡ç»„ã€‚ */
+    /* ºóĞøÓÉ ACTIVE ×´Ì¬Íê³É´ı·¢ÈÎÎñ£¬²¢°´Ô­À´µÄ¿ÕÏĞÊ±¼äÊÍ·ÅÄ£×é¡£ */
     s_wifi_test_phase = WIFI_TEST_ACTIVE;
     s_wifi_test_seconds = 0;
 }
 
-/* è§‚å¯Ÿæœ¬åœ°å®é™…æ¨¡å¼ï¼›å˜åŒ–æ—¶è¦†ç›–å°šæœªå®Œæˆçš„æ—§ä¸ŠæŠ¥ã€‚ */
+/* ¹Û²ì±¾µØÊµ¼ÊÄ£Ê½£»±ä»¯Ê±¸²¸ÇÉĞÎ´Íê³ÉµÄ¾ÉÉÏ±¨¡£ */
 static void App_Wifi_ModeObserve(void)
 {
     u8 current_mode;
@@ -1173,7 +1173,7 @@ static void App_Wifi_ModeObserve(void)
         return;
     }
 
-    /* BOOT é˜¶æ®µç»§ç»­ä½¿ç”¨åŸæœ‰äº‘ç«¯åŒæ­¥ã€‚ */
+    /* BOOT ½×¶Î¼ÌĞøÊ¹ÓÃÔ­ÓĞÔÆ¶ËÍ¬²½¡£ */
     if (s_wifi_test_phase == WIFI_TEST_BOOT) {
         s_wifi_mode_observed = current_mode;
         return;
@@ -1188,7 +1188,7 @@ static void App_Wifi_ModeObserve(void)
     }
 }
 
-/* æ¯æ¬¡åªå‘é€ä¸€ä¸ªæ¨¡å¼ DPï¼Œä¸‰å¸§å‡æœ¬åœ°å‘é€æˆåŠŸåæ›´æ–°å½±å­ã€‚ */
+/* Ã¿´ÎÖ»·¢ËÍÒ»¸öÄ£Ê½ DP£¬ÈıÖ¡¾ù±¾µØ·¢ËÍ³É¹¦ºó¸üĞÂÓ°×Ó¡£ */
 static void App_Wifi_ModeService(void)
 {
     u8 result;
@@ -1229,12 +1229,12 @@ static void App_Wifi_ModeService(void)
                 s_wifi_mode_value;
         }
     } else {
-        /* ä¿ç•™å½“å‰å¸§åŠåç»­å¸§ï¼Œç­‰å¾…ä¸‹ä¸€æ¬¡é‡è¯•ã€‚ */
+        /* ±£Áôµ±Ç°Ö¡¼°ºóĞøÖ¡£¬µÈ´ıÏÂÒ»´ÎÖØÊÔ¡£ */
         s_wifi_mode_retry_s = 1;
     }
 }
 
-/* BOOT æœŸé—´åªè·Ÿè¸ªè®¾ç½®ï¼Œåç»­å˜åŒ–äº¤ç»™å¾…å‘æœåŠ¡ä¸ŠæŠ¥ã€‚ */
+/* BOOT ÆÚ¼äÖ»¸ú×ÙÉèÖÃ£¬ºóĞø±ä»¯½»¸ø´ı·¢·şÎñÉÏ±¨¡£ */
 static void App_Wifi_HeatObserve(void)
 {
     u8 current_heat;
@@ -1255,7 +1255,7 @@ static void App_Wifi_HeatObserve(void)
     }
 }
 
-/* å‘é€ç¼“å­˜çš„åŠ çƒ­è®¾ç½®ï¼Œå¤±è´¥åä¿ç•™å¾…å‘å¹¶å»¶æ—¶é‡è¯•ã€‚ */
+/* ·¢ËÍ»º´æµÄ¼ÓÈÈÉèÖÃ£¬Ê§°Üºó±£Áô´ı·¢²¢ÑÓÊ±ÖØÊÔ¡£ */
 static void App_Wifi_HeatService(void)
 {
     u8 result;
@@ -1283,14 +1283,14 @@ static void App_Wifi_HeatService(void)
     }
 }
 
-/* åŒæ­¥ UVC æ­¦è£…è®¾ç½®ï¼Œä¸è·Ÿéšæ€èŒç¯çš„å®é™…å¯åœã€‚ */
+/* Í¬²½ UVC Îä×°ÉèÖÃ£¬²»¸úËæÉ±¾úµÆµÄÊµ¼ÊÆôÍ£¡£ */
 static void App_Wifi_UvObserve(void)
 {
     u8 current_uv;
 
     current_uv = g_Device.uvc_armed ? 1 : 0;
 
-    /* BOOT é˜¶æ®µç»§ç»­æ²¿ç”¨åŸæœ‰äº‘ç«¯åŒæ­¥ã€‚ */
+    /* BOOT ½×¶Î¼ÌĞøÑØÓÃÔ­ÓĞÔÆ¶ËÍ¬²½¡£ */
     if (s_wifi_test_phase == WIFI_TEST_BOOT) {
         s_wifi_uv_observed = current_uv;
         return;
@@ -1305,7 +1305,7 @@ static void App_Wifi_UvObserve(void)
     }
 }
 
-/* æœ¬åœ°å‘é€å®Œæˆåæ›´æ–°å½±å­ï¼›å¤±è´¥ä¿ç•™æœ€æ–°å¾…ä¸ŠæŠ¥å€¼ã€‚ */
+/* ±¾µØ·¢ËÍÍê³Éºó¸üĞÂÓ°×Ó£»Ê§°Ü±£Áô×îĞÂ´ıÉÏ±¨Öµ¡£ */
 static void App_Wifi_UvService(void)
 {
     u8 result;
@@ -1329,14 +1329,14 @@ static void App_Wifi_UvService(void)
     }
 }
 
-/* åˆå¹¶æ—¶é—´åŒæ­¥è¯·æ±‚ï¼Œç”±ä¸»å¾ªç¯åè°ƒå”¤é†’å’Œå‘é€ã€‚ */
+/* ºÏ²¢Ê±¼äÍ¬²½ÇëÇó£¬ÓÉÖ÷Ñ­»·Ğ­µ÷»½ĞÑºÍ·¢ËÍ¡£ */
 void App_Wifi_TimeSyncSubmit(void)
 {
     s_wifi_time_pending = 1;
     g_wifi_allow_sleep = 0;
 }
 
-/* æœ¬åœ°å‘é€å¤±è´¥ä¿ç•™è¯·æ±‚ï¼›æ—¶é—´å“åº”ä»ç”±åŸæœ‰å›è°ƒå¤„ç†ã€‚ */
+/* ±¾µØ·¢ËÍÊ§°Ü±£ÁôÇëÇó£»Ê±¼äÏìÓ¦ÈÔÓÉÔ­ÓĞ»Øµ÷´¦Àí¡£ */
 static void App_Wifi_TimeSyncService(void)
 {
     if (!s_wifi_time_pending || s_wifi_time_retry_s) {
@@ -1361,7 +1361,7 @@ static void App_Wifi_TimeSyncService(void)
     }
 }
 
-/* åˆå¹¶æ³¨å†Œéœ€æ±‚ï¼Œé‡å¤æäº¤ä¸é‡ç½®é‡è¯•é—´éš”ã€‚ */
+/* ºÏ²¢×¢²áĞèÇó£¬ÖØ¸´Ìá½»²»ÖØÖÃÖØÊÔ¼ä¸ô¡£ */
 void App_Wifi_ResetNotifySubmit(void)
 {
     if (g_reset_notify_enabled) {
@@ -1372,7 +1372,7 @@ void App_Wifi_ResetNotifySubmit(void)
     g_wifi_allow_sleep = 0;
 }
 
-/* æ²¿ç”¨ç°æœ‰åè®®å¤„ç†ï¼šç»“æœä¸º 0 è¡¨ç¤ºæ³¨å†ŒæˆåŠŸã€‚ */
+/* ÑØÓÃÏÖÓĞĞ­Òé´¦Àí£º½á¹ûÎª 0 ±íÊ¾×¢²á³É¹¦¡£ */
 void App_Wifi_ResetNotifyResult(u8 result)
 {
     if (result == 0) {
@@ -1388,7 +1388,7 @@ void App_Wifi_ResetNotifyResult(u8 result)
 
 }
 
-/* å‘é€å®Œæˆåç»§ç»­ç­‰å¾…æ¨¡ç»„ç¡®è®¤ï¼Œä¸èƒ½ç›´æ¥åˆ¤å®šæ³¨å†ŒæˆåŠŸã€‚ */
+/* ·¢ËÍÍê³Éºó¼ÌĞøµÈ´ıÄ£×éÈ·ÈÏ£¬²»ÄÜÖ±½ÓÅĞ¶¨×¢²á³É¹¦¡£ */
 static void App_Wifi_ResetNotifyService(void)
 {
     u16 send_len;
@@ -1433,7 +1433,7 @@ void App_WifiTest_Task(void)
 		App_Wifi_TdsObserve();
 App_Wifi_PairingTask();
 
-/* è”ç½‘åè¡¥äº¤æ³¨å†Œéœ€æ±‚ï¼Œä¸ä¾èµ–ä¸»åŠ¨æŸ¥è¯¢çŠ¶æ€çš„å›è°ƒã€‚ */
+/* ÁªÍøºó²¹½»×¢²áĞèÇó£¬²»ÒÀÀµÖ÷¶¯²éÑ¯×´Ì¬µÄ»Øµ÷¡£ */
 if (mcu_get_wifi_work_state() == WIFI_CONN_CLOUD &&
     !g_reset_notify_enabled) {
     App_Wifi_ResetNotifySubmit();
@@ -1441,12 +1441,12 @@ if (mcu_get_wifi_work_state() == WIFI_CONN_CLOUD &&
 
 App_WifiTest_RunState();
 
-    /* æœ¬è½®å‘é€è¿‡é‡ç½®å¸§ï¼Œå°±ä¸ç»§ç»­å‘é€å…¶ä»–å¸§ã€‚ */
+    /* ±¾ÂÖ·¢ËÍ¹ıÖØÖÃÖ¡£¬¾Í²»¼ÌĞø·¢ËÍÆäËûÖ¡¡£ */
     if (App_Wifi_ResetService()) {
         return;
     }
 
-    /* æ³¨å†Œå±äºåè®®ç»´æŠ¤ï¼Œé…ç½‘ä¿æŒæœŸé—´ä¹Ÿå…è®¸å¤„ç†ã€‚ */
+    /* ×¢²áÊôÓÚĞ­ÒéÎ¬»¤£¬ÅäÍø±£³ÖÆÚ¼äÒ²ÔÊĞí´¦Àí¡£ */
     if (!g_Device.req_wifi_reset &&
         s_wifi_reset_notify_pending &&
         !s_wifi_reset_notify_retry_s) {
@@ -1454,17 +1454,17 @@ App_WifiTest_RunState();
         return;
     }
 
-    /* ç­‰å¾…é‡ç½®æˆ–é…ç½‘è¿‡ç¨‹ä¸­ï¼Œä¿ç•™å…¶ä»–å¾…å‘é€éœ€æ±‚ã€‚ */
+    /* µÈ´ıÖØÖÃ»òÅäÍø¹ı³ÌÖĞ£¬±£ÁôÆäËû´ı·¢ËÍĞèÇó¡£ */
     if (g_Device.req_wifi_reset || s_wifi_pairing_hold) {
         return;
     }
 
-    /* æœ¬è½®å°è¯•æ—¶é—´è¯·æ±‚åï¼Œä¸ç»§ç»­å‘é€ä¸šåŠ¡å¸§ã€‚ */
+    /* ±¾ÂÖ³¢ÊÔÊ±¼äÇëÇóºó£¬²»¼ÌĞø·¢ËÍÒµÎñÖ¡¡£ */
     if (s_wifi_time_pending && !s_wifi_time_retry_s) {
         App_Wifi_TimeSyncService();
         return;
     }
-    /* æ¯è½®æœ€å¤šå°è¯•å‘é€ä¸€å¸§ã€‚ */
+    /* Ã¿ÂÖ×î¶à³¢ÊÔ·¢ËÍÒ»Ö¡¡£ */
     if (s_wifi_switch_pending && !s_wifi_switch_retry_s) {
         App_Wifi_SwitchService();
     } else if (s_wifi_mode_pending && !s_wifi_mode_retry_s) {
@@ -1494,12 +1494,12 @@ App_WifiTest_RunState();
 void App_WifiTest_OnDpReceived(void)
 {
     /*
-     * æœ‰æ•ˆ DP åˆ°è¾¾ï¼Œæ²¿ç”¨ç°æœ‰è®¾è®¡è¿›å…¥é€šä¿¡çª—å£ã€‚
-     * æ–°å¢ï¼š
-     * 1. ç­‰å¾…å”¤é†’æœŸé—´æ”¶åˆ° DPï¼›
-     * 2. å”¤é†’è¶…æ—¶ä¹‹åæ”¶åˆ° DPã€‚
+     * ÓĞĞ§ DP µ½´ï£¬ÑØÓÃÏÖÓĞÉè¼Æ½øÈëÍ¨ĞÅ´°¿Ú¡£
+     * ĞÂÔö£º
+     * 1. µÈ´ı»½ĞÑÆÚ¼äÊÕµ½ DP£»
+     * 2. »½ĞÑ³¬Ê±Ö®ºóÊÕµ½ DP¡£
      *
-     * err=3 ç­‰å…¶ä»–é”™è¯¯ä¸åœ¨è¿™é‡Œå¤„ç†ã€‚
+     * err=3 µÈÆäËû´íÎó²»ÔÚÕâÀï´¦Àí¡£
      */
     if (s_wifi_test_phase == WIFI_TEST_WAIT_SLEEP ||
         s_wifi_test_phase == WIFI_TEST_SLEEP ||
@@ -1518,15 +1518,15 @@ void App_WifiTest_OnDpReceived(void)
     }
 }
 
-/* æœ‰æ•ˆè¿œç¨‹é‡ç½®é€šçŸ¥åˆ°è¾¾åï¼Œä¿æŒæ¨¡ç»„å·¥ä½œä»¥å®Œæˆé‡æ–°é…ç½‘ã€‚ */
+/* ÓĞĞ§Ô¶³ÌÖØÖÃÍ¨Öªµ½´ïºó£¬±£³ÖÄ£×é¹¤×÷ÒÔÍê³ÉÖØĞÂÅäÍø¡£ */
 void App_Wifi_OnRemoteReset(void)
 {
     /*
-     * å¤ç”¨å·²æœ‰é€šä¿¡çª—å£æ¢å¤è§„åˆ™ã€‚
-     * err=3 ä¸ä¼šåœ¨è¿™é‡Œè¢«æ¸…é™¤ã€‚
+     * ¸´ÓÃÒÑÓĞÍ¨ĞÅ´°¿Ú»Ö¸´¹æÔò¡£
+     * err=3 ²»»áÔÚÕâÀï±»Çå³ı¡£
      */
     App_WifiTest_OnDpReceived();
-		/* æ–°ä¸€è½®è¿œç¨‹é…ç½‘é‡æ–°å¯ç”¨æç¤ºï¼Œä¸æœ¬åœ°é…ç½‘å…¥å£ä¿æŒä¸€è‡´ã€‚ */
+		/* ĞÂÒ»ÂÖÔ¶³ÌÅäÍøÖØĞÂÆôÓÃÌáÊ¾£¬Óë±¾µØÅäÍøÈë¿Ú±£³ÖÒ»ÖÂ¡£ */
 		g_Device.user_cancelled_pairing = 0;
 		g_Device.wifi_pairing_timer_s = WIFI_PAIRING_HOLD_S;
 	
@@ -1540,7 +1540,7 @@ void App_Wifi_OnRemoteReset(void)
 
 }
 
-/* MCU ä»…åœ¨æ¨¡ç»„è¿›å…¥ç¡çœ é˜¶æ®µã€æ²¡æœ‰é€šä¿¡å¾…åŠæ—¶ç”³è¯· STOPã€‚ */
+/* MCU ½öÔÚÄ£×é½øÈëË¯Ãß½×¶Î¡¢Ã»ÓĞÍ¨ĞÅ´ı°ìÊ±ÉêÇë STOP¡£ */
 u8 App_Wifi_McuStopReady(void)
 {
     if (s_wifi_test_phase != WIFI_TEST_SLEEP ||

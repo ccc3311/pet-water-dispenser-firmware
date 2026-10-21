@@ -1,46 +1,22 @@
-# 尚未提供的工程依赖
+# 工程依赖与待补资料
 
-本清单只根据当前文件引用及工程格式整理；不是为缺失文件生成替代实现。
+更新日期：2026-10-21。旧版仓库曾仅包含整理源码；本次从桌面 `TL2_T12` 补齐实际工程。
 
-## 直接引用但未提供
+## 已补齐
 
-| 引用 | 引用文件 |
-| --- | --- |
-| `../Drivers/SCDriver_list.h` | `User/SC_Init.c`, `User/SC_it.c`, `User/main.c` |
-| `HeadFiles/SC_itExtern.h` | `User/SC_Init.c`, `User/SC_it.c` |
-| `HeadFiles/SysFunVarDefine.h` | `HAL/hal_eeprom.c`, `HAL/hal_touch.c`, `User/main.c` |
-| `SC_Init.h` | `HAL/hal_uart.c`, `User/SC_Init.c`, `User/main.c`, `Drivers/SC89601/sc89601.c` |
-| `SC_it.h` | `User/SC_it.c`, `User/main.c` |
-| `app_fsm.h` | `HAL/hal_eeprom.c`, `HAL/hal_touch.c`, `HAL/hal_buzzer.c`, `HAL/hal_adc.c`, `HAL/hal_ir.c`, `TuyaMCUSDK/protocol.c`, `App/app_wifi.c`, `App/app_fsm.c`, `User/main.c` |
-| `app_wifi.h` | `TuyaMCUSDK/protocol.c`, `App/app_wifi.c`, `App/app_fsm.c`, `User/main.c` |
-| `hal_adc.h` | `HAL/hal_adc.c`, `TuyaMCUSDK/protocol.c`, `App/app_wifi.c`, `App/app_fsm.c`, `User/main.c` |
-| `hal_buzzer.h` | `HAL/hal_touch.c`, `HAL/hal_buzzer.c`, `HAL/hal_adc.c`, `TuyaMCUSDK/protocol.c`, `App/app_fsm.c`, `User/SC_it.c`, `User/main.c` |
-| `hal_eeprom.h` | `HAL/hal_lpd.c`, `HAL/hal_eeprom.c`, `TuyaMCUSDK/protocol.c`, `App/app_fsm.c`, `User/SC_it.c` |
-| `hal_ir.h` | `HAL/hal_ir.c`, `App/app_fsm.c`, `User/main.c` |
-| `hal_lpd.h` | `HAL/hal_lpd.c`, `User/main.c` |
-| `hal_power.h` | `HAL/hal_power.c`, `App/app_fsm.c`, `User/SC_it.c`, `User/main.c` |
-| `hal_pwm.h` | `HAL/hal_pwm.c`, `TuyaMCUSDK/protocol.c`, `App/app_wifi.c`, `App/app_fsm.c`, `User/main.c` |
-| `hal_tm1650.h` | `HAL/hal_tm1650.c`, `App/app_fsm.c`, `User/main.c` |
-| `hal_touch.h` | `HAL/hal_touch.c`, `App/app_fsm.c`, `User/SC_it.c`, `User/main.c` |
-| `hal_uart.h` | `HAL/hal_uart.c`, `TuyaMCUSDK/protocol.c`, `TuyaMCUSDK/protocol.c`, `App/app_wifi.c`, `User/main.c` |
-| `sc92f_lpd.h` | `HAL/hal_lpd.c` |
-| `tuya_type.h` | `TuyaMCUSDK/system.h`, `TuyaMCUSDK/wifi.h`, `TuyaMCUSDK/protocol.h`, `TuyaMCUSDK/mcu_api.h`, `User/main.c` |
+- `TL2_T12/Keil_C/Project/TL2_6.uvproj`、`STARTUP.A51` 和实际编译/链接配置。
+- `SC_Init.h`、`SC_it.h`、`HeadFiles/`、`Drivers/SCDriver_List.h` 和业务全局定义。
+- `app_fsm.h`、`app_wifi.h`、HAL 头文件和 `tuya_type.h`。
+- `FWLib/SC92F_Lib/` 中的赛元驱动源码、SC92L753x 寄存器定义、预编译 `.LIB`。
+- 软件履历表和 EasyCodeCube CFG 模板。
 
-## 条件编译的测试模板
+静态检查确认工程列出的 116 个文件以及 Include Path 目录均存在。请用完整工程路径构建；根目录的 24 份源码是阅读镜像，并未另造第二套工程。
 
-以下 `.code_snippet` 出现在 `CONFIG_TUYA_ENABLE_TEST` 条件分支中。是否需要由最终 Keil 宏配置决定，不能一概当作正常产品构建必需文件。
+## 仍需环境或外部资料
 
-- `dp_define.code_snippet`
-- `dp_handle.code_snippet`
-- `dp_id.code_snippet`
-- `dp_id_handle.code_snippet`
-- `dp_var.code_snippet`
+- 可正常启动的 Keil C51 工具链及赛元设备/下载调试支持。标准 `stdio.h`、`intrins.h` 等由 Keil 提供。
+- 本轮 C51 发生 Windows DLL 重定位错误，需在正常工具链环境完成 Rebuild，再确认编译与链接结果。
+- 与当前板版本对应的硬件原理图、实际测量数据及本轮上板测试记录。
+- 如果启用 `CONFIG_TUYA_ENABLE_TEST`，还需 `dp_define.code_snippet`、`dp_handle.code_snippet`、`dp_id.code_snippet`、`dp_id_handle.code_snippet`、`dp_var.code_snippet`。当前配置未启用该测试宏。
 
-## 未提供的构建资料
-
-- 原始 Keil `.uvproj/.uvprojx` 工程文件、芯片宏、Include Paths、编译/链接设置及目标资源配置。
-- 与当前 MCU 匹配的完整赛元驱动及所需器件/寄存器定义。
-- `HeadFiles` 对应的声明和实现，例如初始化入口及相关全局变量定义。
-- 最终硬件原理图和与本快照对应的完整 Rebuild 日志（用于核对配置，不影响源码归档）。
-
-当前快照应先用于阅读和备份，补齐依赖后再验证编译。未编造这些文件，也未引入桌面类型替代 C51 寄存器类型。
+`.cgenx` 内保留生成时的历史绝对路径，移机后需在 EasyCodeCube 中重新指定工程位置。Keil 主工程引用主要采用相对路径。

@@ -1,25 +1,25 @@
 #include "hal_eeprom.h"
-#include "HeadFiles/SysFunVarDefine.h"
-#include "app_fsm.h"
+#include "HeadFiles/SysFunVarDefine.h" 
+#include "app_fsm.h"   
 
-extern unsigned char IapWriteFlag;
+extern unsigned char IapWriteFlag; 
 
 /**
- * @brief å°†ã€æ¸…æ´—+æ»¤èŠ¯ã€‘æ•°æ®æ‰“åŒ…ä¿å­˜åˆ°å•ç‰‡æœº EEPROM
+ * @brief ½«¡¾ÇåÏ´+ÂËĞ¾¡¿Êı¾İ´ò°ü±£´æµ½µ¥Æ¬»ú EEPROM
  */
 void HAL_EEPROM_Save_AllData(void)
 {
-    uint8_t write_buf[16]; // ç²¾ç®€ä¸º 16 å­—èŠ‚
-
-    // --- æ‰“åŒ…æ¸…æ´—æ•°æ® (å‰ 6 å­—èŠ‚) ---
+    uint8_t write_buf[16]; // ¾«¼òÎª 16 ×Ö½Ú
+    
+    // --- ´ò°üÇåÏ´Êı¾İ (Ç° 6 ×Ö½Ú) ---
     write_buf[0] = (uint8_t)(g_Device.target_clean_days >> 8);
     write_buf[1] = (uint8_t)(g_Device.target_clean_days & 0xFF);
     write_buf[2] = (uint8_t)(g_Device.last_clean_timestamp >> 24);
     write_buf[3] = (uint8_t)(g_Device.last_clean_timestamp >> 16);
     write_buf[4] = (uint8_t)(g_Device.last_clean_timestamp >> 8);
     write_buf[5] = (uint8_t)(g_Device.last_clean_timestamp & 0xFF);
-
-    // --- æ‰“åŒ…æ»¤èŠ¯æ•°æ® (ä¸­é—´ 6 å­—èŠ‚) ---
+    
+    // --- ´ò°üÂËĞ¾Êı¾İ (ÖĞ¼ä 6 ×Ö½Ú) ---
     write_buf[6] = (uint8_t)(g_Device.target_filter_days >> 8);
     write_buf[7] = (uint8_t)(g_Device.target_filter_days & 0xFF);
     write_buf[8] = (uint8_t)(g_Device.last_filter_timestamp >> 24);
@@ -27,58 +27,58 @@ void HAL_EEPROM_Save_AllData(void)
     write_buf[10]= (uint8_t)(g_Device.last_filter_timestamp >> 8);
     write_buf[11]= (uint8_t)(g_Device.last_filter_timestamp & 0xFF);
 
-		/* A6 è¡¨ç¤ºåŒ…å«æŠ¥è­¦æ ‡å¿—çš„æ–°æ ¼å¼ã€‚ */
+		/* A6 ±íÊ¾°üº¬±¨¾¯±êÖ¾µÄĞÂ¸ñÊ½¡£ */
 		write_buf[12] = 0x5A;
 		write_buf[13] = 0xA6;
 		write_buf[14] = g_Device.req_clean_alarm ? 1 : 0;
 		write_buf[15] = g_Device.req_filter_alarm ? 1 : 0;
 
-    EA = 0; // å…³é—­å…¨å±€ä¸­æ–­
+    EA = 0; // ¹Ø±ÕÈ«¾ÖÖĞ¶Ï
 
-    IapWriteFlag = 0x69;
+    IapWriteFlag = 0x69; 
     IAP_SectorErase(IAP_MEMTYPE_EEPROM, EEPROM_DATA_ADDR, EEPROM_TIME_LIMIT);
-
+    
     IapWriteFlag = 0x69;
     IAP_ProgramByteArray(EEPROM_DATA_ADDR, write_buf, 16, IAP_MEMTYPE_EEPROM, EEPROM_TIME_LIMIT);
-
-    IapWriteFlag = 0x00;
-
-    EA = 1; // æ¢å¤å…¨å±€ä¸­æ–­
+    
+    IapWriteFlag = 0x00; 
+    
+    EA = 1; // »Ö¸´È«¾ÖÖĞ¶Ï
 }
 
 /**
- * @brief å¼€æœºç»Ÿä¸€è¯»å–ã€æ¸…æ´—+æ»¤èŠ¯ã€‘æ•°æ®
+ * @brief ¿ª»úÍ³Ò»¶ÁÈ¡¡¾ÇåÏ´+ÂËĞ¾¡¿Êı¾İ
  */
 void HAL_EEPROM_Load_AllData(void)
 {
-    uint8_t read_buf[16];
-    unsigned char need_save = 0;
+    uint8_t read_buf[16]; 
+    unsigned char need_save = 0; 
 
     IAP_ReadByteArray(EEPROM_DATA_ADDR, read_buf, 16, IAP_MEMTYPE_EEPROM);
 
-    // æ ¡éªŒé­”æœ¯å­—
-		/* A5 æ˜¯æ—§æ ¼å¼ï¼ŒA6 æ˜¯æ–°å¢æŠ¥è­¦æ ‡å¿—çš„æ ¼å¼ã€‚ */
+    // Ğ£ÑéÄ§Êõ×Ö
+		/* A5 ÊÇ¾É¸ñÊ½£¬A6 ÊÇĞÂÔö±¨¾¯±êÖ¾µÄ¸ñÊ½¡£ */
 		if (read_buf[12] != 0x5A ||
 				(read_buf[13] != 0xA5 && read_buf[13] != 0xA6)) {
 				App_Restore_Factory_Settings();
 				return;
 		}
-
-    // --- è§£ææ¸…æ´—æ•°æ® ---
+    
+    // --- ½âÎöÇåÏ´Êı¾İ ---
     g_Device.target_clean_days = ((unsigned int)read_buf[0] << 8) | read_buf[1];
-    g_Device.last_clean_timestamp = ((unsigned long)read_buf[2] << 24) |
-                                    ((unsigned long)read_buf[3] << 16) |
-                                    ((unsigned long)read_buf[4] << 8)  |
+    g_Device.last_clean_timestamp = ((unsigned long)read_buf[2] << 24) | 
+                                    ((unsigned long)read_buf[3] << 16) | 
+                                    ((unsigned long)read_buf[4] << 8)  | 
                                     read_buf[5];
-
-    // --- è§£ææ»¤èŠ¯æ•°æ® ---
+                                    
+    // --- ½âÎöÂËĞ¾Êı¾İ ---
     g_Device.target_filter_days = ((unsigned int)read_buf[6] << 8) | read_buf[7];
-    g_Device.last_filter_timestamp = ((unsigned long)read_buf[8] << 24) |
-                                     ((unsigned long)read_buf[9] << 16) |
-                                     ((unsigned long)read_buf[10] << 8) |
+    g_Device.last_filter_timestamp = ((unsigned long)read_buf[8] << 24) | 
+                                     ((unsigned long)read_buf[9] << 16) | 
+                                     ((unsigned long)read_buf[10] << 8) | 
                                      read_buf[11];
 
-		/* 0 å¤©æ˜¯åˆæ³•çŠ¶æ€ï¼›å¤§äº 365 ä¹ŸåŒ…å«æœªåˆå§‹åŒ–çš„ 0xFFFFã€‚ */
+		/* 0 ÌìÊÇºÏ·¨×´Ì¬£»´óÓÚ 365 Ò²°üº¬Î´³õÊ¼»¯µÄ 0xFFFF¡£ */
 		if (g_Device.target_clean_days > 365U) {
 				g_Device.target_clean_days = DEFAULT_CLEAN_DAYS;
 				g_Device.last_clean_timestamp = 0;
@@ -90,8 +90,8 @@ void HAL_EEPROM_Load_AllData(void)
 				g_Device.last_filter_timestamp = 0;
 				need_save = 1;
 		}
-
-		/* æ—§è®°å½•æ²¡æœ‰æŠ¥è­¦ä¿¡æ¯ï¼›æ–°è®°å½•æ¢å¤ä¿å­˜çš„åˆ°æœŸçŠ¶æ€ã€‚ */
+    
+		/* ¾É¼ÇÂ¼Ã»ÓĞ±¨¾¯ĞÅÏ¢£»ĞÂ¼ÇÂ¼»Ö¸´±£´æµÄµ½ÆÚ×´Ì¬¡£ */
 		g_Device.req_clean_alarm = 0;
 		g_Device.req_filter_alarm = 0;
 

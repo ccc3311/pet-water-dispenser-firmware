@@ -1,229 +1,2734 @@
 {
-  "snapshot_date": "2026-10-03",
-  "source_submission_date": "2026-09-30",
-  "files": [
+  "snapshot_date": "2026-10-21",
+  "source_kind": "desktop_project",
+  "source_directory": "Desktop/TL2_T12",
+  "project_path": "TL2_T12/Keil_C/Project/TL2_6.uvproj",
+  "previous_commit": "4a3db19e16f1e9a9bd295a47ec4274f1f90baddb",
+  "previous_manifest_path": "archive/provenance/2026-10-09_source_manifest.json",
+  "firmware_modified_by_sync": false,
+  "build_validation": {
+    "status": "not_completed",
+    "uv_exit_code": 3,
+    "reason": "C51 launch failed; direct execution reported invalid system DLL relocation"
+  },
+  "project_files": [
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/Drivers/SCDriver_List.h",
+      "size": 812,
+      "sha": "b2a1f6fc44718d1ca95b6798b9bd328e666a93d6",
+      "sha256": "269f210fce38ccd9dd2ca5241617441d3a4ae3ccc42ae454ef68b0893ef04bf8"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/CRC_Option_EW.h",
+      "size": 1724,
+      "sha": "a32f6c1d2ed0f6dc6f409ccf814502f2c6613231",
+      "sha256": "5f28bb50d7bda82738673aa9edc9ab77862ded395510d7a77e6ef85993f92807"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/IAP_Option_EW.h",
+      "size": 5396,
+      "sha": "023fe0f76368ff1afc15d7fe04b5f860c328b3d5",
+      "sha256": "3c81db62b521ca64d7add3caaa5d7e75ec32caac6b6f54678b7699da01867e7a"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/putchar.h",
+      "size": 4069,
+      "sha": "d9a7708807e7bed539868be3530d556e633c1900",
+      "sha256": "83a3094f73001c3ec996762ecdfe711948e9f39b98df1cd58875c59be11cda31"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f.h",
+      "size": 6573,
+      "sha": "e7fd4d484d48855018ed91d38681222ab684d850",
+      "sha256": "ab503549bfadb435f61a73706e0a7bd29b1813c55375e98e000dc0ccd4537382"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F531X_C.H",
+      "size": 10101,
+      "sha": "70f5c7ce07e845e3e44b4dda62efdc67fd5ab22d",
+      "sha256": "3029808e2630b2be283579c6177a0e0a90c2386f5c36a1dd1e5c84c57089fe2d"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F542X_C.H",
+      "size": 10998,
+      "sha": "7f807ae7fdbadf492c429b32c43a6bba9372e28e",
+      "sha256": "9512340e25a3c3a43af838524c89cbb4232611b32969c43461267da577783be9"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F546X_C.H",
+      "size": 11328,
+      "sha": "7d871a0b326631405648ac82112b6dae7c4a36d9",
+      "sha256": "1b172f0c7f142c620e52e0b4dc4fcc26c95f725248e1a8fbdc29925b574fd781"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F552X_C.H",
+      "size": 11188,
+      "sha": "a1829d93723e536e1c4734fe88be9c2590afa3f0",
+      "sha256": "67983a50b3adb74fc59fb4e4bdba488cb9c50cff75c2d4a4b0cac68b8b2b05b6"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F5x5x_C.H",
+      "size": 8487,
+      "sha": "6dbd405d7f8ddf3561184f0db723a2b3126ea10c",
+      "sha256": "08f219b1323d2b68e6e9dc02cf107a19b15796b3083de73cce77f538b6e61df3"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F637X_C.H",
+      "size": 7453,
+      "sha": "507657c667adddc2564e335ad3fafae97ec08cc0",
+      "sha256": "e3f36892ddeaa66ae608f172d65872ea02434b1754dfee24e2f9dff528aa5d9d"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F641X_C.H",
+      "size": 10404,
+      "sha": "ce29699a30b55ede559dee39ee718a4f659fa70c",
+      "sha256": "7ce21e6ca8e48274f1a91ea18103b54f7d7faf0d0f7e9725407b37e3d662f545"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F646X_C.H",
+      "size": 11328,
+      "sha": "a9201e513ee970b41d340e65436dc2c49bcb43c3",
+      "sha256": "ddc96fb6bc2da732d6d2cdad5a39e631bd053f05ac0b1515f23cdd1ba01788fc"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F652X_C.H",
+      "size": 10751,
+      "sha": "20bf49537722e8e61687215c006fe5991e4efc70",
+      "sha256": "f2d6c1ab1f3a175ccf8fd442a4e76d1043aa231981ee21c3c56585df12bc27a2"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F663X_C.H",
+      "size": 10495,
+      "sha": "791d3fd61321074a1e83a21703eb1f24f86927d9",
+      "sha256": "f34d838bc81fbf70b70e08735f1ddfc35702f668fe93e00c4254591b9ea2bd53"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F7003_C.H",
+      "size": 7730,
+      "sha": "b3d50606d2718be31bb390d9c09e3c316575b36b",
+      "sha256": "cfb43f90c3eda35924f6d41c3b2cb55303e96f989a5b74a947b559fa139e8814"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F720x_C.H",
+      "size": 8683,
+      "sha": "66f6a2d107c9f071a2cf82003e074b20901a285d",
+      "sha256": "eefc993c45996b1ba6b83dfbe9d99f5a77c2b1769d1616a1728f2dff4a548e5d"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F725X_C.H",
+      "size": 7928,
+      "sha": "62a5e49c0bd19680e6879d55358924c32d939624",
+      "sha256": "f6e606f6b52da00b4734bde3de2facd34a0bd3f492ed0e76674ba6e6910cb7e5"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F7308B_C.H",
+      "size": 7134,
+      "sha": "e7ff223faa20b7d3583b6dbdcdbbf3cf3f339dcc",
+      "sha256": "7eb5754f15f0dca333a4dbea4a94ebfd514af45b69033b0aea30cc1947a768b9"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F730x_2_C.H",
+      "size": 8682,
+      "sha": "011c44f4ffaf5ccb522df796cf157c3a2eb6aa4a",
+      "sha256": "e8bae8be2bce48a1213c7dd940dd56279a6a3d9b6c6f5e5a8823f24ac54abc4b"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F730x_C.H",
+      "size": 7660,
+      "sha": "1198082d34795b810ff419d9c9dcc377a0812e07",
+      "sha256": "c834f20573986689a240fc36ab823eccd4e4fb9036062d361a3c1120bf532cfc"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F732x_C.H",
+      "size": 9018,
+      "sha": "75deb1b9924cf98292eca9cbd8b0356d160d81cf",
+      "sha256": "abf4be7db5b7d38301348f023496f07fbd9139f27e3d8510904806f06cf3c9d1"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F735x_C.H",
+      "size": 7928,
+      "sha": "c4bad831d97c9a5e212888d2101bc4176ede3a5e",
+      "sha256": "68b71e456812b032ca1e90cfbe67b0d9bf4b41bc3d2064e208620c689fec0908"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F736xB_C.H",
+      "size": 9713,
+      "sha": "0c8873c514d6df1adbd283532069410c54baae72",
+      "sha256": "907ee711b9f89485976fdedc32fcecef5f24ca1b4b2a82b3bfabcc670f96177f"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92f73Ax_C.H",
+      "size": 9814,
+      "sha": "4bf69182a19fafdbaaed96c7af45dd91975a0427",
+      "sha256": "36ae4838be42f2cbe440aee2d60bcc8351629e18c7ac65c7166b1c7259022229"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F740x_C.H",
+      "size": 8690,
+      "sha": "0c7e9019ff2e65d942053c1964921a4506401254",
+      "sha256": "101ee7f267c09ad3486d3cb50ce1d463969106144ba90d994e9a6f7f580e034f"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F741X_C.H",
+      "size": 10477,
+      "sha": "c2ae3d897020af355b49fb892ea6d763c561ce8d",
+      "sha256": "a13d09558f03ef8a9173050ae28dcf2442c3486f826ea842aea70b29f4ecec9f"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F742x_C.H",
+      "size": 9559,
+      "sha": "e36340aad29ab208a03d850ce11454c83aa02bfb",
+      "sha256": "502c31535be211c394cab838a73dfcb5e4446a9069a7648f977f1b50adaba697"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F744xB_C.H",
+      "size": 10492,
+      "sha": "959fd71367d12c808ea7239e16ea132623bc3f97",
+      "sha256": "82430860fe104c0e42cdf482f65024203436cdf4423103f5bb52e259cb517940"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F746xB_C.H",
+      "size": 9739,
+      "sha": "f8e962c99d6765b28ae3499039861d01aef5e920",
+      "sha256": "4b1412a602a762f11cabbc9f29a282ef06a661f8f67dff5be1d17b9ad26dd2fd"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F748x_C.H",
+      "size": 10898,
+      "sha": "e704f6775b56d1ae1bbfdd883f392005df332880",
+      "sha256": "dae7817c6c6589e05070f1ee24dca4fbcbeb8859e3e5d41ce8687bbc2720d843"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F7490_C.H",
+      "size": 7057,
+      "sha": "aa1838d882504b65d1b154738745c04263d3d6a5",
+      "sha256": "de576500f84d91e76a15f9c94977ff82f122d447a685a615910f27a58c9d3be7"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F74Ax_2_C.H",
+      "size": 11195,
+      "sha": "d75dc05918bae107fb6ccec7d4f45209bfbd29ec",
+      "sha256": "7e6edc5b0d6a774bf59cbf05519e3e6d2af2e5da9ef2ab4e52dbba76ace29882"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92f74Ax_C.H",
+      "size": 9846,
+      "sha": "aa5e5b9cca5ccb55f252882f0b93982c0bb57d22",
+      "sha256": "6545754ae8d402b2f58bc37b2d2811060862f5b2f7d135450813d8718d18b792"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F754x_C.H",
+      "size": 11430,
+      "sha": "960237a4952bd5314063c9375fa5d4be9ddfefbd",
+      "sha256": "d235ed2171d5d7c1639db8c8a6117a3522c33b6655ae039a35b28575df3ce7ad"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F759x_C.H",
+      "size": 11931,
+      "sha": "cf29eee9b07462cfe1d2376fbb159774b59a20d5",
+      "sha256": "02ad4c3858bc5c14fbc40b14c5bddb2b5e85c9c815de9877f1e62c1869802dc0"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F8003_C.H",
+      "size": 7611,
+      "sha": "4a4745d61cfaff3f3c5421a31c9079382fcce58c",
+      "sha256": "38dbd2a961510440278f7c2c6125669138549698b80971fb1ce2cb6d230973cb"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F8003B_C.H",
+      "size": 8946,
+      "sha": "235b4d315d08a2580d4401ead50b786864612116",
+      "sha256": "107f83b3a5d0f51b5366b5bffdd01f933cea2582ae9973fb356387cfffd37e90"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F827X_C.H",
+      "size": 7310,
+      "sha": "3af80c177085ef4713eed827f3fa4832b2c80e7d",
+      "sha256": "08f67ddc78f6cb5ed05258925b23bbf770b2955dd4708f772b3945841fcc60c0"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F836xB_C.H",
+      "size": 9627,
+      "sha": "f23ef781298f51f015549619aa86a63e826e1d89",
+      "sha256": "7ed1010aca1bdb941d46fe04195b3d0b6af7b81d629a6bbde20b340f65c69c72"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F837X_C.H",
+      "size": 7557,
+      "sha": "f2b3cc191c793313ff109a3217ff70587adb8c02",
+      "sha256": "128058fea0042d4501a046916dd3d1bd1696b1ef5e9e360647aea8c1cb7fd706"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92f83Ax_C.H",
+      "size": 9850,
+      "sha": "6ab71de0c1717c65692e4154e571cfd485f97eff",
+      "sha256": "470291b19519c5b70648a6f0ac2aaf8e08b6d489fd92b19acdae48af89314507"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F83Hx_C.H",
+      "size": 10057,
+      "sha": "148f3a791e9e37a57251643f8372dd6042c25788",
+      "sha256": "0762d977c14f77055e296edd16f957eb66eadd3a3c987b21507f79dc7d907eab"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F841X_C.H",
+      "size": 10477,
+      "sha": "d022dd49138e9553d0f421447f0178b0b6a77d83",
+      "sha256": "a73706f189fe06f2051d3e0566f85aba549a5e55044e69331635db660c6bb69d"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F844xB_C.H",
+      "size": 10492,
+      "sha": "336aacfd6d09d7fa3e00435bc01a2b40b0bb5568",
+      "sha256": "dc0b133d51b743066a94a91a801d89a2ec3e83e1e4ae11fa07d78910b93c4787"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F846xB_C.H",
+      "size": 9657,
+      "sha": "a7ced55aa1fe458b99533e763512ab1ef117b972",
+      "sha256": "252aeb76d2b9eace1ba881113d7621796c5dd90b397544de2bf0a8e32af269a9"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F848x_C.H",
+      "size": 10898,
+      "sha": "585d8758ee966fd8aa6be0b097b5216e2859e3e4",
+      "sha256": "b11658b23918fb1dd3e4557b72df90f43fa03dc213919172c5175b38e17741b0"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F84Ax_2_C.H",
+      "size": 11197,
+      "sha": "d367638cec431b9dd9fe074501757e83e13c848e",
+      "sha256": "43a9f70c35ae6d8a52bda005a8ac640e770bfc652c33409efc12b86734a0efc9"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92f84Ax_C.H",
+      "size": 9871,
+      "sha": "79729e34a0f853de1b1a1026a716ea4b1ae27270",
+      "sha256": "cc7a4c4f0af3b7fd06d94e90c881039df25cad042619039550ed8a801a0f8681"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F84Hx_C.H",
+      "size": 10056,
+      "sha": "b3493047cfd778058b5690c7b25503b1e4ced027",
+      "sha256": "50b45716478115b45884fe02bdacebaef37dbd6bbcd427cace7e59a53aa462eb"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F854x_C.H",
+      "size": 11625,
+      "sha": "1eb6d6abafcf897d09a18b8cbd76005810a96be9",
+      "sha256": "f06bb63db69c0880854829ef9b40ccc33565c0fa151da92be416b84f3bebe410"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92F859x_C.H",
+      "size": 11931,
+      "sha": "182807f98d559009acdab4addca24c40accdde34",
+      "sha256": "2f8d704c3ebd579bd5c5dc63ea7125157b46525ceae765ea0c1542c263a97a08"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_acmp.h",
+      "size": 6330,
+      "sha": "b9ad799bc781b5474f6d4dbc8b48a7351e94bd4a",
+      "sha256": "1b97fb3b6cb4919f96dca0a0be74a277060d5a24f1abf4acae929837f0d74ed7"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_adc.h",
+      "size": 42952,
+      "sha": "3a7124839924bea0ff04c2e9bc918adfbd80f54c",
+      "sha256": "e46c3c1aff812d0a0b782fb4190f2673729383f3bce917a069277ce5bad209db"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_btm.h",
+      "size": 7918,
+      "sha": "8d6ae9214b9985e9a86292a49f61291d9a2f9117",
+      "sha256": "29d67b1b91ca7e0d3af5658273b194084d5de6b9ee56956e023b77d68a26b7a5"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_chksum.h",
+      "size": 2717,
+      "sha": "31d89ad6988acce0eb561300440695d8abfc322c",
+      "sha256": "a14576f9e551dfac0aa6cd92e4103199f6c1e6b22dcb02d74b4d17e7f74c852f"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_conf.h",
+      "size": 2164,
+      "sha": "62ef54c78d1d1469d1321c0b82153b33f244fad9",
+      "sha256": "e37a3fe81e94019f5b41e4bb70b00c99abc62ceef7b1420705659f225b0106cd"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_crc.h",
+      "size": 2789,
+      "sha": "9cba05837a3c70fc34473ba688e933342e45fb31",
+      "sha256": "a5b86e298444700e886982c43aa64255754008329484165d72c5c1a0cd5f9fc9"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_ddic.h",
+      "size": 28822,
+      "sha": "c55d6f43bd04a14f00bc1547459fbfa57675510b",
+      "sha256": "b6d4c5cdd1349bfb738ad778297a232ecf8e4a29dda25d84a7253df28811c3e3"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_gpio.h",
+      "size": 7695,
+      "sha": "71d734c5d7bf32e2041e6900eeb86f101ed5b6de",
+      "sha256": "66c54a352f6d184acd098735449bba6a0681f40577bc8d82c524441f1bd3dea8"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_iap.h",
+      "size": 10797,
+      "sha": "8b0a21ced1088beed603192ee2ef21b43f5c473f",
+      "sha256": "56358233d3f48f2f91c3f57fe4412fcb18610eb4ebc27c1eb0604a471c4532dc"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_int.h",
+      "size": 15772,
+      "sha": "8832aae38771ec35610715b6d719ec47715868d5",
+      "sha256": "9fdec96d38803584cf32ccd5c106f40e8649579bb7072d2e7a1fba0658180ed0"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_lpd.h",
+      "size": 4436,
+      "sha": "f2f7adea59af6178e4de094130d0f4b329a304ce",
+      "sha256": "d468bcdfa4a625cc7528ba9cb04259c96e36ace5c4850a10260bdea87fd25bdc"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_mdu.h",
+      "size": 3678,
+      "sha": "a56ccf5c53a8e8dbe6ab615a18d486723b2e2169",
+      "sha256": "46c24acfdbecc179fc123fb7c613715100cb6634a2ed935aee24636d2f4b350f"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_option.h",
+      "size": 10891,
+      "sha": "e65ea1a56b4da5b6d03c9c41596f38bdbe7a44e2",
+      "sha256": "f4ad8f070c5bf5d1784227e422ae4df1e9577fbfa9c2d811492f5fae2e7374b3"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_pwm.h",
+      "size": 50096,
+      "sha": "e3ef24d1147e6e640ab698a219a9b71c0a1b38f5",
+      "sha256": "9be09f6292dd423e25a762e12420fd4b4665fa6ad9d31b4ab01a0025638a7496"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_pwr.h",
+      "size": 2526,
+      "sha": "cbf80a3b0574ecdf6ff285b04a1dd5318fa6032f",
+      "sha256": "c1125b99e2c32a075844dffdbb5f77ada221e74df27d4eb3682cee0e8f3f1112"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_ssi.h",
+      "size": 30275,
+      "sha": "ba917f4c91ce29548bb14f409e4b1de7d8810fee",
+      "sha256": "dcc1fb7c96db5a46529222e045013feae31329480820b5540185a8732dfcd10b"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_timer0.h",
+      "size": 5822,
+      "sha": "799c692565cf68f6c9d5e31be453c75e77e287fe",
+      "sha256": "458e782d1910ebfe2fa257e74813001700f4bd33dfd175f9de059fe2b1ce78fd"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_timer1.h",
+      "size": 5128,
+      "sha": "3f6ff251ef438503c177caad6fe346cceaaa9ed7",
+      "sha256": "a218517cc557634066fdebc8ec5529c1959dbbf6de247ef11549fc7ac61b9c26"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_timer2.h",
+      "size": 12268,
+      "sha": "9f29ad87f4aa30f3a82777a0d8cfc133e2ccd7e1",
+      "sha256": "947026ae3e19c656655477bbec1d41845fc5343872a9acb9e90218414b6e6c7a"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_timer3.h",
+      "size": 5707,
+      "sha": "adfba37e6a30e8e931ad2f84de3a09dd38fe879b",
+      "sha256": "cb29f0d83d40e34a14cf1be3c09d5865583accdcee1dfeb282d7286b959c4933"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_timer4.h",
+      "size": 4174,
+      "sha": "8766dc2a15fbb2ec55dde64d087106853d6a2d26",
+      "sha256": "2139afb7d15d7deb3be1a9d9da3e49818858d00e834cd4e077a247f089b4d502"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_uart0.h",
+      "size": 14001,
+      "sha": "72faee94785ef03e8c3239cfdc6ff4bd498980fb",
+      "sha256": "e3572f57137990d23a19684721401126692900e14967efc38aeffbd22d7e4cc3"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_uart2.h",
+      "size": 7392,
+      "sha": "77521cdfaf3373343208c2aa646c4eba1ba12b43",
+      "sha256": "07a7e10f660a534656d0affc187661c8454a0083b25e50d67924c615360bbf2b"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_uart3.h",
+      "size": 5528,
+      "sha": "bf671fc2678b1a8c3a5a29522e763e7398fc2076",
+      "sha256": "fee5e790f4077625cc5a84dc687a648a4e8e975307894b9988ca1ce770944c84"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_usci0.h",
+      "size": 11460,
+      "sha": "db3f4662fc687de5cd93840824a94b19cf950696",
+      "sha256": "66b646549d10708db407235d05ca7f4ce8b8074f24f15b2bebc101d1e18c8d47"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_usci1.h",
+      "size": 9733,
+      "sha": "70850984f23bd3ba259acb54cfb0795e1b16aadd",
+      "sha256": "251ff43742c82a38c23d0fb653c1f504e9b4681758cd42454a77366f3b7e07c8"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_usci2.h",
+      "size": 9737,
+      "sha": "12f355776150b9f7bbae588e18ce7833ea8ec4ac",
+      "sha256": "d693b3dc35d10e2eb6674578df4c131094152f013b264d41bd0ad832c3c20354"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_wdt.h",
+      "size": 3042,
+      "sha": "d56d1daa6d781933562dbbd8559a8c044051bc96",
+      "sha256": "89f3e2fb51c608b93829f7c9b80752e07eac9e961012c060880797c072b890ae"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/sc92f_zoc.h",
+      "size": 10014,
+      "sha": "4b0794de227b0a676b8524e887e9c8204da488fc",
+      "sha256": "9beff2df4c9215d11ba893bedae566cbe33979b77fa81d38b04702baa3f2da6a"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92FWxx_C.H",
+      "size": 10484,
+      "sha": "5cc475cf65820995156ed17251f2998352efe7c6",
+      "sha256": "c73d57926fcaadf147484575d807266325b79c80d5d89480c4c33323bc5b89a2"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92Fx41xB_C.H",
+      "size": 11425,
+      "sha": "4aec0a73bb97aeb4901ba95667b446e139bcec82",
+      "sha256": "d8ab41e44422989a3c725fcdfbdb7dcf02175f42a675e9659430f75a682bf082"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92G74Bx_C.H",
+      "size": 11159,
+      "sha": "8497c4bd7183f8a5912d180791108f5869997a8b",
+      "sha256": "15f958ea5c293084a277aef6b83c07d1a92a63aae5283f21f3c863722af0ac70"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92G84Bx_C.H",
+      "size": 11159,
+      "sha": "346222c9bb5a4eacff2e2312593c60146387f9c8",
+      "sha256": "61e9cb692c2c9d1bd36bde9bd2c7788340c3e7a60ad516cc380009269cc4d114"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92L753x_C.H",
+      "size": 11561,
+      "sha": "6792c51cdfb17ebafcd2a24f4d70c633f5ec532a",
+      "sha256": "2a55e65e70e8c4fee1379817200ff44130009a723d90639fd28ccd8491e7113e"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92L840x_C.H",
+      "size": 10098,
+      "sha": "4794ed4d8690ad944262180cb7d3052544a62621",
+      "sha256": "eed924b3edf9949d3c67fd43a9f047f1c2be93473367a34e939aaece8d5b803b"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92L853x_C.H",
+      "size": 11561,
+      "sha": "b350f9d564baa639f523b68c089c25dae6a2f32e",
+      "sha256": "0e6c36565938dcf475a21a17c2796635926d6ed464b35666139ff1c9e72f7286"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92R342_C.H",
+      "size": 9653,
+      "sha": "cd8b3ac81d63504177d621e8a0ef8f9d37a9ad63",
+      "sha256": "3d18cdeffeb3520e5f8692887e24df837e7988c3c2821d1218437bac0d4c1a61"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92R422A_C.H",
+      "size": 8607,
+      "sha": "206680c0fd6612e41ee039c21876f7f353087cd6",
+      "sha256": "4a4b0b78f95079995eb64a9a2a95c5a4355f00a074279d92c421a16124c45563"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92R436_C.H",
+      "size": 10861,
+      "sha": "d6a933a024ca201aab167cfcdd7e5d34287e825a",
+      "sha256": "bfcd9259651840764092ae2ee63e2fde6f03c0b70a41099961e1931cca3ca58d"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92R438_C.H",
+      "size": 9174,
+      "sha": "d83c76faee486d2bd8460368c5eaad4a6f92a034",
+      "sha256": "5b56a7342f1a1d760e79729f885c22b87666a6f4bb1b9d1f85d396d41b8245df"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92R439_C.H",
+      "size": 10101,
+      "sha": "7d0b23fcc724b691525e703df2e2fbdb338b973d",
+      "sha256": "422c2d7c5a428f500a713691436b56275c767526fb92cd0ba2ca60b0fefeda73"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92R445_C.H",
+      "size": 11339,
+      "sha": "b07fa6e66fb4e009db32d2b679426a798a3dd4da",
+      "sha256": "1e5ce33490fc36779b27db598675b0ca817c23d30bd08118653a5c5990c7b587"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92R511x_C.H",
+      "size": 11578,
+      "sha": "7c8312f5a67e1d575d8e4344884740feb25c0a18",
+      "sha256": "ed899f75c7b9ceb7ceff05d257300a7ea6ad8374c804fe97f244f5c89a60e194"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC92R51X_R52X_C.H",
+      "size": 12702,
+      "sha": "247f530109ef5232a63d06c9c73302e85a42e2f3",
+      "sha256": "47f805c91817c47dd247d64a208a7b3dd318e9bd704950a9b696d6f15a89dad7"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC93F743x_C.H",
+      "size": 9237,
+      "sha": "0770c50bc5d48eda7aef8864c8ce3557940be274",
+      "sha256": "4ef89a7365c2e0196bed630e2d9566e55d4fddb1b81eaf74a6140d036ed37643"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC93F833x_C.H",
+      "size": 9452,
+      "sha": "747b4af1029942f6326f9e20f5bc5f8860990318",
+      "sha256": "e22c6984a37b666f9e3bb27d26a6c3c9b59d46e19312fda26b302ddf74e59cf0"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/SC93F843X_C.H",
+      "size": 9520,
+      "sha": "9376d29142b13e9f19b929265d1e7d9a55ecc960",
+      "sha256": "372bb4af0fc969ae090868eb7546bd54f6b4c587dff480cb38d1cbe477173616"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/STOP_Option_EW.h",
+      "size": 874,
+      "sha": "53392704c3b30fe88d363ab43db81aa3fb54702f",
+      "sha256": "9bd7210265ed7168e01fae82a3da8dc5d753b940070f67a58011a9bf9100a270"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/inc/ZCD_Option_EW.h",
+      "size": 4855,
+      "sha": "09eb366d211dfce6e650751b175658c445957e4b",
+      "sha256": "f388a03e57af3553052482c66fc46b49326002da611697f0a0cd89cd943329c4"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/putchar.c",
+      "size": 2541,
+      "sha": "40214f453e904170b7a835648e1581842aec6480",
+      "sha256": "b51c226d1921e56757a5714997a687dc7967486d79da78f465144e4d841bd327"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F531x_IAP_L_lib_V1.1.3.LIB",
+      "size": 2171,
+      "sha": "bb73d48b28fa84f7ea080401eeb193da0a819403",
+      "sha256": "a810bd7fdf0be1f6edb592335709dbafffe7022063809c9ff81458806ac46e9d"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F531x_IAP_S_lib_V1.1.3.LIB",
+      "size": 2037,
+      "sha": "4d4cc6bb7b65a6788be225ec57493592f8cc44ce",
+      "sha256": "91cdd2b81c40883e5656a8fa1100f1a3088f9c2c4273d41c4b9f86e87a78c62f"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F531x_ZCD_L_lib_V1.0.LIB",
+      "size": 2453,
+      "sha": "64cf617953baf8d63865e0e65b9dca46f96b3950",
+      "sha256": "daea522e94b7cdefe343f051b14f876bcfc594300e6f57060646ba14b41280a8"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F531x_ZCD_S_lib_V1.0.LIB",
+      "size": 2422,
+      "sha": "7c7ebb7f606bb6d2f62a413016f9be4b4ceab147",
+      "sha256": "4721c2cda2985f9fda20cd3131eeda07acc691e9457e3e4c1837b5bcc8d12e63"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F552X_CRC_L_lib_V1.0.0.LIB",
+      "size": 2251,
+      "sha": "1ea7e3636512835aa399560b1a601e97fbfb7a96",
+      "sha256": "78e7b0d22cc2445bcdd2e09b01dd733ed80ed9307c812a8e6a4e6345520bd91b"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F552X_CRC_S_lib_V1.0.0.LIB",
+      "size": 2040,
+      "sha": "4c59991604e3c07ab5710cbcc64d92cda3dad3d9",
+      "sha256": "8c0bda9cbf2c0a055bdae0b6530d7f034138c89bce129bb3d540dce48b131644"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F552x_IAP_L_lib_V1.1.3.LIB",
+      "size": 4960,
+      "sha": "c72ebffd5aa5aa7d344281ed3f06c83129f012ca",
+      "sha256": "6a4c5d3c53d926566e70a634a36bf866dd43d2a65665df49a9c0982d101a00e7"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F552x_IAP_S_lib_V1.1.3.LIB",
+      "size": 4605,
+      "sha": "06b571c3c41dabeb6af16677df753f76a02143ec",
+      "sha256": "0d9bef87a2e046a0988e8af5109d8f83a6a62429a77e155d90f85d8279064df7"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F5x5x_IAP_L_lib_V1.1.3.LIB",
+      "size": 2171,
+      "sha": "bb73d48b28fa84f7ea080401eeb193da0a819403",
+      "sha256": "a810bd7fdf0be1f6edb592335709dbafffe7022063809c9ff81458806ac46e9d"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F5x5x_IAP_S_lib_V1.1.3.LIB",
+      "size": 2037,
+      "sha": "4d4cc6bb7b65a6788be225ec57493592f8cc44ce",
+      "sha256": "91cdd2b81c40883e5656a8fa1100f1a3088f9c2c4273d41c4b9f86e87a78c62f"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F637x_IAP_L_lib_V1.1.3.LIB",
+      "size": 2171,
+      "sha": "190e9950147bd04f1c1343d1d775c5e5c8338e2b",
+      "sha256": "1b274396b210e227f3a39e441d15a532fe047adb70ff4ed5bacbb73f7e5a35d7"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F637x_IAP_S_lib_V1.1.3.LIB",
+      "size": 2037,
+      "sha": "731018ad9af1a0b613bee965d24a440569d1f3d2",
+      "sha256": "870c277860faf094c3380de88a35587742a82ae52e1ee8082b911fc9908ea6b9"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F652X_CRC_L_lib_V1.0.0.LIB",
+      "size": 2225,
+      "sha": "310d27534c08c84426167ee4149ddf23cef8e29c",
+      "sha256": "6e4ec922c0c0972fe9677b24b3ca1c7ced6227d3423d770145c32b4ef1447adb"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F652X_CRC_S_lib_V1.0.0.LIB",
+      "size": 2014,
+      "sha": "7fa3cb55efbcd498f09935065387526f1747069e",
+      "sha256": "163c7229f079835f2cb38fde35683c2e8174ef19ceb30c576b680c769c144af1"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F652x_IAP_L_lib_V1.1.2.LIB",
+      "size": 4960,
+      "sha": "4759d616e23dd2ab64edc852ba9f2d63fb403268",
+      "sha256": "27a29d0c883fbd5fca20b509c1d446cddda9f37444a1b9695c812d2d5fc8e059"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F652x_IAP_S_lib_V1.1.2.LIB",
+      "size": 4605,
+      "sha": "bb2c721f8b35e3f17a54f5a44778e1049c3a7c65",
+      "sha256": "2746fdba0566a1d267feeca6d5e424dfb98370c0ea349f2a375dd4d738f8b0b1"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F663x_CRC_L_lib_V1.0.1.LIB",
+      "size": 2225,
+      "sha": "f88872343ffacb4926314ecf60c32a33bd61a825",
+      "sha256": "c9ab698c3db92ef8dd2c9ea0566e74bfdf201b29f0fefc825fdf3d2189102794"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F663x_CRC_S_lib_V1.0.1.LIB",
+      "size": 2014,
+      "sha": "eb7f0e87c6b7c9e0c9c2d83440018b06e401ee6e",
+      "sha256": "93cb146b5cc61c0ea62ce0ce987eafdf81f38212ff0870130497a21bd646c17b"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F663x_IAP_L_lib_V1.1.4.LIB",
+      "size": 4992,
+      "sha": "53f20669f8da573569a73fa553db18f5f3aac722",
+      "sha256": "ba2fe1efd40f6550e6081552081a7a50929d86a8b66c21804b762394dfe5a67d"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F663x_IAP_S_lib_V1.1.4.LIB",
+      "size": 4637,
+      "sha": "30063d7268845c753aeda3b6bc30f72faa19bb95",
+      "sha256": "50a96f550721ea37e58e19c924f4df31a5c82f53e929d31056f231f1b7e4e0db"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F6x1x_CRC_L_lib_V1.0.0.LIB",
+      "size": 2235,
+      "sha": "8114a9f664c2331593d1aa22bcd2c8d54a54d3a0",
+      "sha256": "a865de1d302e06a722ab9574735d9f2f272238ce111c39ccf10da659005daabf"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F6x1x_CRC_S_lib_V1.0.0.LIB",
+      "size": 2024,
+      "sha": "3f331ec28ba4943a7fb8279003435a552f1c3c9f",
+      "sha256": "381601aade3f2664a6f67619bf4d2e0d4a56334c981df782ee122a2552cc05b7"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F6x1x_IAP_L_lib_V1.1.2.LIB",
+      "size": 2852,
+      "sha": "5769ea9bd0db4500b8c4640e3edb0fa8a47c6990",
+      "sha256": "90443107009767a8d0213f733bff177bab0f715f3e7b4c7ee31896c8de02cbe8"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92F6x1x_IAP_S_lib_V1.1.2.LIB",
+      "size": 2641,
+      "sha": "5622729119083f4eb2e4ad64b44b21574d6d1f15",
+      "sha256": "1583188e842e329376eb9b4a25a459d6aa701953cc1343f957ce5b8b91e4067f"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_acmp.c",
+      "size": 7928,
+      "sha": "b0298f7881a15b9de8720489b236cb9dbc6b01c8",
+      "sha256": "588fb509bfe16dc8be354ea4d57c9551fe400288b299a08a196e0c1225b45213"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_adc.c",
+      "size": 49334,
+      "sha": "0f94eceb4267bb05432c91dff00d196f2e869494",
+      "sha256": "f4a32abdf8da74743f1a4cf206e84483d7c1add89d524f378b268e4aa5256a74"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_btm.c",
+      "size": 6050,
+      "sha": "8c7bdfc85ef3abe7540347805edc5042d15df18d",
+      "sha256": "0650e2602fba31ead21789de496d6939ab56e8f25598768c13471c4d9a38a959"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_chksum.c",
+      "size": 3574,
+      "sha": "517a26792ba10631022d343a5cd51bd2977d9570",
+      "sha256": "60a36d371769bdc16b1bb9a35282057f8dc51dde440c59a476786a35f0ca004c"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_crc.c",
+      "size": 4640,
+      "sha": "61c2e9ac8718f5f0915dea85f9e5d49f2d051455",
+      "sha256": "6f6f6f1304056a7a649bb65f308e7aee579a8ac0558f35115ec564e63d730fec"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_ddic.c",
+      "size": 26904,
+      "sha": "70dbe72ec670980d0f818e41f91c05c564fffa50",
+      "sha256": "1a554e4106c760f79cf7ab022d5b19e98ad5354087e2372cd9518e0d7921e43f"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_gpio.c",
+      "size": 39159,
+      "sha": "2e7d058633ece1500f253526e4fffb0b5bb9bd3f",
+      "sha256": "7044ede526fa555793ccdef728665188254c1cedae1f0803f7d1385771f44cee"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_iap.c",
+      "size": 17641,
+      "sha": "61c65f145ed2ba5f3c0e75e9fee5650094694c1f",
+      "sha256": "1a70d0883181b8afce91d803b348bd6570b5078a5811f90c197409bd97bc88b6"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_int.c",
+      "size": 10720,
+      "sha": "57d5f7218c43e258034499173140c5f4011eaafd",
+      "sha256": "448b5f55bb687fd471e3c50f47d9dd5c2e6a6b9f61b18ad8fddd7204e7404b92"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_lpd.c",
+      "size": 4464,
+      "sha": "4502355bc24b0bb5365c3e6960949e517b82720f",
+      "sha256": "1950db43b681667f603e309f2e1dddec6497bc6ad2ac9559bc4152bbf8e83c49"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_mdu.c",
+      "size": 5655,
+      "sha": "f998e7cf97f4f75a5352593e739af2dd856f2518",
+      "sha256": "a80ea36fddacbcffd8c4c3d1c995b70294083d17de015b98c1a20a3927ca2603"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_option.c",
+      "size": 11500,
+      "sha": "98aa7af732bf6d22f53abf66ed895d9e2bd1f996",
+      "sha256": "9c10b0def6c10d96575f3bdd96253cc98add180d8fafbe362bb969f6b31a9cd7"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_pwm.c",
+      "size": 131317,
+      "sha": "b65d136dfbbf914e990766ff89e7a4d3b43f9a5e",
+      "sha256": "e0962ec59e64b077ecb71a4be499bc9b83d87656f9139872af618ecc0a42f7e6"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_pwr.c",
+      "size": 4221,
+      "sha": "1897acbe2093ea4ddedfd2116fcd492f60f9b7c3",
+      "sha256": "dc58795766f3d77d003aa1fc13076569671bbe33d8fc28b92d77c79430e67c9b"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_ssi.c",
+      "size": 51359,
+      "sha": "19c30900d58388a47936352b1ac59c68fdc252f6",
+      "sha256": "a23dc80635c6cc51051588e5d89a693caa686744021060ed60ab46af30d5eebf"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_ssi0.c",
+      "size": 46072,
+      "sha": "cf9ba60d88cf6f3c7bface8cfde5ef4d4ccb1366",
+      "sha256": "0629f08b666d008381a66fadbf6b46eeeb3a3391b5215c069d59c9e9e381c72c"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_ssi1.c",
+      "size": 45921,
+      "sha": "d24a54221ce3d82ccaea52228e0bbe05d84049aa",
+      "sha256": "f783a890d4b22bd52cd11e7d0ccac2dd4c6085d8720ba812c3d9ef5c42151b1a"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_timer0.c",
+      "size": 5424,
+      "sha": "f1925a621daa7604488c43e273136786c2c7004d",
+      "sha256": "64203130d952c468b44d2934659511533da703864e0162ae574f3052fc2a82e9"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_timer1.c",
+      "size": 4851,
+      "sha": "289adb7665a0a05ef3d2d8410b280b9ab4b33859",
+      "sha256": "187f51c80ae4b15ff875bb1160f295f4397b2afab2c5f0abf796472598effc2e"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_timer2.c",
+      "size": 19620,
+      "sha": "0fb5d10adc1e12fddea794a5e29a980281d77c05",
+      "sha256": "5191b3fd9acba6ace891f9859cf89684ee2b055ab9f6ae5d2d1cfb3c2f129856"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_timer3.c",
+      "size": 10286,
+      "sha": "42d737015bdcea1c836d174d5a392e587776b131",
+      "sha256": "7cf3da70b7eca1c91cd8d072722b8e231846837730f5cfc6aad7d1927cc8a730"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_timer4.c",
+      "size": 8940,
+      "sha": "7fd513c8df6564d63fdd4da476440ca0a491d182",
+      "sha256": "b5c0e59700af9de652981a503535aa85c2a6f1cc55d94f83e628d39f9c4da00a"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_uart0.c",
+      "size": 41869,
+      "sha": "9bee5fab9db7e86e85d350b6fb9c84967b8436ad",
+      "sha256": "99061a2f5e917962bdce9d751ad63824c71062a902517f021d9fb4d4fbff127f"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_uart2.c",
+      "size": 34510,
+      "sha": "43cbfe7489959fe00f83d7677037bf7aeb0a016b",
+      "sha256": "3b019a41db403befd2fb53ded721eb3e12ff6aa0a0426c8013b312255e75b791"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_uart3.c",
+      "size": 17539,
+      "sha": "94f805879e20a250278df4e90c92ebe45c3d0099",
+      "sha256": "57e2d8724202ab5a5dd2ae9ca169c9dea4289c2b4558cc16822ad7d7ec820e8a"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_usci0.c",
+      "size": 20301,
+      "sha": "eeaa6b9690820407b4b57d60bae4ad1cd5d1adea",
+      "sha256": "e01947105acb82d7db516b1b651c38c6f71db81e779041a7d2b8b868ee2688b5"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_usci1.c",
+      "size": 17515,
+      "sha": "7b5bac3865a448df22d180bb85afef2ff6ec0158",
+      "sha256": "4ff31a859ccf94263487ad92b1448b8809d059c672a6679994244bc575068cfa"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_usci2.c",
+      "size": 17537,
+      "sha": "e2d0d37eea88bc012fe28dd48eea941c3148bc3c",
+      "sha256": "d7681da210c3d3c0f2df1e4206cc148ec27171457998d84011e154c8f00b337f"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_wdt.c",
+      "size": 3593,
+      "sha": "8e4ca8c2e47c7a993c8f934f32caeeb855ea2658",
+      "sha256": "5a2f668a9b2c3815a60549427716f69cd09ed578ad9765c52721bf10b39bf596"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/sc92f_zoc.c",
+      "size": 13221,
+      "sha": "7818ddbf86996197ceead271f9ff6cb00ffde154",
+      "sha256": "028fbb15527936e66066989d8db98879ec247018f73feea6da36a894292a279b"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92Fx41xB_IAP_L_lib_V1.1.2.LIB",
+      "size": 3014,
+      "sha": "7f20424d1cea7302d2aac10aadf90f382efdc5c4",
+      "sha256": "b0a4369568d0d83221947f5bf874dd0164c4009449be293795131436f309e942"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92Fx41xB_IAP_S_lib_V1.1.2.LIB",
+      "size": 2816,
+      "sha": "e421c3a3034042ec7dda33a3360affebbe74e075",
+      "sha256": "39876db39d68fa56c5abefa33a1693297362751fbf931feb97c1132f2b66f737"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92L840x_CRC_L_lib_V1.0.0.LIB",
+      "size": 1565,
+      "sha": "ccd290ede2f682a2363d1a0d6a305583e8693e7a",
+      "sha256": "d2ff2078ff3b0e88dffc514c4ad1b3620191c8a06be059fed95cb0fc71fa1110"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92L840x_CRC_S_lib_V1.0.0.LIB",
+      "size": 1460,
+      "sha": "39af055b244c68783d1bd03f0f93ca391ce8a6a4",
+      "sha256": "aa194ddea60b925e144fcf630a0391d95e9f0407a989b19ac1e5cf384e7a668c"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92L840x_IAP_L_lib_V1.1.2.LIB",
+      "size": 2789,
+      "sha": "764f998edc052239558cc0156c1b856a973a19e9",
+      "sha256": "d0a9f71c2370c4a98d9ab7f6258e756452b945074725cc3c9da2fc24c783b8bb"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92L840x_IAP_S_lib_V1.1.2.LIB",
+      "size": 2591,
+      "sha": "f190d1deaba7d58cb4d74e8042f51e4b9648d648",
+      "sha256": "392756d424f6150bc79698d6ac0981b6aa82aad4f4e0036b9138620ea022e3c0"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92L840x_STOP_L_lib_V1.0.0.LIB",
+      "size": 925,
+      "sha": "d36705317611f9477c645d94a4a79af9888ae5ec",
+      "sha256": "a657823a2d8836d5602b9abef0dc61c749188c51280ac9f23874a8200ae76886"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92L840x_STOP_S_lib_V1.0.0.LIB",
+      "size": 925,
+      "sha": "aa5b296e34831efc811be04e83187e244c4bde98",
+      "sha256": "3a0a992b19e69062446ed6d3fc1e1f1aaa2e4bb06efd843f089792355d80a9be"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R422A_CRC_L_lib_V1.0.0.LIB",
+      "size": 2235,
+      "sha": "8114a9f664c2331593d1aa22bcd2c8d54a54d3a0",
+      "sha256": "a865de1d302e06a722ab9574735d9f2f272238ce111c39ccf10da659005daabf"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R422A_CRC_S_lib_V1.0.0.LIB",
+      "size": 2024,
+      "sha": "3f331ec28ba4943a7fb8279003435a552f1c3c9f",
+      "sha256": "381601aade3f2664a6f67619bf4d2e0d4a56334c981df782ee122a2552cc05b7"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R422A_IAP_L_lib_V1.1.2.LIB",
+      "size": 2852,
+      "sha": "5769ea9bd0db4500b8c4640e3edb0fa8a47c6990",
+      "sha256": "90443107009767a8d0213f733bff177bab0f715f3e7b4c7ee31896c8de02cbe8"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R422A_IAP_S_lib_V1.1.2.LIB",
+      "size": 2641,
+      "sha": "5622729119083f4eb2e4ad64b44b21574d6d1f15",
+      "sha256": "1583188e842e329376eb9b4a25a459d6aa701953cc1343f957ce5b8b91e4067f"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R436_CRC_L_lib_V1.0.0.LIB",
+      "size": 2235,
+      "sha": "8114a9f664c2331593d1aa22bcd2c8d54a54d3a0",
+      "sha256": "a865de1d302e06a722ab9574735d9f2f272238ce111c39ccf10da659005daabf"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R436_CRC_S_lib_V1.0.0.LIB",
+      "size": 2024,
+      "sha": "3f331ec28ba4943a7fb8279003435a552f1c3c9f",
+      "sha256": "381601aade3f2664a6f67619bf4d2e0d4a56334c981df782ee122a2552cc05b7"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R436_IAP_L_lib_V1.1.2.LIB",
+      "size": 2852,
+      "sha": "5769ea9bd0db4500b8c4640e3edb0fa8a47c6990",
+      "sha256": "90443107009767a8d0213f733bff177bab0f715f3e7b4c7ee31896c8de02cbe8"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R436_IAP_S_lib_V1.1.2.LIB",
+      "size": 2641,
+      "sha": "5622729119083f4eb2e4ad64b44b21574d6d1f15",
+      "sha256": "1583188e842e329376eb9b4a25a459d6aa701953cc1343f957ce5b8b91e4067f"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R438_CRC_L_lib_V1.0.0.LIB",
+      "size": 2235,
+      "sha": "8114a9f664c2331593d1aa22bcd2c8d54a54d3a0",
+      "sha256": "a865de1d302e06a722ab9574735d9f2f272238ce111c39ccf10da659005daabf"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R438_CRC_S_lib_V1.0.0.LIB",
+      "size": 2024,
+      "sha": "3f331ec28ba4943a7fb8279003435a552f1c3c9f",
+      "sha256": "381601aade3f2664a6f67619bf4d2e0d4a56334c981df782ee122a2552cc05b7"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R438_IAP_L_lib_V1.1.2.LIB",
+      "size": 2852,
+      "sha": "5769ea9bd0db4500b8c4640e3edb0fa8a47c6990",
+      "sha256": "90443107009767a8d0213f733bff177bab0f715f3e7b4c7ee31896c8de02cbe8"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R438_IAP_S_lib_V1.1.2.LIB",
+      "size": 2641,
+      "sha": "5622729119083f4eb2e4ad64b44b21574d6d1f15",
+      "sha256": "1583188e842e329376eb9b4a25a459d6aa701953cc1343f957ce5b8b91e4067f"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R439_CRC_L_lib_V1.0.0.LIB",
+      "size": 2235,
+      "sha": "8114a9f664c2331593d1aa22bcd2c8d54a54d3a0",
+      "sha256": "a865de1d302e06a722ab9574735d9f2f272238ce111c39ccf10da659005daabf"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R439_CRC_S_lib_V1.0.0.LIB",
+      "size": 2024,
+      "sha": "3f331ec28ba4943a7fb8279003435a552f1c3c9f",
+      "sha256": "381601aade3f2664a6f67619bf4d2e0d4a56334c981df782ee122a2552cc05b7"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R439_IAP_L_lib_V1.1.2.LIB",
+      "size": 2852,
+      "sha": "5769ea9bd0db4500b8c4640e3edb0fa8a47c6990",
+      "sha256": "90443107009767a8d0213f733bff177bab0f715f3e7b4c7ee31896c8de02cbe8"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R439_IAP_S_lib_V1.1.2.LIB",
+      "size": 2641,
+      "sha": "5622729119083f4eb2e4ad64b44b21574d6d1f15",
+      "sha256": "1583188e842e329376eb9b4a25a459d6aa701953cc1343f957ce5b8b91e4067f"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R445_IAP_L_lib_V1.1.2.LIB",
+      "size": 2789,
+      "sha": "764f998edc052239558cc0156c1b856a973a19e9",
+      "sha256": "d0a9f71c2370c4a98d9ab7f6258e756452b945074725cc3c9da2fc24c783b8bb"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R445_IAP_S_lib_V1.1.2.LIB",
+      "size": 2591,
+      "sha": "f190d1deaba7d58cb4d74e8042f51e4b9648d648",
+      "sha256": "392756d424f6150bc79698d6ac0981b6aa82aad4f4e0036b9138620ea022e3c0"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R51x_R52x_CRC_L_lib_V1.0.0.LIB",
+      "size": 2225,
+      "sha": "40df364428b23d4f15890cb5b00a318902b6a043",
+      "sha256": "0404172bc94fb93df0aa75705ecd281b297b485c6b8f8361fbb4d4663aa41b63"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R51x_R52x_CRC_S_lib_V1.0.0.LIB",
+      "size": 2014,
+      "sha": "6a2e579d19658a7d065857952026b8e08e0bcb6b",
+      "sha256": "b7a9303fc33f9ace61a8faec2ac4b19e48fa2b7a3037ccea48cd835e31c30112"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R51x_R52x_IAP_L_lib_V1.1.3.LIB",
+      "size": 4960,
+      "sha": "c72ebffd5aa5aa7d344281ed3f06c83129f012ca",
+      "sha256": "6a4c5d3c53d926566e70a634a36bf866dd43d2a65665df49a9c0982d101a00e7"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/FWLib/SC92F_Lib/src/SC92R51x_R52x_IAP_S_lib_V1.1.3.LIB",
+      "size": 4853,
+      "sha": "8d40c777cdbe12666549b001fe05ac84493b04b3",
+      "sha256": "6889b305b51b14884978d5ec236d25324d3f9ca1bceecf9ff7272e2ce5a83aa1"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/Project/project name.uvproj",
+      "size": 15300,
+      "sha": "0fec7dfa6d5a662fdbe9cf5331c9c7255f0f370e",
+      "sha256": "f60876a625c96dffc88b257871d2ae8967aa152895fc0a621d6b1584a7234c11"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/Project/STARTUP.A51",
+      "size": 6380,
+      "sha": "26457c2813fb2de13ec3cc442bc24e041e90661b",
+      "sha256": "de97a75a7ec618c00200422026a7c10469654d4d3a78229d4fff21573d83308d"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/User/CallBackFunction.c",
+      "size": 2010,
+      "sha": "d2bc8b61fd62c0d0821e24727da99e14536f4066",
+      "sha256": "fb615ac0acb7f9a150a7f3a909aedc62a559eb5e5d4d63c93dea7628298d31e9"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/User/CompCtrlDefine.c",
+      "size": 907,
+      "sha": "9cab0ccb95c74c3093e97d2f29cee15e247cc45b",
+      "sha256": "8b0045e87ba409d78572dde13a625dc6c2f5dfb25dc86d704e14d430685ab066"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/User/HeadFiles/CompCtrlDefine.h",
+      "size": 700,
+      "sha": "07f4c9e24e0471ec96b33a0ce2a39daa7c9e155e",
+      "sha256": "ef5864029572e61b9cae43969740c57c8d73602729efcd7c582ce8a1f397c59d"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/User/HeadFiles/CustomType.h",
+      "size": 641,
+      "sha": "59b099fa28fcb3e3ec4cbb12992e4f1f06ef6b12",
+      "sha256": "a68bcbd83d88b1f84e28db91d174d1e524b6ab2c387b74d786358706bfafc854"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/User/HeadFiles/FunctionType.h",
+      "size": 690,
+      "sha": "ae82145b3494c6edb8d6145222b386b0006c6ee0",
+      "sha256": "8ae2e8a506cbe511d0c7847f583fee0207f485523200addf61bfa82e26fb79c5"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/User/HeadFiles/SC_itExtern.h",
+      "size": 728,
+      "sha": "cc125a2bb51e6372332862f3ef7689832fed7316",
+      "sha256": "cef91c2c2023e20100c71391a7b2858ab4b4bfed3abaf46e21e05b24cb8a2558"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/User/HeadFiles/SysFunVarDefine.h",
+      "size": 856,
+      "sha": "6274e221087ca6beaff373aabf5efaecb3e71af1",
+      "sha256": "8bb057dbcb89c958052d60f333639aace2a4cf658d9a0272d9d9959c6972c18f"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/User/HeadFiles/UserExport.h",
+      "size": 613,
+      "sha": "47c7225fcd03fa9f2f77f718338073e551e8f5ed",
+      "sha256": "112b67bee759dec04e93d45ac097095383e94e8fce2b4f9e38d3575116d4bb41"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/User/main.c",
+      "size": 1601,
+      "sha": "af0d7f903f2d86bffd6273ee13a4cd01f2951c75",
+      "sha256": "0b07333979b98b5de87f7339f10a40838b49d41b01f302cf9cfdc5c8e9eccbff"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/User/SC_Init.c",
+      "size": 7208,
+      "sha": "2b0b8d5891e04199c244ce366a8e0d1c87731700",
+      "sha256": "66006b325af48fbe9703af5ca5d9b33910e79292788af3b543d42b96898e5ef7"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/User/SC_Init.h",
+      "size": 2133,
+      "sha": "d03a5a30d6e83a25d5e666d4d86f1633a9a7526f",
+      "sha256": "540c690b3c7b475a1e3b66a69811b8626dd49649d81adcfdcffd721fdaf7a769"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/User/SC_it.c",
+      "size": 7438,
+      "sha": "266e9102eff2ec9532f949a71bd4f9dcad0b6757",
+      "sha256": "179d9d951309d077debafb153de6cd0bb34da87419c5bd095d22c1bee06cd9d7"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/User/SC_it.h",
+      "size": 1223,
+      "sha": "2d41c03f3d1747ec40a23f248fb86c1135c855ba",
+      "sha256": "20369afe53bc880c76e1868363f6c01032485a1c1f4ea857dac7c6cb65a90a61"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Keil_Mould/User/SysFunVarDefine.c",
+      "size": 865,
+      "sha": "cadff1de4d6d0a5e8c342cc248d7a8b76750b0d9",
+      "sha256": "1b8beb1234f1f94ffaf0fb45561815ea663d6022ab338fc4c12ce5d9948942b2"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/PEP/SC92L7533.db",
+      "size": 259072,
+      "sha": "7b6a8ead6c3cdc6f610b3befd3373d9637f2c9bb",
+      "sha256": "c6e66254935d8e4c584e666b2774a4a7a7171b0fea0eabf731dea8fc54432a23"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/SC92L7533.txt",
+      "size": 9912,
+      "sha": "12fffe04ec8379bdc55c387ef6573d27587f8f29",
+      "sha256": "33c1f67185499e98a3d67742a756378adeae0f47eae5b873758071b35bff7161"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/SC92L7533_en.txt",
+      "size": 14390,
+      "sha": "c6f486170c63bfca3d05597d832d2442da3283e7",
+      "sha256": "e66f3e5cd4f438971cc9296b6df7c3c21b6ea5f463e986cc57802ee23b726560"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Temp/Function_Temp/ADC.txt",
+      "size": 45,
+      "sha": "844a7cbbe67f6cf6e5b8b4b6467ac525bb9687f7",
+      "sha256": "deb2083b3bb281d74535e43bd4d773b7527fa17e834f03fcc2b4140a4973099d"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Temp/Function_Temp/INT0.txt",
+      "size": 45,
+      "sha": "844a7cbbe67f6cf6e5b8b4b6467ac525bb9687f7",
+      "sha256": "deb2083b3bb281d74535e43bd4d773b7527fa17e834f03fcc2b4140a4973099d"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Temp/Function_Temp/INT2.txt",
+      "size": 45,
+      "sha": "844a7cbbe67f6cf6e5b8b4b6467ac525bb9687f7",
+      "sha256": "deb2083b3bb281d74535e43bd4d773b7527fa17e834f03fcc2b4140a4973099d"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Temp/Function_Temp/OPTION.txt",
+      "size": 45,
+      "sha": "844a7cbbe67f6cf6e5b8b4b6467ac525bb9687f7",
+      "sha256": "deb2083b3bb281d74535e43bd4d773b7527fa17e834f03fcc2b4140a4973099d"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/Temp/Function_Temp/USCI2模式UART.txt",
+      "size": 45,
+      "sha": "844a7cbbe67f6cf6e5b8b4b6467ac525bb9687f7",
+      "sha256": "deb2083b3bb281d74535e43bd4d773b7527fa17e834f03fcc2b4140a4973099d"
+    },
+    {
+      "path": "TL2_T12/CFG/SC92L7533/结构图.png",
+      "size": 31547,
+      "sha": "c6b0ae3de4250b8cb50e3067e96018763fcfceed",
+      "sha256": "1195683eed0fba8f904986f063bb1c2a913a6a74837a746aacd49ecd9641dcf1"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Drivers/SCDriver_List.h",
+      "size": 888,
+      "sha": "3af499606cdd3292f353e2822dd3932211f3c490",
+      "sha256": "9040f36ca4d2518ec1276664ef6ec84131ce3cc7f6a227466e0ae28c39308eba"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/CRC_Option_EW.h",
+      "size": 1724,
+      "sha": "a32f6c1d2ed0f6dc6f409ccf814502f2c6613231",
+      "sha256": "5f28bb50d7bda82738673aa9edc9ab77862ded395510d7a77e6ef85993f92807"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/IAP_Option_EW.h",
+      "size": 5396,
+      "sha": "023fe0f76368ff1afc15d7fe04b5f860c328b3d5",
+      "sha256": "3c81db62b521ca64d7add3caaa5d7e75ec32caac6b6f54678b7699da01867e7a"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/putchar.h",
+      "size": 4069,
+      "sha": "d9a7708807e7bed539868be3530d556e633c1900",
+      "sha256": "83a3094f73001c3ec996762ecdfe711948e9f39b98df1cd58875c59be11cda31"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f.h",
+      "size": 6834,
+      "sha": "88946fd9be3db2ee9ebc76c2e92683b0ba47e3e4",
+      "sha256": "04d33e791999e85200229809568437bc2795ba495b3938969bdb98f03e9fb7ea"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/SC92F552X_C.H",
+      "size": 11188,
+      "sha": "a1829d93723e536e1c4734fe88be9c2590afa3f0",
+      "sha256": "67983a50b3adb74fc59fb4e4bdba488cb9c50cff75c2d4a4b0cac68b8b2b05b6"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/SC92F637X_C.H",
+      "size": 7453,
+      "sha": "507657c667adddc2564e335ad3fafae97ec08cc0",
+      "sha256": "e3f36892ddeaa66ae608f172d65872ea02434b1754dfee24e2f9dff528aa5d9d"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/SC92F663X_C.H",
+      "size": 10495,
+      "sha": "791d3fd61321074a1e83a21703eb1f24f86927d9",
+      "sha256": "f34d838bc81fbf70b70e08735f1ddfc35702f668fe93e00c4254591b9ea2bd53"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_acmp.h",
+      "size": 6330,
+      "sha": "b9ad799bc781b5474f6d4dbc8b48a7351e94bd4a",
+      "sha256": "1b97fb3b6cb4919f96dca0a0be74a277060d5a24f1abf4acae929837f0d74ed7"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_adc.h",
+      "size": 42952,
+      "sha": "3a7124839924bea0ff04c2e9bc918adfbd80f54c",
+      "sha256": "e46c3c1aff812d0a0b782fb4190f2673729383f3bce917a069277ce5bad209db"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_btm.h",
+      "size": 7918,
+      "sha": "8d6ae9214b9985e9a86292a49f61291d9a2f9117",
+      "sha256": "29d67b1b91ca7e0d3af5658273b194084d5de6b9ee56956e023b77d68a26b7a5"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_chksum.h",
+      "size": 2717,
+      "sha": "31d89ad6988acce0eb561300440695d8abfc322c",
+      "sha256": "a14576f9e551dfac0aa6cd92e4103199f6c1e6b22dcb02d74b4d17e7f74c852f"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_conf.h",
+      "size": 2164,
+      "sha": "62ef54c78d1d1469d1321c0b82153b33f244fad9",
+      "sha256": "e37a3fe81e94019f5b41e4bb70b00c99abc62ceef7b1420705659f225b0106cd"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_crc.h",
+      "size": 2789,
+      "sha": "9cba05837a3c70fc34473ba688e933342e45fb31",
+      "sha256": "a5b86e298444700e886982c43aa64255754008329484165d72c5c1a0cd5f9fc9"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_ddic.h",
+      "size": 28822,
+      "sha": "c55d6f43bd04a14f00bc1547459fbfa57675510b",
+      "sha256": "b6d4c5cdd1349bfb738ad778297a232ecf8e4a29dda25d84a7253df28811c3e3"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_gpio.h",
+      "size": 7695,
+      "sha": "71d734c5d7bf32e2041e6900eeb86f101ed5b6de",
+      "sha256": "66c54a352f6d184acd098735449bba6a0681f40577bc8d82c524441f1bd3dea8"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_iap.h",
+      "size": 10797,
+      "sha": "8b0a21ced1088beed603192ee2ef21b43f5c473f",
+      "sha256": "56358233d3f48f2f91c3f57fe4412fcb18610eb4ebc27c1eb0604a471c4532dc"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_int.h",
+      "size": 15772,
+      "sha": "8832aae38771ec35610715b6d719ec47715868d5",
+      "sha256": "9fdec96d38803584cf32ccd5c106f40e8649579bb7072d2e7a1fba0658180ed0"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_lpd.h",
+      "size": 4436,
+      "sha": "f2f7adea59af6178e4de094130d0f4b329a304ce",
+      "sha256": "d468bcdfa4a625cc7528ba9cb04259c96e36ace5c4850a10260bdea87fd25bdc"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_mdu.h",
+      "size": 3678,
+      "sha": "a56ccf5c53a8e8dbe6ab615a18d486723b2e2169",
+      "sha256": "46c24acfdbecc179fc123fb7c613715100cb6634a2ed935aee24636d2f4b350f"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_option.h",
+      "size": 10891,
+      "sha": "e65ea1a56b4da5b6d03c9c41596f38bdbe7a44e2",
+      "sha256": "f4ad8f070c5bf5d1784227e422ae4df1e9577fbfa9c2d811492f5fae2e7374b3"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_pwm.h",
+      "size": 50096,
+      "sha": "e3ef24d1147e6e640ab698a219a9b71c0a1b38f5",
+      "sha256": "9be09f6292dd423e25a762e12420fd4b4665fa6ad9d31b4ab01a0025638a7496"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_pwr.h",
+      "size": 2526,
+      "sha": "cbf80a3b0574ecdf6ff285b04a1dd5318fa6032f",
+      "sha256": "c1125b99e2c32a075844dffdbb5f77ada221e74df27d4eb3682cee0e8f3f1112"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_ssi.h",
+      "size": 30275,
+      "sha": "ba917f4c91ce29548bb14f409e4b1de7d8810fee",
+      "sha256": "dcc1fb7c96db5a46529222e045013feae31329480820b5540185a8732dfcd10b"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_timer0.h",
+      "size": 5822,
+      "sha": "799c692565cf68f6c9d5e31be453c75e77e287fe",
+      "sha256": "458e782d1910ebfe2fa257e74813001700f4bd33dfd175f9de059fe2b1ce78fd"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_timer1.h",
+      "size": 5128,
+      "sha": "3f6ff251ef438503c177caad6fe346cceaaa9ed7",
+      "sha256": "a218517cc557634066fdebc8ec5529c1959dbbf6de247ef11549fc7ac61b9c26"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_timer2.h",
+      "size": 12268,
+      "sha": "9f29ad87f4aa30f3a82777a0d8cfc133e2ccd7e1",
+      "sha256": "947026ae3e19c656655477bbec1d41845fc5343872a9acb9e90218414b6e6c7a"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_timer3.h",
+      "size": 5707,
+      "sha": "adfba37e6a30e8e931ad2f84de3a09dd38fe879b",
+      "sha256": "cb29f0d83d40e34a14cf1be3c09d5865583accdcee1dfeb282d7286b959c4933"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_timer4.h",
+      "size": 4174,
+      "sha": "8766dc2a15fbb2ec55dde64d087106853d6a2d26",
+      "sha256": "2139afb7d15d7deb3be1a9d9da3e49818858d00e834cd4e077a247f089b4d502"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_uart0.h",
+      "size": 14001,
+      "sha": "72faee94785ef03e8c3239cfdc6ff4bd498980fb",
+      "sha256": "e3572f57137990d23a19684721401126692900e14967efc38aeffbd22d7e4cc3"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_uart2.h",
+      "size": 7392,
+      "sha": "77521cdfaf3373343208c2aa646c4eba1ba12b43",
+      "sha256": "07a7e10f660a534656d0affc187661c8454a0083b25e50d67924c615360bbf2b"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_uart3.h",
+      "size": 5528,
+      "sha": "bf671fc2678b1a8c3a5a29522e763e7398fc2076",
+      "sha256": "fee5e790f4077625cc5a84dc687a648a4e8e975307894b9988ca1ce770944c84"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_usci0.h",
+      "size": 11460,
+      "sha": "db3f4662fc687de5cd93840824a94b19cf950696",
+      "sha256": "66b646549d10708db407235d05ca7f4ce8b8074f24f15b2bebc101d1e18c8d47"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_usci1.h",
+      "size": 9733,
+      "sha": "70850984f23bd3ba259acb54cfb0795e1b16aadd",
+      "sha256": "251ff43742c82a38c23d0fb653c1f504e9b4681758cd42454a77366f3b7e07c8"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_usci2.h",
+      "size": 9737,
+      "sha": "12f355776150b9f7bbae588e18ce7833ea8ec4ac",
+      "sha256": "d693b3dc35d10e2eb6674578df4c131094152f013b264d41bd0ad832c3c20354"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_wdt.h",
+      "size": 3042,
+      "sha": "d56d1daa6d781933562dbbd8559a8c044051bc96",
+      "sha256": "89f3e2fb51c608b93829f7c9b80752e07eac9e961012c060880797c072b890ae"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/sc92f_zoc.h",
+      "size": 10014,
+      "sha": "4b0794de227b0a676b8524e887e9c8204da488fc",
+      "sha256": "9beff2df4c9215d11ba893bedae566cbe33979b77fa81d38b04702baa3f2da6a"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/SC92L753x_C.H",
+      "size": 11561,
+      "sha": "6792c51cdfb17ebafcd2a24f4d70c633f5ec532a",
+      "sha256": "2a55e65e70e8c4fee1379817200ff44130009a723d90639fd28ccd8491e7113e"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/SC92R422A_C.H",
+      "size": 8607,
+      "sha": "206680c0fd6612e41ee039c21876f7f353087cd6",
+      "sha256": "4a4b0b78f95079995eb64a9a2a95c5a4355f00a074279d92c421a16124c45563"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/STOP_Option_EW.h",
+      "size": 874,
+      "sha": "53392704c3b30fe88d363ab43db81aa3fb54702f",
+      "sha256": "9bd7210265ed7168e01fae82a3da8dc5d753b940070f67a58011a9bf9100a270"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/inc/ZCD_Option_EW.h",
+      "size": 4855,
+      "sha": "09eb366d211dfce6e650751b175658c445957e4b",
+      "sha256": "f388a03e57af3553052482c66fc46b49326002da611697f0a0cd89cd943329c4"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/putchar.c",
+      "size": 2541,
+      "sha": "40214f453e904170b7a835648e1581842aec6480",
+      "sha256": "b51c226d1921e56757a5714997a687dc7967486d79da78f465144e4d841bd327"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F531x_IAP_L_lib_V1.1.3.LIB",
+      "size": 2171,
+      "sha": "bb73d48b28fa84f7ea080401eeb193da0a819403",
+      "sha256": "a810bd7fdf0be1f6edb592335709dbafffe7022063809c9ff81458806ac46e9d"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F531x_IAP_S_lib_V1.1.3.LIB",
+      "size": 2037,
+      "sha": "4d4cc6bb7b65a6788be225ec57493592f8cc44ce",
+      "sha256": "91cdd2b81c40883e5656a8fa1100f1a3088f9c2c4273d41c4b9f86e87a78c62f"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F531x_ZCD_L_lib_V1.0.LIB",
+      "size": 2453,
+      "sha": "64cf617953baf8d63865e0e65b9dca46f96b3950",
+      "sha256": "daea522e94b7cdefe343f051b14f876bcfc594300e6f57060646ba14b41280a8"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F531x_ZCD_S_lib_V1.0.LIB",
+      "size": 2422,
+      "sha": "7c7ebb7f606bb6d2f62a413016f9be4b4ceab147",
+      "sha256": "4721c2cda2985f9fda20cd3131eeda07acc691e9457e3e4c1837b5bcc8d12e63"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F552X_CRC_L_lib_V1.0.0.LIB",
+      "size": 2251,
+      "sha": "1ea7e3636512835aa399560b1a601e97fbfb7a96",
+      "sha256": "78e7b0d22cc2445bcdd2e09b01dd733ed80ed9307c812a8e6a4e6345520bd91b"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F552X_CRC_S_lib_V1.0.0.LIB",
+      "size": 2040,
+      "sha": "4c59991604e3c07ab5710cbcc64d92cda3dad3d9",
+      "sha256": "8c0bda9cbf2c0a055bdae0b6530d7f034138c89bce129bb3d540dce48b131644"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F552x_IAP_L_lib_V1.1.3.LIB",
+      "size": 4960,
+      "sha": "c72ebffd5aa5aa7d344281ed3f06c83129f012ca",
+      "sha256": "6a4c5d3c53d926566e70a634a36bf866dd43d2a65665df49a9c0982d101a00e7"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F552x_IAP_S_lib_V1.1.3.LIB",
+      "size": 4605,
+      "sha": "06b571c3c41dabeb6af16677df753f76a02143ec",
+      "sha256": "0d9bef87a2e046a0988e8af5109d8f83a6a62429a77e155d90f85d8279064df7"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F5x5x_IAP_L_lib_V1.1.3.LIB",
+      "size": 2171,
+      "sha": "bb73d48b28fa84f7ea080401eeb193da0a819403",
+      "sha256": "a810bd7fdf0be1f6edb592335709dbafffe7022063809c9ff81458806ac46e9d"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F5x5x_IAP_S_lib_V1.1.3.LIB",
+      "size": 2037,
+      "sha": "4d4cc6bb7b65a6788be225ec57493592f8cc44ce",
+      "sha256": "91cdd2b81c40883e5656a8fa1100f1a3088f9c2c4273d41c4b9f86e87a78c62f"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F637x_IAP_L_lib_V1.1.3.LIB",
+      "size": 2171,
+      "sha": "190e9950147bd04f1c1343d1d775c5e5c8338e2b",
+      "sha256": "1b274396b210e227f3a39e441d15a532fe047adb70ff4ed5bacbb73f7e5a35d7"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F637x_IAP_S_lib_V1.1.3.LIB",
+      "size": 2037,
+      "sha": "731018ad9af1a0b613bee965d24a440569d1f3d2",
+      "sha256": "870c277860faf094c3380de88a35587742a82ae52e1ee8082b911fc9908ea6b9"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F652X_CRC_L_lib_V1.0.0.LIB",
+      "size": 2225,
+      "sha": "310d27534c08c84426167ee4149ddf23cef8e29c",
+      "sha256": "6e4ec922c0c0972fe9677b24b3ca1c7ced6227d3423d770145c32b4ef1447adb"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F652X_CRC_S_lib_V1.0.0.LIB",
+      "size": 2014,
+      "sha": "7fa3cb55efbcd498f09935065387526f1747069e",
+      "sha256": "163c7229f079835f2cb38fde35683c2e8174ef19ceb30c576b680c769c144af1"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F652x_IAP_L_lib_V1.1.2.LIB",
+      "size": 4960,
+      "sha": "4759d616e23dd2ab64edc852ba9f2d63fb403268",
+      "sha256": "27a29d0c883fbd5fca20b509c1d446cddda9f37444a1b9695c812d2d5fc8e059"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F652x_IAP_S_lib_V1.1.2.LIB",
+      "size": 4605,
+      "sha": "bb2c721f8b35e3f17a54f5a44778e1049c3a7c65",
+      "sha256": "2746fdba0566a1d267feeca6d5e424dfb98370c0ea349f2a375dd4d738f8b0b1"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F663x_CRC_L_lib_V1.0.1.LIB",
+      "size": 2225,
+      "sha": "f88872343ffacb4926314ecf60c32a33bd61a825",
+      "sha256": "c9ab698c3db92ef8dd2c9ea0566e74bfdf201b29f0fefc825fdf3d2189102794"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F663x_CRC_S_lib_V1.0.1.LIB",
+      "size": 2014,
+      "sha": "eb7f0e87c6b7c9e0c9c2d83440018b06e401ee6e",
+      "sha256": "93cb146b5cc61c0ea62ce0ce987eafdf81f38212ff0870130497a21bd646c17b"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F663x_IAP_L_lib_V1.1.4.LIB",
+      "size": 4992,
+      "sha": "53f20669f8da573569a73fa553db18f5f3aac722",
+      "sha256": "ba2fe1efd40f6550e6081552081a7a50929d86a8b66c21804b762394dfe5a67d"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F663x_IAP_S_lib_V1.1.4.LIB",
+      "size": 4637,
+      "sha": "30063d7268845c753aeda3b6bc30f72faa19bb95",
+      "sha256": "50a96f550721ea37e58e19c924f4df31a5c82f53e929d31056f231f1b7e4e0db"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F6x1x_CRC_L_lib_V1.0.0.LIB",
+      "size": 2235,
+      "sha": "8114a9f664c2331593d1aa22bcd2c8d54a54d3a0",
+      "sha256": "a865de1d302e06a722ab9574735d9f2f272238ce111c39ccf10da659005daabf"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F6x1x_CRC_S_lib_V1.0.0.LIB",
+      "size": 2024,
+      "sha": "3f331ec28ba4943a7fb8279003435a552f1c3c9f",
+      "sha256": "381601aade3f2664a6f67619bf4d2e0d4a56334c981df782ee122a2552cc05b7"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F6x1x_IAP_L_lib_V1.1.2.LIB",
+      "size": 2852,
+      "sha": "5769ea9bd0db4500b8c4640e3edb0fa8a47c6990",
+      "sha256": "90443107009767a8d0213f733bff177bab0f715f3e7b4c7ee31896c8de02cbe8"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92F6x1x_IAP_S_lib_V1.1.2.LIB",
+      "size": 2641,
+      "sha": "5622729119083f4eb2e4ad64b44b21574d6d1f15",
+      "sha256": "1583188e842e329376eb9b4a25a459d6aa701953cc1343f957ce5b8b91e4067f"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_acmp.c",
+      "size": 7928,
+      "sha": "b0298f7881a15b9de8720489b236cb9dbc6b01c8",
+      "sha256": "588fb509bfe16dc8be354ea4d57c9551fe400288b299a08a196e0c1225b45213"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_adc.c",
+      "size": 49334,
+      "sha": "0f94eceb4267bb05432c91dff00d196f2e869494",
+      "sha256": "f4a32abdf8da74743f1a4cf206e84483d7c1add89d524f378b268e4aa5256a74"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_btm.c",
+      "size": 6050,
+      "sha": "8c7bdfc85ef3abe7540347805edc5042d15df18d",
+      "sha256": "0650e2602fba31ead21789de496d6939ab56e8f25598768c13471c4d9a38a959"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_chksum.c",
+      "size": 3574,
+      "sha": "517a26792ba10631022d343a5cd51bd2977d9570",
+      "sha256": "60a36d371769bdc16b1bb9a35282057f8dc51dde440c59a476786a35f0ca004c"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_crc.c",
+      "size": 4640,
+      "sha": "61c2e9ac8718f5f0915dea85f9e5d49f2d051455",
+      "sha256": "6f6f6f1304056a7a649bb65f308e7aee579a8ac0558f35115ec564e63d730fec"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_ddic.c",
+      "size": 26904,
+      "sha": "70dbe72ec670980d0f818e41f91c05c564fffa50",
+      "sha256": "1a554e4106c760f79cf7ab022d5b19e98ad5354087e2372cd9518e0d7921e43f"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_gpio.c",
+      "size": 39159,
+      "sha": "2e7d058633ece1500f253526e4fffb0b5bb9bd3f",
+      "sha256": "7044ede526fa555793ccdef728665188254c1cedae1f0803f7d1385771f44cee"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_iap.c",
+      "size": 17641,
+      "sha": "61c65f145ed2ba5f3c0e75e9fee5650094694c1f",
+      "sha256": "1a70d0883181b8afce91d803b348bd6570b5078a5811f90c197409bd97bc88b6"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_int.c",
+      "size": 10720,
+      "sha": "57d5f7218c43e258034499173140c5f4011eaafd",
+      "sha256": "448b5f55bb687fd471e3c50f47d9dd5c2e6a6b9f61b18ad8fddd7204e7404b92"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_lpd.c",
+      "size": 4464,
+      "sha": "4502355bc24b0bb5365c3e6960949e517b82720f",
+      "sha256": "1950db43b681667f603e309f2e1dddec6497bc6ad2ac9559bc4152bbf8e83c49"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_mdu.c",
+      "size": 5655,
+      "sha": "f998e7cf97f4f75a5352593e739af2dd856f2518",
+      "sha256": "a80ea36fddacbcffd8c4c3d1c995b70294083d17de015b98c1a20a3927ca2603"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_option.c",
+      "size": 11500,
+      "sha": "98aa7af732bf6d22f53abf66ed895d9e2bd1f996",
+      "sha256": "9c10b0def6c10d96575f3bdd96253cc98add180d8fafbe362bb969f6b31a9cd7"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_pwm.c",
+      "size": 131317,
+      "sha": "b65d136dfbbf914e990766ff89e7a4d3b43f9a5e",
+      "sha256": "e0962ec59e64b077ecb71a4be499bc9b83d87656f9139872af618ecc0a42f7e6"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_pwr.c",
+      "size": 4221,
+      "sha": "1897acbe2093ea4ddedfd2116fcd492f60f9b7c3",
+      "sha256": "dc58795766f3d77d003aa1fc13076569671bbe33d8fc28b92d77c79430e67c9b"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_ssi.c",
+      "size": 51359,
+      "sha": "19c30900d58388a47936352b1ac59c68fdc252f6",
+      "sha256": "a23dc80635c6cc51051588e5d89a693caa686744021060ed60ab46af30d5eebf"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_ssi0.c",
+      "size": 46072,
+      "sha": "cf9ba60d88cf6f3c7bface8cfde5ef4d4ccb1366",
+      "sha256": "0629f08b666d008381a66fadbf6b46eeeb3a3391b5215c069d59c9e9e381c72c"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_ssi1.c",
+      "size": 45921,
+      "sha": "d24a54221ce3d82ccaea52228e0bbe05d84049aa",
+      "sha256": "f783a890d4b22bd52cd11e7d0ccac2dd4c6085d8720ba812c3d9ef5c42151b1a"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_timer0.c",
+      "size": 5424,
+      "sha": "f1925a621daa7604488c43e273136786c2c7004d",
+      "sha256": "64203130d952c468b44d2934659511533da703864e0162ae574f3052fc2a82e9"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_timer1.c",
+      "size": 4851,
+      "sha": "289adb7665a0a05ef3d2d8410b280b9ab4b33859",
+      "sha256": "187f51c80ae4b15ff875bb1160f295f4397b2afab2c5f0abf796472598effc2e"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_timer2.c",
+      "size": 19620,
+      "sha": "0fb5d10adc1e12fddea794a5e29a980281d77c05",
+      "sha256": "5191b3fd9acba6ace891f9859cf89684ee2b055ab9f6ae5d2d1cfb3c2f129856"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_timer3.c",
+      "size": 10286,
+      "sha": "42d737015bdcea1c836d174d5a392e587776b131",
+      "sha256": "7cf3da70b7eca1c91cd8d072722b8e231846837730f5cfc6aad7d1927cc8a730"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_timer4.c",
+      "size": 8940,
+      "sha": "7fd513c8df6564d63fdd4da476440ca0a491d182",
+      "sha256": "b5c0e59700af9de652981a503535aa85c2a6f1cc55d94f83e628d39f9c4da00a"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_uart0.c",
+      "size": 41869,
+      "sha": "9bee5fab9db7e86e85d350b6fb9c84967b8436ad",
+      "sha256": "99061a2f5e917962bdce9d751ad63824c71062a902517f021d9fb4d4fbff127f"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_uart2.c",
+      "size": 34510,
+      "sha": "43cbfe7489959fe00f83d7677037bf7aeb0a016b",
+      "sha256": "3b019a41db403befd2fb53ded721eb3e12ff6aa0a0426c8013b312255e75b791"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_uart3.c",
+      "size": 17539,
+      "sha": "94f805879e20a250278df4e90c92ebe45c3d0099",
+      "sha256": "57e2d8724202ab5a5dd2ae9ca169c9dea4289c2b4558cc16822ad7d7ec820e8a"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_usci0.c",
+      "size": 20299,
+      "sha": "8c55d44e7b98980bd018d57116e1fb9595b74b1a",
+      "sha256": "3766017af9aff0920d018b60ce580bcbcbef24f9c89801a43a18f1f3df6385ec"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_usci1.c",
+      "size": 17515,
+      "sha": "7b5bac3865a448df22d180bb85afef2ff6ec0158",
+      "sha256": "4ff31a859ccf94263487ad92b1448b8809d059c672a6679994244bc575068cfa"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_usci2.c",
+      "size": 17537,
+      "sha": "e2d0d37eea88bc012fe28dd48eea941c3148bc3c",
+      "sha256": "d7681da210c3d3c0f2df1e4206cc148ec27171457998d84011e154c8f00b337f"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_wdt.c",
+      "size": 3593,
+      "sha": "8e4ca8c2e47c7a993c8f934f32caeeb855ea2658",
+      "sha256": "5a2f668a9b2c3815a60549427716f69cd09ed578ad9765c52721bf10b39bf596"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/sc92f_zoc.c",
+      "size": 13221,
+      "sha": "7818ddbf86996197ceead271f9ff6cb00ffde154",
+      "sha256": "028fbb15527936e66066989d8db98879ec247018f73feea6da36a894292a279b"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92Fx41xB_IAP_L_lib_V1.1.2.LIB",
+      "size": 3014,
+      "sha": "7f20424d1cea7302d2aac10aadf90f382efdc5c4",
+      "sha256": "b0a4369568d0d83221947f5bf874dd0164c4009449be293795131436f309e942"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92Fx41xB_IAP_S_lib_V1.1.2.LIB",
+      "size": 2816,
+      "sha": "e421c3a3034042ec7dda33a3360affebbe74e075",
+      "sha256": "39876db39d68fa56c5abefa33a1693297362751fbf931feb97c1132f2b66f737"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92L840x_CRC_L_lib_V1.0.0.LIB",
+      "size": 1565,
+      "sha": "ccd290ede2f682a2363d1a0d6a305583e8693e7a",
+      "sha256": "d2ff2078ff3b0e88dffc514c4ad1b3620191c8a06be059fed95cb0fc71fa1110"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92L840x_CRC_S_lib_V1.0.0.LIB",
+      "size": 1460,
+      "sha": "39af055b244c68783d1bd03f0f93ca391ce8a6a4",
+      "sha256": "aa194ddea60b925e144fcf630a0391d95e9f0407a989b19ac1e5cf384e7a668c"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92L840x_IAP_L_lib_V1.1.2.LIB",
+      "size": 2789,
+      "sha": "764f998edc052239558cc0156c1b856a973a19e9",
+      "sha256": "d0a9f71c2370c4a98d9ab7f6258e756452b945074725cc3c9da2fc24c783b8bb"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92L840x_IAP_S_lib_V1.1.2.LIB",
+      "size": 2591,
+      "sha": "f190d1deaba7d58cb4d74e8042f51e4b9648d648",
+      "sha256": "392756d424f6150bc79698d6ac0981b6aa82aad4f4e0036b9138620ea022e3c0"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92L840x_STOP_L_lib_V1.0.0.LIB",
+      "size": 925,
+      "sha": "d36705317611f9477c645d94a4a79af9888ae5ec",
+      "sha256": "a657823a2d8836d5602b9abef0dc61c749188c51280ac9f23874a8200ae76886"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92L840x_STOP_S_lib_V1.0.0.LIB",
+      "size": 925,
+      "sha": "aa5b296e34831efc811be04e83187e244c4bde98",
+      "sha256": "3a0a992b19e69062446ed6d3fc1e1f1aaa2e4bb06efd843f089792355d80a9be"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R422A_CRC_L_lib_V1.0.0.LIB",
+      "size": 2235,
+      "sha": "8114a9f664c2331593d1aa22bcd2c8d54a54d3a0",
+      "sha256": "a865de1d302e06a722ab9574735d9f2f272238ce111c39ccf10da659005daabf"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R422A_CRC_S_lib_V1.0.0.LIB",
+      "size": 2024,
+      "sha": "3f331ec28ba4943a7fb8279003435a552f1c3c9f",
+      "sha256": "381601aade3f2664a6f67619bf4d2e0d4a56334c981df782ee122a2552cc05b7"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R422A_IAP_L_lib_V1.1.2.LIB",
+      "size": 2852,
+      "sha": "5769ea9bd0db4500b8c4640e3edb0fa8a47c6990",
+      "sha256": "90443107009767a8d0213f733bff177bab0f715f3e7b4c7ee31896c8de02cbe8"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R422A_IAP_S_lib_V1.1.2.LIB",
+      "size": 2641,
+      "sha": "5622729119083f4eb2e4ad64b44b21574d6d1f15",
+      "sha256": "1583188e842e329376eb9b4a25a459d6aa701953cc1343f957ce5b8b91e4067f"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R436_CRC_L_lib_V1.0.0.LIB",
+      "size": 2235,
+      "sha": "8114a9f664c2331593d1aa22bcd2c8d54a54d3a0",
+      "sha256": "a865de1d302e06a722ab9574735d9f2f272238ce111c39ccf10da659005daabf"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R436_CRC_S_lib_V1.0.0.LIB",
+      "size": 2024,
+      "sha": "3f331ec28ba4943a7fb8279003435a552f1c3c9f",
+      "sha256": "381601aade3f2664a6f67619bf4d2e0d4a56334c981df782ee122a2552cc05b7"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R436_IAP_L_lib_V1.1.2.LIB",
+      "size": 2852,
+      "sha": "5769ea9bd0db4500b8c4640e3edb0fa8a47c6990",
+      "sha256": "90443107009767a8d0213f733bff177bab0f715f3e7b4c7ee31896c8de02cbe8"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R436_IAP_S_lib_V1.1.2.LIB",
+      "size": 2641,
+      "sha": "5622729119083f4eb2e4ad64b44b21574d6d1f15",
+      "sha256": "1583188e842e329376eb9b4a25a459d6aa701953cc1343f957ce5b8b91e4067f"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R438_CRC_L_lib_V1.0.0.LIB",
+      "size": 2235,
+      "sha": "8114a9f664c2331593d1aa22bcd2c8d54a54d3a0",
+      "sha256": "a865de1d302e06a722ab9574735d9f2f272238ce111c39ccf10da659005daabf"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R438_CRC_S_lib_V1.0.0.LIB",
+      "size": 2024,
+      "sha": "3f331ec28ba4943a7fb8279003435a552f1c3c9f",
+      "sha256": "381601aade3f2664a6f67619bf4d2e0d4a56334c981df782ee122a2552cc05b7"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R438_IAP_L_lib_V1.1.2.LIB",
+      "size": 2852,
+      "sha": "5769ea9bd0db4500b8c4640e3edb0fa8a47c6990",
+      "sha256": "90443107009767a8d0213f733bff177bab0f715f3e7b4c7ee31896c8de02cbe8"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R438_IAP_S_lib_V1.1.2.LIB",
+      "size": 2641,
+      "sha": "5622729119083f4eb2e4ad64b44b21574d6d1f15",
+      "sha256": "1583188e842e329376eb9b4a25a459d6aa701953cc1343f957ce5b8b91e4067f"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R439_CRC_L_lib_V1.0.0.LIB",
+      "size": 2235,
+      "sha": "8114a9f664c2331593d1aa22bcd2c8d54a54d3a0",
+      "sha256": "a865de1d302e06a722ab9574735d9f2f272238ce111c39ccf10da659005daabf"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R439_CRC_S_lib_V1.0.0.LIB",
+      "size": 2024,
+      "sha": "3f331ec28ba4943a7fb8279003435a552f1c3c9f",
+      "sha256": "381601aade3f2664a6f67619bf4d2e0d4a56334c981df782ee122a2552cc05b7"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R439_IAP_L_lib_V1.1.2.LIB",
+      "size": 2852,
+      "sha": "5769ea9bd0db4500b8c4640e3edb0fa8a47c6990",
+      "sha256": "90443107009767a8d0213f733bff177bab0f715f3e7b4c7ee31896c8de02cbe8"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R439_IAP_S_lib_V1.1.2.LIB",
+      "size": 2641,
+      "sha": "5622729119083f4eb2e4ad64b44b21574d6d1f15",
+      "sha256": "1583188e842e329376eb9b4a25a459d6aa701953cc1343f957ce5b8b91e4067f"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R445_IAP_L_lib_V1.1.2.LIB",
+      "size": 2789,
+      "sha": "764f998edc052239558cc0156c1b856a973a19e9",
+      "sha256": "d0a9f71c2370c4a98d9ab7f6258e756452b945074725cc3c9da2fc24c783b8bb"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R445_IAP_S_lib_V1.1.2.LIB",
+      "size": 2591,
+      "sha": "f190d1deaba7d58cb4d74e8042f51e4b9648d648",
+      "sha256": "392756d424f6150bc79698d6ac0981b6aa82aad4f4e0036b9138620ea022e3c0"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R51x_R52x_CRC_L_lib_V1.0.0.LIB",
+      "size": 2225,
+      "sha": "40df364428b23d4f15890cb5b00a318902b6a043",
+      "sha256": "0404172bc94fb93df0aa75705ecd281b297b485c6b8f8361fbb4d4663aa41b63"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R51x_R52x_CRC_S_lib_V1.0.0.LIB",
+      "size": 2014,
+      "sha": "6a2e579d19658a7d065857952026b8e08e0bcb6b",
+      "sha256": "b7a9303fc33f9ace61a8faec2ac4b19e48fa2b7a3037ccea48cd835e31c30112"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R51x_R52x_IAP_L_lib_V1.1.3.LIB",
+      "size": 4960,
+      "sha": "c72ebffd5aa5aa7d344281ed3f06c83129f012ca",
+      "sha256": "6a4c5d3c53d926566e70a634a36bf866dd43d2a65665df49a9c0982d101a00e7"
+    },
+    {
+      "path": "TL2_T12/Keil_C/FWLib/SC92F_Lib/src/SC92R51x_R52x_IAP_S_lib_V1.1.3.LIB",
+      "size": 4853,
+      "sha": "8d40c777cdbe12666549b001fe05ac84493b04b3",
+      "sha256": "6889b305b51b14884978d5ec236d25324d3f9ca1bceecf9ff7272e2ce5a83aa1"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_adc.c",
+      "size": 20434,
+      "sha": "01dec27db13c52d2ae3642ed9b7d018d23c9495d",
+      "sha256": "e48fa9d213a29384f961a8ebaf6bb2a2275e18c78ca894c050acaab7f650ca82"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_adc.h",
+      "size": 795,
+      "sha": "a449c44a280927123058f9a3800807684a46d93e",
+      "sha256": "16b61b30e834651c39def664a4d592fab43e46664d17c193eab64587f3cadc8b"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_buzzer.c",
+      "size": 2686,
+      "sha": "3d21a6ab8a56da29affd2d30e6d8f81077d33464",
+      "sha256": "d6182e21a67ff2547fdc632164221ed7e2b5d1b6e3e1248ffed21578f5ec3a65"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_buzzer.h",
+      "size": 583,
+      "sha": "1c4a1b4928e22c0596fc630872f667567778651c",
+      "sha256": "4c26045d761d346b72484d6d0dc7383e4fac9506c38940e3fece97e40232d3ea"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_eeprom.c",
+      "size": 3856,
+      "sha": "f4c5331f334f080b33be8217fde392271a6b56d7",
+      "sha256": "440014f6ea7308724959475b630aeb3b0794da6af0fd08f40ec33432e655ffd3"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_eeprom.h",
+      "size": 406,
+      "sha": "9e1c382ade181cae1e9f989c78105a2f167a2966",
+      "sha256": "6a787c5d31d1a144c3c1f555f1e03bb8abffb952875a9e861a8c6a8a2f2b8965"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_ir.c",
+      "size": 1276,
+      "sha": "39feb15841c237de726e67941cc3e35101d43ccd",
+      "sha256": "08ffa54b774c67e539b4873f2acffe019d9fac170db3d358b0181583ff2759b8"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_ir.h",
+      "size": 369,
+      "sha": "d577ca09c95da030cbb725222336c113f15ff706",
+      "sha256": "22513c3d900e95a8a0f5397a09e08dfcf8e8d0c23d9732ed520562438352b4de"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_lpd.c",
+      "size": 496,
+      "sha": "b46400162bd7291d9ed6dbc47c9205a59533e90d",
+      "sha256": "5ab59abfbf299280db9eb3331be0dcdfddd3a38f9645b2f450fd97a7b0b588bd"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_lpd.h",
+      "size": 626,
+      "sha": "ded4ecb969e830251b199f0710e3f0296a7a83f9",
+      "sha256": "7331c4b9d2790b9b26f2d39034dfc9c43b3017cb79b090ca64841355a6e600ff"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_power.c",
+      "size": 5313,
+      "sha": "273bf2faa5545ae718de2817000627388dde34fc",
+      "sha256": "edfec4208d28a6a0f600fb3ae9695595da600afa5e351514118d0746ed81adf1"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_power.h",
+      "size": 655,
+      "sha": "74dae2e9a607162584b3dda4b4211b411e5e7fc1",
+      "sha256": "68826323c82aef26563598a038315b3c79f40bf30036897def065277a130e174"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_pwm.c",
+      "size": 2109,
+      "sha": "6ef74d3e4f39b1d85cd87bbc2b74d97c031cfd02",
+      "sha256": "7bac87a7f86dbf55f06fc3f870c7b5e171bfb2264926711541417381f402e6fe"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_pwm.h",
+      "size": 526,
+      "sha": "43a025963f59b3b5da0c692de9e82b92ed0bc278",
+      "sha256": "af07f87b98e36a3054d3094171bf4aba7c7c5f0236607c0f9b4237b0dee1603a"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_tm1650.c",
+      "size": 7977,
+      "sha": "59762b647a71533f74815a599b82cc572514e0fc",
+      "sha256": "60db59e4a97fbac94d4ce4e864db719a06cabd2f14fdd912ec711ca9bb2ded0a"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_tm1650.h",
+      "size": 1633,
+      "sha": "19e81dd2a162fab6bd82d061c5f38482371381ad",
+      "sha256": "5dda86b1452174a85001bfe4d098c1ed06fc262a96fd6b6e20eda7b10047a5f5"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_touch.c",
+      "size": 6331,
+      "sha": "2c6e22b4305afcccba909f17742cce611c40b47e",
+      "sha256": "6cdec2ccebe371c1c298faf6e4d94e236a2cb382e29255310ee6e1e718e0610f"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_touch.h",
+      "size": 451,
+      "sha": "6f739d72b82c14eb8fd64e76faf945e17c869a01",
+      "sha256": "0be5f9f0dc17925c98c43535f713865396be5d4053fba7ba8ae681fa1454dd78"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_uart.c",
+      "size": 4037,
+      "sha": "bb949403ad1ed18f634a25298940d05605b7307d",
+      "sha256": "d05d401ca79ee6dff6c7f23fddd4006ef0627f5576f6cb9a2bdffc7e289f46b4"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Hardware/hal_uart.h",
+      "size": 469,
+      "sha": "ebae970a821ad43106614f75d4a5e95dd42950dd",
+      "sha256": "043aeb10f0da9b3c16850c3f588274045cc911234a36a24148cc5d4d26e5a20f"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Project/1.c",
+      "size": 51655,
+      "sha": "a43df43f2f4cd3c26c6f5673cbcf11f44bc8a4b6",
+      "sha256": "eecff5d1dc4d688f9bf8e6fad8c725e6503c8f115c68e2f319e297bafe895629"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Project/STARTUP.A51",
+      "size": 6380,
+      "sha": "26457c2813fb2de13ec3cc442bc24e041e90661b",
+      "sha256": "de97a75a7ec618c00200422026a7c10469654d4d3a78229d4fff21573d83308d"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Project/TL2_6.uvproj",
+      "size": 39257,
+      "sha": "a9d2b0591715aadca5a494b8f4d803e1e3ba327f",
+      "sha256": "42cad3d470adb5a288d78cf4fccbab4e3b49f6b31ddc0d11d8615a193f6ad160"
+    },
+    {
+      "path": "TL2_T12/Keil_C/PWR/app_wifi.c",
+      "size": 39795,
+      "sha": "a82d4a60b803f3b7f3be67af521f20f3c7f713a8",
+      "sha256": "c12cc88c9992ee862afa09bdec838a1dc84183a5bed1cc7ffa32fc34d2868f84"
+    },
+    {
+      "path": "TL2_T12/Keil_C/PWR/app_wifi.h",
+      "size": 1014,
+      "sha": "c030d78697a5239c9d4f6ca109fce99a0cfafa92",
+      "sha256": "bb64e68a9e701be732863a7c7c6e5161fc32413155e6169f28a29d863f354602"
+    },
+    {
+      "path": "TL2_T12/Keil_C/PWR/hal_power.c",
+      "size": 7427,
+      "sha": "5119d9fe4e79971e1bbc8021e668bd14b95d0d95",
+      "sha256": "999e0b7cebd866ebb81012c8a610bad91a5cc4086bb6d8f9b7fc25515eab64f8"
+    },
+    {
+      "path": "TL2_T12/Keil_C/PWR/hal_power.h",
+      "size": 2137,
+      "sha": "33c0a8c0933e2fa7f7139545137eeb51f174d59f",
+      "sha256": "6bfa173e6f5bf7cd14e61ed462d8753d02de70ba988b3ce2097554d15e4aa3c7"
+    },
+    {
+      "path": "TL2_T12/Keil_C/PWR/sc89601.c",
+      "size": 56032,
+      "sha": "b6a36892e5327e925591e2a59549a3f3e38e49d3",
+      "sha256": "8216d48f23f6d4bafc1d2ae58530dbecdc1dda936168f0e0ad5eebe5947f396b"
+    },
+    {
+      "path": "TL2_T12/Keil_C/PWR/sc89601.h",
+      "size": 18017,
+      "sha": "248c3ddc5159b4ddb1a026cfd1ee38a104f7e7ea",
+      "sha256": "1fc1d9ab88ed53705a72b7d9e19c6bb600d863d1a69c1b26e35597ab8c691249"
+    },
+    {
+      "path": "TL2_T12/Keil_C/PWR/sc92l7533_min.h",
+      "size": 453,
+      "sha": "8c045a455f4feb478f779c76fc3c33d37caf94a5",
+      "sha256": "c39614f1c5be491bc83b6158cd36671cf3ac4ee44be16270e3bdcf07a69d68fa"
+    },
+    {
+      "path": "TL2_T12/Keil_C/User/CallBackFunction.c",
+      "size": 2010,
+      "sha": "d2bc8b61fd62c0d0821e24727da99e14536f4066",
+      "sha256": "fb615ac0acb7f9a150a7f3a909aedc62a559eb5e5d4d63c93dea7628298d31e9"
+    },
+    {
+      "path": "TL2_T12/Keil_C/User/CompCtrlDefine.c",
+      "size": 582,
+      "sha": "643653ffbb5b92988823dbfadfb70df4f3d7a924",
+      "sha256": "7b73032855eb0d0570be98a0a339bd135937fcf2d7e81e1734d17e82dfb4ffcd"
+    },
+    {
+      "path": "TL2_T12/Keil_C/User/HeadFiles/CompCtrlDefine.h",
+      "size": 451,
+      "sha": "7ea7b3abd6ec6a2a6e8a13cd1271c17d0c947928",
+      "sha256": "a0bf2b153863a9982bca0c3bee1f7ee691f32fb0160453319bbbce3b3b2c5088"
+    },
+    {
+      "path": "TL2_T12/Keil_C/User/HeadFiles/CustomType.h",
+      "size": 392,
+      "sha": "779ae094fe6dd50ff5447c264d292ba56058b0b5",
+      "sha256": "16ab5969e130fb64fa03e347aa5de1d1cbda51a501039e4e91d07090df04f39c"
+    },
+    {
+      "path": "TL2_T12/Keil_C/User/HeadFiles/FunctionType.h",
+      "size": 690,
+      "sha": "ae82145b3494c6edb8d6145222b386b0006c6ee0",
+      "sha256": "8ae2e8a506cbe511d0c7847f583fee0207f485523200addf61bfa82e26fb79c5"
+    },
+    {
+      "path": "TL2_T12/Keil_C/User/HeadFiles/SC_itExtern.h",
+      "size": 728,
+      "sha": "cc125a2bb51e6372332862f3ef7689832fed7316",
+      "sha256": "cef91c2c2023e20100c71391a7b2858ab4b4bfed3abaf46e21e05b24cb8a2558"
+    },
+    {
+      "path": "TL2_T12/Keil_C/User/HeadFiles/SysFunVarDefine.h",
+      "size": 856,
+      "sha": "6274e221087ca6beaff373aabf5efaecb3e71af1",
+      "sha256": "8bb057dbcb89c958052d60f333639aace2a4cf658d9a0272d9d9959c6972c18f"
+    },
+    {
+      "path": "TL2_T12/Keil_C/User/HeadFiles/UserExport.h",
+      "size": 613,
+      "sha": "47c7225fcd03fa9f2f77f718338073e551e8f5ed",
+      "sha256": "112b67bee759dec04e93d45ac097095383e94e8fce2b4f9e38d3575116d4bb41"
+    },
+    {
+      "path": "TL2_T12/Keil_C/User/inc/app_fsm.h",
+      "size": 3786,
+      "sha": "bde481ae09e02884be1cb3b85f4c2beff15c3d29",
+      "sha256": "ba7f1d3fd1b47a0a843cdcc6fb54b1f82e1f0cef2007d82a16ca9a90414ee1fc"
+    },
+    {
+      "path": "TL2_T12/Keil_C/User/main.c",
+      "size": 25797,
+      "sha": "af1fd1799ba4924ff8cc14234b8d35ad6e5861fa",
+      "sha256": "8c46bda83d83b9d66590387540da47084a915e702d686f7ae3f249e928c18ade"
+    },
+    {
+      "path": "TL2_T12/Keil_C/User/SC_Init.c",
+      "size": 11227,
+      "sha": "ce041f5f4fc2ccf4a9b17e53c19e1806798f69c5",
+      "sha256": "72cb6ccc9d8196a4d8534fc9918a48f6201b3ee1007c2803b8bc2d52b49cb44b"
+    },
+    {
+      "path": "TL2_T12/Keil_C/User/SC_Init.h",
+      "size": 2133,
+      "sha": "d03a5a30d6e83a25d5e666d4d86f1633a9a7526f",
+      "sha256": "540c690b3c7b475a1e3b66a69811b8626dd49649d81adcfdcffd721fdaf7a769"
+    },
+    {
+      "path": "TL2_T12/Keil_C/User/SC_it.c",
+      "size": 8123,
+      "sha": "d8f985739f784a792a6d3e6cb4c572398a955ab7",
+      "sha256": "e98bbd197e3542a2b08b06e11eb4cc5fae478ff2a5a26024b73f39ab33192098"
+    },
+    {
+      "path": "TL2_T12/Keil_C/User/SC_it.h",
+      "size": 1255,
+      "sha": "c50dc488332ef85a978e537a30e4b46350df0f78",
+      "sha256": "1dcc5c31072e5e1e5c5ef07166611b890722da50be78316864a50568e1ca821c"
+    },
+    {
+      "path": "TL2_T12/Keil_C/User/src/app_fsm.c",
+      "size": 33346,
+      "sha": "571d142df7647388fbb8a5f85c6b85fb6cc121bb",
+      "sha256": "d9af1ba30ccec02cf40fba27fff6b0ee03d460efff9476a119606dd60fe2c3b8"
+    },
+    {
+      "path": "TL2_T12/Keil_C/User/SysFunVarDefine.c",
+      "size": 616,
+      "sha": "3f6755a80c1d41991065d57a2c76f8932a4442a3",
+      "sha256": "f2a914144fd66e7f2da70a43191a1e4173b738d940cfd6ea1b7e093a637230a5"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Wifi/mcu_sdk/mcu_api.c",
+      "size": 47392,
+      "sha": "4a2b2ac483c8504023af6dd9f5006883c392bde7",
+      "sha256": "28d08ccc4a0889fdd569efe28e1efc49d945bfd5acf24ff4bcae70345ee219a4"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Wifi/mcu_sdk/mcu_api.h",
+      "size": 15898,
+      "sha": "3209f61b6a4be5e9dd1c469b2100c47d850dfd11",
+      "sha256": "895a06e93b9a4d89cdc049dd7455e56dd58d533050f7c9948e79d42de25046ec"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Wifi/mcu_sdk/offline_voice_word_zh_cn.h",
+      "size": 12321,
+      "sha": "16b9671d5de160a09b54dc8da7c4c8e823a07dbf",
+      "sha256": "2016965887b5026d8bbf946649f3a99fea042145726240dabfe9be9d990599c6"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Wifi/mcu_sdk/protocol.c",
+      "size": 94492,
+      "sha": "2425b2b2eb6ffe0410de55b600135a65b68fd726",
+      "sha256": "da4d511a6e25a224ec60c6ccad7e2f3ba98f98326da259cffb2d9a21d8e28f1d"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Wifi/mcu_sdk/protocol.h",
+      "size": 37590,
+      "sha": "3239ff6c307f8d6a0eec4731892a642cb09dbdc9",
+      "sha256": "83300bd3fcec5c2f11596f2c022da83d0f966e6e3ffeeaf4a24d3697081f8774"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Wifi/mcu_sdk/readme.txt",
+      "size": 1906,
+      "sha": "68785293d1cb2113f03f14c3278b0a3ea61889de",
+      "sha256": "753340ae1a8690c1dc79011261cf351691252e7e8e287b06d85ffe022b327abc"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Wifi/mcu_sdk/system.c",
+      "size": 28539,
+      "sha": "8fdc43e0d3049f14f88365c09aada4b8b2435402",
+      "sha256": "3c80e4bbb64d9e7e36de54b9fb0b374f5b34a457b57ea3f6db12f618298d7996"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Wifi/mcu_sdk/system.h",
+      "size": 13624,
+      "sha": "68579b6439708c37213eb9653ac44eee7ab3d81a",
+      "sha256": "6e2295d2816582ca05b10f7f6328b9f59ec4c4fdab1b756bc97139d9ca9a269d"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Wifi/mcu_sdk/tuya_type.h",
+      "size": 2812,
+      "sha": "77541f61c4264400c6f9b5660f7914b08a32af18",
+      "sha256": "b0e2724cfa808adeceafc252cd2e775de6599a6a964982df7bd02f1b5d29f431"
+    },
+    {
+      "path": "TL2_T12/Keil_C/Wifi/mcu_sdk/wifi.h",
+      "size": 7924,
+      "sha": "a4751fecd54972ede32f12bdaf6fb5d6e830c959",
+      "sha256": "32aaadfa6d850774afc98650307a34f68f0882d6f5949b235e70c594c1b49ea5"
+    },
+    {
+      "path": "TL2_T12/RD02 TL2软件履历表REV.01.xlsx",
+      "size": 35541,
+      "sha": "919fac6ad92289ec7717f30105d16a793ef6ab68",
+      "sha256": "825204c20be02a1dfc212522518daa687ba189faaffabbac4eff61b86b5d73b2"
+    },
+    {
+      "path": "TL2_T12/TL2_6.cgenx",
+      "size": 4155,
+      "sha": "f9fd17380779b1ddf629cd54fcf3add2b7f1f12a",
+      "sha256": "3c8ac31cc5d77842c2e6aa3fbb88a0592485c7034e5e02a9d0e1a9e961f235bc"
+    }
+  ],
+  "source_mirrors": [
     {
       "path": "User/main.c",
-      "source_name": "2026-10-09 user code message",
-      "source_kind": "conversation_transcription",
-      "transform": "preserve historical header; transcribe supplied code body; retain commented HAL_LPD_Init call; normalize final newline",
-      "sha256": "8598132c9795edd4c5977fbceb98a371340e0acef743a13ca3c7eeba8ed0e492",
-      "confirmed_date": "2026-10-09",
-      "compared_to_commit": "e3b0968dc7acf1077aafe83b09304233792f6635",
-      "behavior_change": "main no longer explicitly calls HAL_LPD_Init; other active code unchanged",
-      "original_source": {
-        "path": "User/main.c",
-        "source_name": "粘贴的文本 (1).txt",
-        "source_kind": "uploaded_file",
-        "transform": "none",
-        "sha256": "8c9e07b0ffd7d468e0c356669a65fff15636234017525164084a02a03b5508d4",
-        "source_sha256": "8c9e07b0ffd7d468e0c356669a65fff15636234017525164084a02a03b5508d4"
-      }
+      "source": "TL2_T12/Keil_C/User/main.c",
+      "sha": "af1fd1799ba4924ff8cc14234b8d35ad6e5861fa",
+      "sha256": "8c46bda83d83b9d66590387540da47084a915e702d686f7ae3f249e928c18ade",
+      "previous_sha256": "8598132c9795edd4c5977fbceb98a371340e0acef743a13ca3c7eeba8ed0e492",
+      "changed_bytes": true
     },
     {
       "path": "User/SC_Init.c",
-      "source_name": "粘贴的文本 (2).txt",
-      "source_kind": "uploaded_file",
-      "transform": "none",
-      "sha256": "caa64a3bd418a7c2e25a2d5e0c0e0338153547cabb68436059f99fbb23c05564",
-      "source_sha256": "caa64a3bd418a7c2e25a2d5e0c0e0338153547cabb68436059f99fbb23c05564"
+      "source": "TL2_T12/Keil_C/User/SC_Init.c",
+      "sha": "ce041f5f4fc2ccf4a9b17e53c19e1806798f69c5",
+      "sha256": "72cb6ccc9d8196a4d8534fc9918a48f6201b3ee1007c2803b8bc2d52b49cb44b",
+      "previous_sha256": "caa64a3bd418a7c2e25a2d5e0c0e0338153547cabb68436059f99fbb23c05564",
+      "changed_bytes": true
     },
     {
       "path": "App/app_fsm.c",
-      "source_name": "粘贴的文本 (3).txt",
-      "source_kind": "uploaded_file",
-      "transform": "none",
-      "sha256": "ec0fa58a7d71b87b3ce19b4eca43faceca92f20433c7f2c39e30d0710af59f3e",
-      "source_sha256": "ec0fa58a7d71b87b3ce19b4eca43faceca92f20433c7f2c39e30d0710af59f3e"
+      "source": "TL2_T12/Keil_C/User/src/app_fsm.c",
+      "sha": "571d142df7647388fbb8a5f85c6b85fb6cc121bb",
+      "sha256": "d9af1ba30ccec02cf40fba27fff6b0ee03d460efff9476a119606dd60fe2c3b8",
+      "previous_sha256": "ec0fa58a7d71b87b3ce19b4eca43faceca92f20433c7f2c39e30d0710af59f3e",
+      "changed_bytes": true
     },
     {
       "path": "HAL/hal_adc.c",
-      "source_name": "粘贴的文本 (4).txt",
-      "source_kind": "uploaded_file",
-      "transform": "none",
-      "sha256": "4a8a41b62a7e5d3014cd40b807d8f9c426e07285c2c2372961432448cbe9c440",
-      "source_sha256": "4a8a41b62a7e5d3014cd40b807d8f9c426e07285c2c2372961432448cbe9c440"
+      "source": "TL2_T12/Keil_C/Hardware/hal_adc.c",
+      "sha": "01dec27db13c52d2ae3642ed9b7d018d23c9495d",
+      "sha256": "e48fa9d213a29384f961a8ebaf6bb2a2275e18c78ca894c050acaab7f650ca82",
+      "previous_sha256": "4a8a41b62a7e5d3014cd40b807d8f9c426e07285c2c2372961432448cbe9c440",
+      "changed_bytes": true
     },
     {
       "path": "TuyaMCUSDK/mcu_api.c",
-      "source_name": "粘贴的文本 (5).txt",
-      "source_kind": "uploaded_file",
-      "transform": "none",
+      "source": "TL2_T12/Keil_C/Wifi/mcu_sdk/mcu_api.c",
+      "sha": "4a2b2ac483c8504023af6dd9f5006883c392bde7",
       "sha256": "28d08ccc4a0889fdd569efe28e1efc49d945bfd5acf24ff4bcae70345ee219a4",
-      "source_sha256": "28d08ccc4a0889fdd569efe28e1efc49d945bfd5acf24ff4bcae70345ee219a4"
+      "previous_sha256": "28d08ccc4a0889fdd569efe28e1efc49d945bfd5acf24ff4bcae70345ee219a4",
+      "changed_bytes": false
     },
     {
       "path": "TuyaMCUSDK/mcu_api.h",
-      "source_name": "粘贴的文本 (6).txt",
-      "source_kind": "uploaded_file",
-      "transform": "none",
+      "source": "TL2_T12/Keil_C/Wifi/mcu_sdk/mcu_api.h",
+      "sha": "3209f61b6a4be5e9dd1c469b2100c47d850dfd11",
       "sha256": "895a06e93b9a4d89cdc049dd7455e56dd58d533050f7c9948e79d42de25046ec",
-      "source_sha256": "895a06e93b9a4d89cdc049dd7455e56dd58d533050f7c9948e79d42de25046ec"
+      "previous_sha256": "895a06e93b9a4d89cdc049dd7455e56dd58d533050f7c9948e79d42de25046ec",
+      "changed_bytes": false
     },
     {
       "path": "TuyaMCUSDK/protocol.c",
-      "source_name": "粘贴的文本 (7).txt",
-      "source_kind": "uploaded_file",
-      "transform": "none",
+      "source": "TL2_T12/Keil_C/Wifi/mcu_sdk/protocol.c",
+      "sha": "2425b2b2eb6ffe0410de55b600135a65b68fd726",
       "sha256": "da4d511a6e25a224ec60c6ccad7e2f3ba98f98326da259cffb2d9a21d8e28f1d",
-      "source_sha256": "da4d511a6e25a224ec60c6ccad7e2f3ba98f98326da259cffb2d9a21d8e28f1d"
+      "previous_sha256": "da4d511a6e25a224ec60c6ccad7e2f3ba98f98326da259cffb2d9a21d8e28f1d",
+      "changed_bytes": false
     },
     {
       "path": "TuyaMCUSDK/protocol.h",
-      "source_name": "粘贴的文本 (8).txt",
-      "source_kind": "uploaded_file",
-      "transform": "none",
+      "source": "TL2_T12/Keil_C/Wifi/mcu_sdk/protocol.h",
+      "sha": "3239ff6c307f8d6a0eec4731892a642cb09dbdc9",
       "sha256": "83300bd3fcec5c2f11596f2c022da83d0f966e6e3ffeeaf4a24d3697081f8774",
-      "source_sha256": "83300bd3fcec5c2f11596f2c022da83d0f966e6e3ffeeaf4a24d3697081f8774"
+      "previous_sha256": "83300bd3fcec5c2f11596f2c022da83d0f966e6e3ffeeaf4a24d3697081f8774",
+      "changed_bytes": false
     },
     {
       "path": "TuyaMCUSDK/system.c",
-      "source_name": "粘贴的文本 (9).txt",
-      "source_kind": "uploaded_file",
-      "transform": "none",
+      "source": "TL2_T12/Keil_C/Wifi/mcu_sdk/system.c",
+      "sha": "8fdc43e0d3049f14f88365c09aada4b8b2435402",
       "sha256": "3c80e4bbb64d9e7e36de54b9fb0b374f5b34a457b57ea3f6db12f618298d7996",
-      "source_sha256": "3c80e4bbb64d9e7e36de54b9fb0b374f5b34a457b57ea3f6db12f618298d7996"
+      "previous_sha256": "3c80e4bbb64d9e7e36de54b9fb0b374f5b34a457b57ea3f6db12f618298d7996",
+      "changed_bytes": false
     },
     {
       "path": "Drivers/SC89601/sc89601.c",
-      "source_name": "粘贴的文本 (10).txt",
-      "source_kind": "uploaded_file",
-      "transform": "none",
-      "sha256": "6080fef75b5ba49673a914d26afb68a56e2df6ff5cefc04067c85608a597e1b9",
-      "source_sha256": "6080fef75b5ba49673a914d26afb68a56e2df6ff5cefc04067c85608a597e1b9"
+      "source": "TL2_T12/Keil_C/PWR/sc89601.c",
+      "sha": "b6a36892e5327e925591e2a59549a3f3e38e49d3",
+      "sha256": "8216d48f23f6d4bafc1d2ae58530dbecdc1dda936168f0e0ad5eebe5947f396b",
+      "previous_sha256": "6080fef75b5ba49673a914d26afb68a56e2df6ff5cefc04067c85608a597e1b9",
+      "changed_bytes": true
     },
     {
       "path": "App/app_wifi.c",
-      "source_name": "粘贴的文本 (11).txt",
-      "source_kind": "uploaded_file",
-      "transform": "none",
-      "sha256": "674e0ec9ad51f5564cbe865a076b061141b020f7beaa975458c0c8821a6e9ee5",
-      "source_sha256": "674e0ec9ad51f5564cbe865a076b061141b020f7beaa975458c0c8821a6e9ee5"
+      "source": "TL2_T12/Keil_C/PWR/app_wifi.c",
+      "sha": "a82d4a60b803f3b7f3be67af521f20f3c7f713a8",
+      "sha256": "c12cc88c9992ee862afa09bdec838a1dc84183a5bed1cc7ffa32fc34d2868f84",
+      "previous_sha256": "674e0ec9ad51f5564cbe865a076b061141b020f7beaa975458c0c8821a6e9ee5",
+      "changed_bytes": true
     },
     {
       "path": "TuyaMCUSDK/system.h",
-      "source_name": "粘贴的文本 (1)(1).txt",
-      "source_kind": "uploaded_file",
-      "transform": "none",
+      "source": "TL2_T12/Keil_C/Wifi/mcu_sdk/system.h",
+      "sha": "68579b6439708c37213eb9653ac44eee7ab3d81a",
       "sha256": "6e2295d2816582ca05b10f7f6328b9f59ec4c4fdab1b756bc97139d9ca9a269d",
-      "source_sha256": "6e2295d2816582ca05b10f7f6328b9f59ec4c4fdab1b756bc97139d9ca9a269d"
+      "previous_sha256": "6e2295d2816582ca05b10f7f6328b9f59ec4c4fdab1b756bc97139d9ca9a269d",
+      "changed_bytes": false
     },
     {
       "path": "TuyaMCUSDK/wifi.h",
-      "source_name": "wifi.h",
-      "source_kind": "saved_header",
-      "transform": "none",
-      "sha256": "9db185d0a92098560313e059ff8399a7de4cb63243708375c35cb4415d900812",
-      "source_sha256": "9db185d0a92098560313e059ff8399a7de4cb63243708375c35cb4415d900812"
+      "source": "TL2_T12/Keil_C/Wifi/mcu_sdk/wifi.h",
+      "sha": "a4751fecd54972ede32f12bdaf6fb5d6e830c959",
+      "sha256": "32aaadfa6d850774afc98650307a34f68f0882d6f5949b235e70c594c1b49ea5",
+      "previous_sha256": "9db185d0a92098560313e059ff8399a7de4cb63243708375c35cb4415d900812",
+      "changed_bytes": true
     },
     {
       "path": "Drivers/SC89601/sc89601.h",
-      "source_name": "sc89601.h",
-      "source_kind": "saved_header",
-      "transform": "none",
-      "sha256": "7d9394213c587ae1c978211208e458f25efe726512c16dea7dd7c5b47e963734",
-      "source_sha256": "7d9394213c587ae1c978211208e458f25efe726512c16dea7dd7c5b47e963734"
+      "source": "TL2_T12/Keil_C/PWR/sc89601.h",
+      "sha": "248c3ddc5159b4ddb1a026cfd1ee38a104f7e7ea",
+      "sha256": "1fc1d9ab88ed53705a72b7d9e19c6bb600d863d1a69c1b26e35597ab8c691249",
+      "previous_sha256": "7d9394213c587ae1c978211208e458f25efe726512c16dea7dd7c5b47e963734",
+      "changed_bytes": true
     },
     {
       "path": "HAL/hal_power.c",
-      "source_name": "2026-10-09 user code message",
-      "source_kind": "conversation_transcription",
-      "transform": "transcribe supplied source; preserve code behavior; retain supplied whitespace and comment formatting",
-      "sha256": "00736e814e14555ad72bc0c953b1195315696cb7210d1883491814a7dace11a9",
-      "confirmed_date": "2026-10-09",
-      "compared_to_commit": "e3b0968dc7acf1077aafe83b09304233792f6635",
-      "behavior_change": "none; active code matches baseline",
-      "original_source": {
-        "path": "HAL/hal_power.c",
-        "source_name": "粘贴的 Markdown (1).md",
-        "source_kind": "markdown_upload",
-        "transform": "decode Markdown escapes and HTML whitespace; split concatenated source units; normalize line endings",
-        "sha256": "db9b7f837f67903d24b584b8867bd565bcf6243eef2645cdc726b91dff499bd2",
-        "source_sha256": "8487beabfa61d804e559f9b85ea0808fc686d5f5be1e7ec353fe8b658fcca16a"
-      }
+      "source": "TL2_T12/Keil_C/PWR/hal_power.c",
+      "sha": "5119d9fe4e79971e1bbc8021e668bd14b95d0d95",
+      "sha256": "999e0b7cebd866ebb81012c8a610bad91a5cc4086bb6d8f9b7fc25515eab64f8",
+      "previous_sha256": "00736e814e14555ad72bc0c953b1195315696cb7210d1883491814a7dace11a9",
+      "changed_bytes": true
     },
     {
       "path": "HAL/hal_lpd.c",
-      "source_name": "粘贴的 Markdown (1).md",
-      "source_kind": "markdown_upload",
-      "transform": "decode Markdown escapes and HTML whitespace; split concatenated source units; normalize line endings",
-      "sha256": "1633c27e59c968bc712cb943b55a903f7155e81367f370c5f901d00fc3e0d16d",
-      "source_sha256": "8487beabfa61d804e559f9b85ea0808fc686d5f5be1e7ec353fe8b658fcca16a"
+      "source": "TL2_T12/Keil_C/Hardware/hal_lpd.c",
+      "sha": "b46400162bd7291d9ed6dbc47c9205a59533e90d",
+      "sha256": "5ab59abfbf299280db9eb3331be0dcdfddd3a38f9645b2f450fd97a7b0b588bd",
+      "previous_sha256": "1633c27e59c968bc712cb943b55a903f7155e81367f370c5f901d00fc3e0d16d",
+      "changed_bytes": true
     },
     {
       "path": "HAL/hal_eeprom.c",
-      "source_name": "粘贴的 Markdown (1).md",
-      "source_kind": "markdown_upload",
-      "transform": "decode Markdown escapes and HTML whitespace; split concatenated source units; normalize line endings",
-      "sha256": "cce09757f2344e7402a2baa3140dd116c3869612e82274e3bb314f836c83a7c8",
-      "source_sha256": "8487beabfa61d804e559f9b85ea0808fc686d5f5be1e7ec353fe8b658fcca16a"
+      "source": "TL2_T12/Keil_C/Hardware/hal_eeprom.c",
+      "sha": "f4c5331f334f080b33be8217fde392271a6b56d7",
+      "sha256": "440014f6ea7308724959475b630aeb3b0794da6af0fd08f40ec33432e655ffd3",
+      "previous_sha256": "cce09757f2344e7402a2baa3140dd116c3869612e82274e3bb314f836c83a7c8",
+      "changed_bytes": true
     },
     {
       "path": "HAL/hal_uart.c",
-      "source_name": "粘贴的 Markdown (1).md",
-      "source_kind": "markdown_upload",
-      "transform": "decode Markdown escapes and HTML whitespace; split concatenated source units; normalize line endings",
-      "sha256": "cbaf6daa9daff6231cc5070edca6f0d992741033c0c9a2074225a76765f0db2c",
-      "source_sha256": "8487beabfa61d804e559f9b85ea0808fc686d5f5be1e7ec353fe8b658fcca16a"
+      "source": "TL2_T12/Keil_C/Hardware/hal_uart.c",
+      "sha": "bb949403ad1ed18f634a25298940d05605b7307d",
+      "sha256": "d05d401ca79ee6dff6c7f23fddd4006ef0627f5576f6cb9a2bdffc7e289f46b4",
+      "previous_sha256": "cbaf6daa9daff6231cc5070edca6f0d992741033c0c9a2074225a76765f0db2c",
+      "changed_bytes": true
     },
     {
       "path": "HAL/hal_touch.c",
-      "source_name": "粘贴的 Markdown (1).md",
-      "source_kind": "markdown_upload",
-      "transform": "decode Markdown escapes and HTML whitespace; split concatenated source units; normalize line endings",
-      "sha256": "b3b182b808d92d94f186ed115987f2182a9187ba0f40e55546ceb1993fef85bf",
-      "source_sha256": "8487beabfa61d804e559f9b85ea0808fc686d5f5be1e7ec353fe8b658fcca16a"
+      "source": "TL2_T12/Keil_C/Hardware/hal_touch.c",
+      "sha": "2c6e22b4305afcccba909f17742cce611c40b47e",
+      "sha256": "6cdec2ccebe371c1c298faf6e4d94e236a2cb382e29255310ee6e1e718e0610f",
+      "previous_sha256": "b3b182b808d92d94f186ed115987f2182a9187ba0f40e55546ceb1993fef85bf",
+      "changed_bytes": true
     },
     {
       "path": "HAL/hal_tm1650.c",
-      "source_name": "粘贴的 Markdown (1).md",
-      "source_kind": "markdown_upload",
-      "transform": "decode Markdown escapes and HTML whitespace; split concatenated source units; normalize line endings",
-      "sha256": "d92e88746ee142a9c271611394c8675d13f8e8b909a613ddfd51f20ffa86946d",
-      "source_sha256": "8487beabfa61d804e559f9b85ea0808fc686d5f5be1e7ec353fe8b658fcca16a"
+      "source": "TL2_T12/Keil_C/Hardware/hal_tm1650.c",
+      "sha": "59762b647a71533f74815a599b82cc572514e0fc",
+      "sha256": "60db59e4a97fbac94d4ce4e864db719a06cabd2f14fdd912ec711ca9bb2ded0a",
+      "previous_sha256": "d92e88746ee142a9c271611394c8675d13f8e8b909a613ddfd51f20ffa86946d",
+      "changed_bytes": true
     },
     {
       "path": "User/SC_it.c",
-      "source_name": "2026-10-09 user code message",
-      "source_kind": "conversation_transcription",
-      "transform": "transcribe supplied source; preserve code behavior; retain supplied whitespace and comment formatting",
-      "sha256": "c599d232db83a92eb16ba57f1b8c41e1eca9b1cdd4acb7ef9b9d817661abc14e",
-      "confirmed_date": "2026-10-09",
-      "compared_to_commit": "e3b0968dc7acf1077aafe83b09304233792f6635",
-      "behavior_change": "none; active code matches baseline",
-      "original_source": {
-        "path": "User/SC_it.c",
-        "source_name": "2026-09-30 user code message",
-        "source_kind": "conversation_transcription",
-        "transform": "split into source units; whitespace normalization during transcription; preserve code behavior",
-        "sha256": "a0aa03d287ed503d702cc06e133fc7e86a2b2f4ae1f08cb040755acc2bd95ec8",
-        "transcription_path": "archive/chat_transcription/SC_it.c"
-      }
+      "source": "TL2_T12/Keil_C/User/SC_it.c",
+      "sha": "d8f985739f784a792a6d3e6cb4c572398a955ab7",
+      "sha256": "e98bbd197e3542a2b08b06e11eb4cc5fae478ff2a5a26024b73f39ab33192098",
+      "previous_sha256": "c599d232db83a92eb16ba57f1b8c41e1eca9b1cdd4acb7ef9b9d817661abc14e",
+      "changed_bytes": true
     },
     {
       "path": "HAL/hal_buzzer.c",
-      "source_name": "2026-09-30 user code message",
-      "source_kind": "conversation_transcription",
-      "transform": "split into source units; whitespace normalization during transcription; preserve code behavior",
-      "sha256": "395ddafb7c722183cd139056f31aa00c2cc847d28925d2c55c3174e91c5423d1",
-      "transcription_path": "archive/chat_transcription/hal_buzzer.c"
+      "source": "TL2_T12/Keil_C/Hardware/hal_buzzer.c",
+      "sha": "3d21a6ab8a56da29affd2d30e6d8f81077d33464",
+      "sha256": "d6182e21a67ff2547fdc632164221ed7e2b5d1b6e3e1248ffed21578f5ec3a65",
+      "previous_sha256": "395ddafb7c722183cd139056f31aa00c2cc847d28925d2c55c3174e91c5423d1",
+      "changed_bytes": true
     },
     {
       "path": "HAL/hal_ir.c",
-      "source_name": "2026-09-30 user code message",
-      "source_kind": "conversation_transcription",
-      "transform": "split into source units; whitespace normalization during transcription; preserve code behavior",
-      "sha256": "3f76450a7f5a24939a00d2045f54d87c2f0143f06b6cb0420b164b9b2206efad",
-      "transcription_path": "archive/chat_transcription/hal_ir.c"
+      "source": "TL2_T12/Keil_C/Hardware/hal_ir.c",
+      "sha": "39feb15841c237de726e67941cc3e35101d43ccd",
+      "sha256": "08ffa54b774c67e539b4873f2acffe019d9fac170db3d358b0181583ff2759b8",
+      "previous_sha256": "3f76450a7f5a24939a00d2045f54d87c2f0143f06b6cb0420b164b9b2206efad",
+      "changed_bytes": true
     },
     {
       "path": "HAL/hal_pwm.c",
-      "source_name": "2026-09-30 user code message",
-      "source_kind": "conversation_transcription",
-      "transform": "split into source units; whitespace normalization during transcription; preserve code behavior",
-      "sha256": "4b20c6330b01fe148938837518c9cb05cb0b27220698785706d00ea659437122",
-      "transcription_path": "archive/chat_transcription/hal_pwm.c"
+      "source": "TL2_T12/Keil_C/Hardware/hal_pwm.c",
+      "sha": "6ef74d3e4f39b1d85cd87bbc2b74d97c031cfd02",
+      "sha256": "7bac87a7f86dbf55f06fc3f870c7b5e171bfb2264926711541417381f402e6fe",
+      "previous_sha256": "4b20c6330b01fe148938837518c9cb05cb0b27220698785706d00ea659437122",
+      "changed_bytes": true
     }
   ],
-  "latest_source_update_date": "2026-10-09"
+  "excluded_desktop_files": [
+    "CFG/SC92L7533/Keil_Mould/Project/project name.uvopt",
+    "CFG/SC92L7533/Keil_Mould/User/Tmp/main.bak",
+    "CFG/SC92L7533/Keil_Mould/User/Tmp/main.tmp",
+    "CFG/SC92L7533/Keil_Mould/User/Tmp/SC_it.bak",
+    "CFG/SC92L7533/Keil_Mould/User/Tmp/SC_it.tmp",
+    "CFG/SC92L7533/Keil_Mould/User/tmp.txt",
+    "Keil_C/List/1.lst",
+    "Keil_C/List/app_fsm.lst",
+    "Keil_C/List/app_wifi.lst",
+    "Keil_C/List/CallBackFunction.lst",
+    "Keil_C/List/CompCtrlDefine.lst",
+    "Keil_C/List/hal_adc.lst",
+    "Keil_C/List/hal_buzzer.lst",
+    "Keil_C/List/hal_eeprom.lst",
+    "Keil_C/List/hal_ir.lst",
+    "Keil_C/List/hal_lpd.lst",
+    "Keil_C/List/hal_power.lst",
+    "Keil_C/List/hal_pwm.lst",
+    "Keil_C/List/hal_tm1650.lst",
+    "Keil_C/List/hal_touch.lst",
+    "Keil_C/List/hal_uart.lst",
+    "Keil_C/List/main.lst",
+    "Keil_C/List/mcu_api.lst",
+    "Keil_C/List/protocol.lst",
+    "Keil_C/List/putchar.lst",
+    "Keil_C/List/sc89601.lst",
+    "Keil_C/List/sc92f_acmp.lst",
+    "Keil_C/List/sc92f_adc.lst",
+    "Keil_C/List/sc92f_btm.lst",
+    "Keil_C/List/sc92f_chksum.lst",
+    "Keil_C/List/sc92f_crc.lst",
+    "Keil_C/List/sc92f_ddic.lst",
+    "Keil_C/List/sc92f_gpio.lst",
+    "Keil_C/List/sc92f_iap.lst",
+    "Keil_C/List/sc92f_int.lst",
+    "Keil_C/List/sc92f_lpd.lst",
+    "Keil_C/List/sc92f_mdu.lst",
+    "Keil_C/List/sc92f_option.lst",
+    "Keil_C/List/sc92f_pwm.lst",
+    "Keil_C/List/sc92f_pwr.lst",
+    "Keil_C/List/sc92f_ssi.lst",
+    "Keil_C/List/sc92f_ssi0.lst",
+    "Keil_C/List/sc92f_ssi1.lst",
+    "Keil_C/List/sc92f_timer0.lst",
+    "Keil_C/List/sc92f_timer1.lst",
+    "Keil_C/List/sc92f_timer2.lst",
+    "Keil_C/List/sc92f_timer3.lst",
+    "Keil_C/List/sc92f_timer4.lst",
+    "Keil_C/List/sc92f_uart0.lst",
+    "Keil_C/List/sc92f_uart2.lst",
+    "Keil_C/List/sc92f_uart3.lst",
+    "Keil_C/List/sc92f_usci0.lst",
+    "Keil_C/List/sc92f_usci1.lst",
+    "Keil_C/List/sc92f_usci2.lst",
+    "Keil_C/List/sc92f_wdt.lst",
+    "Keil_C/List/sc92f_zoc.lst",
+    "Keil_C/List/SC_Init.lst",
+    "Keil_C/List/SC_it.lst",
+    "Keil_C/List/STARTUP.lst",
+    "Keil_C/List/SysFunVarDefine.lst",
+    "Keil_C/List/system.lst",
+    "Keil_C/List/TL2_6.map",
+    "Keil_C/Output/1.__i",
+    "Keil_C/Output/1.obj",
+    "Keil_C/Output/app_fsm.obj",
+    "Keil_C/Output/app_wifi.__i",
+    "Keil_C/Output/app_wifi.obj",
+    "Keil_C/Output/CallBackFunction.obj",
+    "Keil_C/Output/CompCtrlDefine.obj",
+    "Keil_C/Output/ExtDll.iex",
+    "Keil_C/Output/hal_adc.__i",
+    "Keil_C/Output/hal_adc.obj",
+    "Keil_C/Output/hal_buzzer.__i",
+    "Keil_C/Output/hal_buzzer.obj",
+    "Keil_C/Output/hal_eeprom.__i",
+    "Keil_C/Output/hal_eeprom.obj",
+    "Keil_C/Output/hal_ir.__i",
+    "Keil_C/Output/hal_ir.obj",
+    "Keil_C/Output/hal_lpd.__i",
+    "Keil_C/Output/hal_lpd.obj",
+    "Keil_C/Output/hal_power.__i",
+    "Keil_C/Output/hal_power.obj",
+    "Keil_C/Output/hal_pwm.__i",
+    "Keil_C/Output/hal_pwm.obj",
+    "Keil_C/Output/hal_tm1650.__i",
+    "Keil_C/Output/hal_tm1650.obj",
+    "Keil_C/Output/hal_touch.__i",
+    "Keil_C/Output/hal_touch.obj",
+    "Keil_C/Output/hal_uart.__i",
+    "Keil_C/Output/hal_uart.obj",
+    "Keil_C/Output/main.__i",
+    "Keil_C/Output/main.obj",
+    "Keil_C/Output/mcu_api.__i",
+    "Keil_C/Output/mcu_api.obj",
+    "Keil_C/Output/protocol.__i",
+    "Keil_C/Output/protocol.obj",
+    "Keil_C/Output/putchar.obj",
+    "Keil_C/Output/sc89601.__i",
+    "Keil_C/Output/sc89601.obj",
+    "Keil_C/Output/sc92f_acmp.obj",
+    "Keil_C/Output/sc92f_adc.obj",
+    "Keil_C/Output/sc92f_btm.obj",
+    "Keil_C/Output/sc92f_chksum.obj",
+    "Keil_C/Output/sc92f_crc.obj",
+    "Keil_C/Output/sc92f_ddic.obj",
+    "Keil_C/Output/sc92f_gpio.obj",
+    "Keil_C/Output/sc92f_iap.obj",
+    "Keil_C/Output/sc92f_int.obj",
+    "Keil_C/Output/sc92f_lpd.obj",
+    "Keil_C/Output/sc92f_mdu.obj",
+    "Keil_C/Output/sc92f_option.obj",
+    "Keil_C/Output/sc92f_pwm.obj",
+    "Keil_C/Output/sc92f_pwr.obj",
+    "Keil_C/Output/sc92f_ssi.obj",
+    "Keil_C/Output/sc92f_ssi0.obj",
+    "Keil_C/Output/sc92f_ssi1.obj",
+    "Keil_C/Output/sc92f_timer0.obj",
+    "Keil_C/Output/sc92f_timer1.obj",
+    "Keil_C/Output/sc92f_timer2.obj",
+    "Keil_C/Output/sc92f_timer3.obj",
+    "Keil_C/Output/sc92f_timer4.obj",
+    "Keil_C/Output/sc92f_uart0.obj",
+    "Keil_C/Output/sc92f_uart2.obj",
+    "Keil_C/Output/sc92f_uart3.obj",
+    "Keil_C/Output/sc92f_usci0.obj",
+    "Keil_C/Output/sc92f_usci1.obj",
+    "Keil_C/Output/sc92f_usci2.obj",
+    "Keil_C/Output/sc92f_wdt.obj",
+    "Keil_C/Output/sc92f_zoc.obj",
+    "Keil_C/Output/SC_Init.obj",
+    "Keil_C/Output/SC_it.obj",
+    "Keil_C/Output/Scatter.sct",
+    "Keil_C/Output/STARTUP._ia",
+    "Keil_C/Output/STARTUP.obj",
+    "Keil_C/Output/SysFunVarDefine.obj",
+    "Keil_C/Output/system.__i",
+    "Keil_C/Output/system.obj",
+    "Keil_C/Output/TL2_6.build_log.htm",
+    "Keil_C/Output/TL2_6.hex",
+    "Keil_C/Output/TL2_6.lnp",
+    "Keil_C/Output/TL2_6.map",
+    "Keil_C/Output/TL2_6.SBR",
+    "Keil_C/Output/TL2_6.txt",
+    "Keil_C/Project/Templst.soclst",
+    "Keil_C/Project/TL2_6.uvgui.EXCE-RD002",
+    "Keil_C/Project/TL2_6.uvgui.Lenovo",
+    "Keil_C/Project/TL2_6.uvopt",
+    "Keil_C/User/Tmp/main.bak",
+    "Keil_C/User/Tmp/main.tmp",
+    "Keil_C/User/Tmp/SC_it.bak",
+    "Keil_C/User/Tmp/SC_it.tmp",
+    "Keil_C/User/tmp.txt"
+  ]
 }
