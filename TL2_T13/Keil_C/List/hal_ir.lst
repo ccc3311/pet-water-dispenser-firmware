@@ -1,0 +1,78 @@
+C51 COMPILER V9.60.7.0   HAL_IR                                                            10/20/2026 16:39:30 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE HAL_IR
+OBJECT MODULE PLACED IN ..\Output\hal_ir.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\Hardware\hal_ir.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE INCDIR(..\FWLib\
+                    -SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753x) DEBUG PRINT(
+                    -..\List\hal_ir.lst) TABS(2) OBJECT(..\Output\hal_ir.obj)
+
+line level    source
+
+   1          #include "hal_ir.h"
+   2          #include "app_fsm.h"     // 用于操作 g_Device.ir_triggered 总线
+   3          #include <stdio.h>    
+   4          
+   5          // ==========================================
+   6          // 1. 引脚映射修改：适配图2的新硬件
+   7          // ==========================================
+   8          #define IR1_PIN  P06   // GY
+   9          
+  10          // 软件消抖计数器
+  11          static uint8_t ir_debounce_cnt = 0;
+  12          extern  volatile uint8_t g_ir_exti_flag;  // 引入外部标志位
+  13          /**
+  14           * @brief  红外模块初始化 (适配新硬件)
+  15           */
+  16          void HAL_IR_Init(void) {
+  17   1          // 之前在 SC_GPIO_Init() 里已经将 P0.1 配置为高阻输入了
+  18   1          ir_debounce_cnt = 0;
+  19   1      }
+  20          
+  21          /**
+  22           * @brief  红外信号扫描与消抖算法 (每 10ms 执行一次)
+  23           */
+  24          void HAL_IR_Scan(void) {
+  25   1          // 1. 读取红外探头的电平
+  26   1          if (IR1_PIN == 1) {
+  27   2              // 2. 累加消抖计数器
+  28   2              if (ir_debounce_cnt < 5) {
+  29   3                  ir_debounce_cnt++;
+  30   3              }
+  31   2              // 3. 【核心修复】：只要满足消抖阈值，就必须持续映射硬件的真实电平！
+  32   2              if (ir_debounce_cnt >= 3) {
+  33   3                  g_Device.ir_triggered = 1; // 向上层总线上报触发事件！
+  34   3              }
+  35   2          } else {
+  36   2              // 4. 一旦检测到低电平，立刻清零计数器
+  37   2              ir_debounce_cnt = 0;
+  38   2            g_ir_exti_flag = 0;
+  39   2              g_Device.ir_triggered = 0;
+  40   2          }
+  41   1        }
+  42          
+  43            /* 任意一路红外为高，表示存在原始感应信号 */
+  44          uint8_t HAL_IR_IsActive(void)
+  45          {
+  46   1          return IR1_PIN ? 1 : 0;
+  47   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     59    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      1    ----
+C51 COMPILER V9.60.7.0   HAL_IR                                                            10/20/2026 16:39:30 PAGE 2   
+
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,1249 @@
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SC89601
+OBJECT MODULE PLACED IN ..\Output\sc89601.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\PWR\sc89601.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE INCDIR(..\FWLib\SC92
+                    -F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753x) DEBUG PRINT(..\L
+                    -ist\sc89601.lst) TABS(2) OBJECT(..\Output\sc89601.obj)
+
+line level    source
+
+   1          #include "sc89601.h"
+   2          #include "SC_Init.h"
+   3          #include "sc89601.h"
+   4          #include <stdio.h>
+   5          #include "hal_uart.h"
+   6          
+   7          #if APP_CHARGE_DEBUG
+   8          volatile sc_u8 g_sc89601_debug_ready = 0u;
+   9          #endif
+  10          /*
+  11           * 用户指定连线：
+  12           *   SC92L7533 P1.6 -> SC89601 SCL
+  13           *   SC92L7533 P1.7 -> SC89601 SDA
+  14           *
+  15           * SC92L7533 端口只有“输入/强推挽输出”，没有独立开漏模式。
+  16           * I2C 低电平：数据锁存器写 0，再切为输出。
+  17           * I2C 高电平：切为高阻输入，由原理图上的 10k 上拉到 3.3V。
+  18           * 禁止把引脚配置为推挽输出高电平，否则可能与从机拉低发生冲突。
+  19           */
+  20          #define SC89601_SCL_MASK       0x40u
+  21          #define SC89601_SDA_MASK       0x80u
+  22          #define SC89601_I2C_MASK       0xC0u
+  23          #define SC89601_SCL_IO         P16
+  24          #define SC89601_SDA_IO         P17
+  25          #define SC89601_ADDR_WRITE     ((SC89601_I2C_ADDR_7BIT << 1) | 0u)
+  26          #define SC89601_ADDR_READ      ((SC89601_I2C_ADDR_7BIT << 1) | 1u)
+  27          /* SCL/SDA 的显示驱动输出位在 P1VO[4]/P1VO[5]。 */
+  28          #define SC89601_P1VO_MASK      0x30u
+  29          /* 软件 I2C 等待从机释放 SCL 的循环上限。 */
+  30          #define SC89601_SCL_WAIT_COUNT 1000u
+  31          /* 充电芯片看门狗的喂狗间隔，单位：秒。 */
+  32          #define SC89601_WDT_FEED_INTERVAL_S  10u
+  33          
+  34          static sc_u8 s_sc89601_wdt_enabled = 0u;
+  35          static sc_u8 s_sc89601_wdt_seconds = 0u;
+  36          
+  37          static void sc89601_i2c_delay(void)
+  38          {
+  39   1          volatile sc_u8 count;
+  40   1      
+  41   1          /*
+  42   1           * 兼容 4~32MHz 的保守软件延时，目标总线低于 100kHz。
+  43   1           * 该延时不要求精确，只要求满足 I2C 最小时序。
+  44   1           */
+  45   1          count = 60u;
+  46   1          while (count != 0u)
+  47   1          {
+  48   2              count--;
+  49   2          }
+  50   1      }
+  51          
+  52          void sc89601_delay_ms(sc_u16 ms)
+  53          {
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 2   
+
+  54   1          sc_u16 count;
+  55   1      
+  56   1          /* 仅用于上电等待和轮询节拍，不作为精确定时基准。 */
+  57   1          while (ms != 0u)
+  58   1          {
+  59   2              count = 100u;
+  60   2              while (count != 0u)
+  61   2              {
+  62   3                  sc89601_i2c_delay();
+  63   3                  count--;
+  64   3              }
+  65   2              ms--;
+  66   2          }
+  67   1      }
+  68          
+  69          static void sc89601_scl_drive_low(void)
+  70          {
+  71   1          SC89601_SCL_IO = 0;
+  72   1          P1CON |= SC89601_SCL_MASK;
+  73   1      }
+  74          
+  75          static void sc89601_scl_release(void)
+  76          {
+  77   1          P1CON &= (sc_u8)(~SC89601_SCL_MASK);
+  78   1      }
+  79          
+  80          static void sc89601_sda_drive_low(void)
+  81          {
+  82   1          SC89601_SDA_IO = 0;
+  83   1          P1CON |= SC89601_SDA_MASK;
+  84   1      }
+  85          
+  86          static void sc89601_sda_release(void)
+  87          {
+  88   1          P1CON &= (sc_u8)(~SC89601_SDA_MASK);
+  89   1      }
+  90          
+  91          static sc_u8 sc89601_scl_read(void)
+  92          {
+  93   1          return (SC89601_SCL_IO != 0) ? 1u : 0u;
+  94   1      }
+  95          
+  96          static sc_u8 sc89601_sda_read(void)
+  97          {
+  98   1          return (SC89601_SDA_IO != 0) ? 1u : 0u;
+  99   1      }
+ 100          
+ 101          static sc_u8 sc89601_wait_scl_high(void)
+ 102          {
+ 103   1          sc_u16 timeout;
+ 104   1      
+ 105   1          sc89601_scl_release();
+ 106   1          timeout = SC89601_SCL_WAIT_COUNT;
+ 107   1          while ((sc89601_scl_read() == 0u) && (timeout != 0u))
+ 108   1          {
+ 109   2              timeout--;
+ 110   2          }
+ 111   1      
+ 112   1          return (timeout == 0u) ? SC89601_ERR_SCL_TIMEOUT : SC89601_OK;
+ 113   1      }
+ 114          
+ 115          void sc89601_gpio_init(void)
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 3   
+
+ 116          {
+ 117   1          /* 关闭 P1.6/P1.7 的 ADC 输入功能，确保作为数字 GPIO 使用。 */
+ 118   1          ADCCFG0 &= (sc_u8)(~SC89601_I2C_MASK);
+ 119   1      
+ 120   1          /* 关闭这两个脚的显示驱动输出功能。 */
+ 121   1          P1VO &= (sc_u8)(~SC89601_P1VO_MASK);
+ 122   1      
+ 123   1          /* 不使用内部上拉，使用原理图上的外部 10k 上拉。 */
+ 124   1          P1PH &= (sc_u8)(~SC89601_I2C_MASK);
+ 125   1      
+ 126   1          /* 先把输出锁存值准备为 0，再释放为高阻输入。 */
+ 127   1          SC89601_SCL_IO = 0;
+ 128   1          SC89601_SDA_IO = 0;
+ 129   1          P1CON &= (sc_u8)(~SC89601_I2C_MASK);
+ 130   1      }
+ 131          
+ 132          sc_u8 sc89601_bus_recover(void)
+ 133          {
+ 134   1          sc_u8 index;
+ 135   1          sc_u8 result;
+ 136   1      
+ 137   1          sc89601_sda_release();
+ 138   1          sc89601_scl_release();
+ 139   1          sc89601_i2c_delay();
+ 140   1      
+ 141   1          /* SDA 被从机占住时发送 9 个 SCL，帮助从机退出未完成字节。 */
+ 142   1          for (index = 0u; index < 9u; index++)
+ 143   1          {
+ 144   2              sc89601_scl_drive_low();
+ 145   2              sc89601_i2c_delay();
+ 146   2      
+ 147   2              result = sc89601_wait_scl_high();
+ 148   2              if (result != SC89601_OK)
+ 149   2              {
+ 150   3                  return result;
+ 151   3              }
+ 152   2              sc89601_i2c_delay();
+ 153   2          }
+ 154   1      
+ 155   1          /* 生成一个 STOP：SDA 低 -> SCL 高 -> SDA 释放。 */
+ 156   1          sc89601_sda_drive_low();
+ 157   1          sc89601_i2c_delay();
+ 158   1          result = sc89601_wait_scl_high();
+ 159   1          if (result != SC89601_OK)
+ 160   1          {
+ 161   2              return result;
+ 162   2          }
+ 163   1          sc89601_i2c_delay();
+ 164   1          sc89601_sda_release();
+ 165   1          sc89601_i2c_delay();
+ 166   1      
+ 167   1          return (sc89601_sda_read() != 0u) ? SC89601_OK : SC89601_ERR_BUS_BUSY;
+ 168   1      }
+ 169          
+ 170          static sc_u8 sc89601_i2c_start(void)
+ 171          {
+ 172   1          sc_u8 result;
+ 173   1      
+ 174   1          sc89601_sda_release();
+ 175   1          result = sc89601_wait_scl_high();
+ 176   1          if (result != SC89601_OK)
+ 177   1          {
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 4   
+
+ 178   2              return result;
+ 179   2          }
+ 180   1          sc89601_i2c_delay();
+ 181   1      
+ 182   1          if (sc89601_sda_read() == 0u)
+ 183   1          {
+ 184   2              return SC89601_ERR_BUS_BUSY;
+ 185   2          }
+ 186   1      
+ 187   1          sc89601_sda_drive_low();
+ 188   1          sc89601_i2c_delay();
+ 189   1          sc89601_scl_drive_low();
+ 190   1          sc89601_i2c_delay();
+ 191   1      
+ 192   1          return SC89601_OK;
+ 193   1      }
+ 194          
+ 195          static sc_u8 sc89601_i2c_stop(void)
+ 196          {
+ 197   1          sc_u8 result;
+ 198   1      
+ 199   1          sc89601_sda_drive_low();
+ 200   1          sc89601_i2c_delay();
+ 201   1      
+ 202   1          result = sc89601_wait_scl_high();
+ 203   1          if (result != SC89601_OK)
+ 204   1          {
+ 205   2              return result;
+ 206   2          }
+ 207   1      
+ 208   1          sc89601_i2c_delay();
+ 209   1          sc89601_sda_release();
+ 210   1          sc89601_i2c_delay();
+ 211   1      
+ 212   1          return SC89601_OK;
+ 213   1      }
+ 214          
+ 215          static sc_u8 sc89601_i2c_write_byte(sc_u8 data_value)
+ 216          {
+ 217   1          sc_u8 bit_count;
+ 218   1          sc_u8 result;
+ 219   1          sc_u8 ack;
+ 220   1      
+ 221   1          for (bit_count = 0u; bit_count < 8u; bit_count++)
+ 222   1          {
+ 223   2              if ((data_value & 0x80u) != 0u)
+ 224   2              {
+ 225   3                  sc89601_sda_release();
+ 226   3              }
+ 227   2              else
+ 228   2              {
+ 229   3                  sc89601_sda_drive_low();
+ 230   3              }
+ 231   2      
+ 232   2              sc89601_i2c_delay();
+ 233   2              result = sc89601_wait_scl_high();
+ 234   2              if (result != SC89601_OK)
+ 235   2              {
+ 236   3                  return result;
+ 237   3              }
+ 238   2              sc89601_i2c_delay();
+ 239   2              sc89601_scl_drive_low();
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 5   
+
+ 240   2              sc89601_i2c_delay();
+ 241   2      
+ 242   2              data_value <<= 1;
+ 243   2          }
+ 244   1      
+ 245   1          /* 第 9 个时钟读取从机 ACK，ACK=0。 */
+ 246   1          sc89601_sda_release();
+ 247   1          sc89601_i2c_delay();
+ 248   1          result = sc89601_wait_scl_high();
+ 249   1          if (result != SC89601_OK)
+ 250   1          {
+ 251   2              return result;
+ 252   2          }
+ 253   1          sc89601_i2c_delay();
+ 254   1          ack = sc89601_sda_read();
+ 255   1          sc89601_scl_drive_low();
+ 256   1          sc89601_i2c_delay();
+ 257   1      
+ 258   1          return (ack == 0u) ? SC89601_OK : SC89601_ERR_DATA_NACK;
+ 259   1      }
+ 260          
+ 261          static sc_u8 sc89601_i2c_read_byte(sc_u8 *data_value, sc_u8 send_ack)
+ 262          {
+ 263   1          sc_u8 bit_count;
+ 264   1          sc_u8 result;
+ 265   1          sc_u8 value;
+ 266   1      
+ 267   1          if (data_value == 0)
+ 268   1          {
+ 269   2              return SC89601_ERR_NULL;
+ 270   2          }
+ 271   1      
+ 272   1          value = 0u;
+ 273   1          sc89601_sda_release();
+ 274   1      
+ 275   1          for (bit_count = 0u; bit_count < 8u; bit_count++)
+ 276   1          {
+ 277   2              value <<= 1;
+ 278   2              result = sc89601_wait_scl_high();
+ 279   2              if (result != SC89601_OK)
+ 280   2              {
+ 281   3                  return result;
+ 282   3              }
+ 283   2              sc89601_i2c_delay();
+ 284   2              if (sc89601_sda_read() != 0u)
+ 285   2              {
+ 286   3                  value |= 0x01u;
+ 287   3              }
+ 288   2              sc89601_scl_drive_low();
+ 289   2              sc89601_i2c_delay();
+ 290   2          }
+ 291   1      
+ 292   1          if (send_ack != 0u)
+ 293   1          {
+ 294   2              sc89601_sda_drive_low();
+ 295   2          }
+ 296   1          else
+ 297   1          {
+ 298   2              sc89601_sda_release();
+ 299   2          }
+ 300   1      
+ 301   1          sc89601_i2c_delay();
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 6   
+
+ 302   1          result = sc89601_wait_scl_high();
+ 303   1          if (result != SC89601_OK)
+ 304   1          {
+ 305   2              return result;
+ 306   2          }
+ 307   1          sc89601_i2c_delay();
+ 308   1          sc89601_scl_drive_low();
+ 309   1          sc89601_sda_release();
+ 310   1          sc89601_i2c_delay();
+ 311   1      
+ 312   1          *data_value = value;
+ 313   1          return SC89601_OK;
+ 314   1      }
+ 315          
+ 316          sc_u8 sc89601_write_reg(sc_u8 reg, sc_u8 data_value)
+ 317          {
+ 318   1          sc_u8 result;
+ 319   1      
+ 320   1          result = sc89601_i2c_start();
+ 321   1          if (result != SC89601_OK)
+ 322   1          {
+ 323   2              return result;
+ 324   2          }
+ 325   1      
+ 326   1          result = sc89601_i2c_write_byte(SC89601_ADDR_WRITE);
+ 327   1          if (result != SC89601_OK)
+ 328   1          {
+ 329   2              (void)sc89601_i2c_stop();
+ 330   2              return SC89601_ERR_ADDR_NACK;
+ 331   2          }
+ 332   1      
+ 333   1          result = sc89601_i2c_write_byte(reg);
+ 334   1          if (result != SC89601_OK)
+ 335   1          {
+ 336   2              (void)sc89601_i2c_stop();
+ 337   2              return SC89601_ERR_REG_NACK;
+ 338   2          }
+ 339   1      
+ 340   1          result = sc89601_i2c_write_byte(data_value);
+ 341   1          if (result != SC89601_OK)
+ 342   1          {
+ 343   2              (void)sc89601_i2c_stop();
+ 344   2              return SC89601_ERR_DATA_NACK;
+ 345   2          }
+ 346   1      
+ 347   1          return sc89601_i2c_stop();
+ 348   1      }
+ 349          
+ 350          sc_u8 sc89601_read_reg(sc_u8 reg, sc_u8 *data_value)
+ 351          {
+ 352   1          sc_u8 result;
+ 353   1      
+ 354   1          if (data_value == 0)
+ 355   1          {
+ 356   2              return SC89601_ERR_NULL;
+ 357   2          }
+ 358   1      
+ 359   1          result = sc89601_i2c_start();
+ 360   1          if (result != SC89601_OK)
+ 361   1          {
+ 362   2              return result;
+ 363   2          }
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 7   
+
+ 364   1      
+ 365   1          result = sc89601_i2c_write_byte(SC89601_ADDR_WRITE);
+ 366   1          if (result != SC89601_OK)
+ 367   1          {
+ 368   2              (void)sc89601_i2c_stop();
+ 369   2              return SC89601_ERR_ADDR_NACK;
+ 370   2          }
+ 371   1      
+ 372   1          result = sc89601_i2c_write_byte(reg);
+ 373   1          if (result != SC89601_OK)
+ 374   1          {
+ 375   2              (void)sc89601_i2c_stop();
+ 376   2              return SC89601_ERR_REG_NACK;
+ 377   2          }
+ 378   1      
+ 379   1          /* Repeated START。 */
+ 380   1          result = sc89601_i2c_start();
+ 381   1          if (result != SC89601_OK)
+ 382   1          {
+ 383   2              (void)sc89601_i2c_stop();
+ 384   2              return result;
+ 385   2          }
+ 386   1      
+ 387   1          result = sc89601_i2c_write_byte(SC89601_ADDR_READ);
+ 388   1          if (result != SC89601_OK)
+ 389   1          {
+ 390   2              (void)sc89601_i2c_stop();
+ 391   2              return SC89601_ERR_ADDR_NACK;
+ 392   2          }
+ 393   1      
+ 394   1          /* 单字节读取后主机发送 NACK。 */
+ 395   1          result = sc89601_i2c_read_byte(data_value, 0u);
+ 396   1          (void)sc89601_i2c_stop();
+ 397   1          return result;
+ 398   1      }
+ 399          
+ 400          sc_u8 sc89601_update_bits(sc_u8 reg, sc_u8 mask, sc_u8 data_value)
+ 401          {
+ 402   1          sc_u8 result;
+ 403   1          sc_u8 value;
+ 404   1      
+ 405   1          result = sc89601_read_reg(reg, &value);
+ 406   1          if (result != SC89601_OK)
+ 407   1          {
+ 408   2              return result;
+ 409   2          }
+ 410   1      
+ 411   1          value &= (sc_u8)(~mask);
+ 412   1          value |= (data_value & mask);
+ 413   1          return sc89601_write_reg(reg, value);
+ 414   1      }
+ 415          
+ 416          sc_u8 sc89601_check_device(sc_u8 *device_reg)
+ 417          {
+ 418   1          sc_u8 result;
+ 419   1          sc_u8 value;
+ 420   1      
+ 421   1          if (device_reg == 0)
+ 422   1          {
+ 423   2              return SC89601_ERR_NULL;
+ 424   2          }
+ 425   1      
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 8   
+
+ 426   1          result = sc89601_read_reg(SC89601_REG_DEVICE, &value);
+ 427   1          if (result != SC89601_OK)
+ 428   1          {
+ 429   2              return result;
+ 430   2          }
+ 431   1      
+ 432   1          *device_reg = value;
+ 433   1          if (((value & 0x78u) >> 3) != 3u)
+ 434   1          {
+ 435   2              return SC89601_ERR_DEVICE_ID;
+ 436   2          }
+ 437   1      
+ 438   1          return SC89601_OK;
+ 439   1      }
+ 440          
+ 441          sc_u8 sc89601_reset_registers(void)
+ 442          {
+ 443   1          sc_u8 result;
+ 444   1      
+ 445   1          /* 对应官方 sc8960x_reset_chip()：REG0B.REG_RST 写 1 后自清零。 */
+ 446   1          result = sc89601_update_bits(SC89601_REG_DEVICE, 0x80u, 0x80u);
+ 447   1          if (result == SC89601_OK)
+ 448   1          {
+ 449   2              sc89601_delay_ms(2u);
+ 450   2          }
+ 451   1      
+ 452   1          return result;
+ 453   1      }
+ 454          
+ 455          sc_u8 sc89601_set_input_current_limit(sc_u16 current_ma)
+ 456          {
+ 457   1          sc_u8 code_value;
+ 458   1      
+ 459   1          if (current_ma < 100u)
+ 460   1          {
+ 461   2              current_ma = 100u;
+ 462   2          }
+ 463   1          else if (current_ma > 3200u)
+ 464   1          {
+ 465   2              current_ma = 3200u;
+ 466   2          }
+ 467   1      
+ 468   1          code_value = (sc_u8)((current_ma - 100u) / 100u);
+ 469   1          return sc89601_update_bits(SC89601_REG_IINDPM, 0x1Fu, code_value);
+ 470   1      }
+ 471          
+ 472          sc_u8 sc89601_set_input_voltage_limit(sc_u16 voltage_mv)
+ 473          {
+ 474   1          sc_u8 code_value;
+ 475   1      
+ 476   1          if (voltage_mv <= 3900u)
+ 477   1          {
+ 478   2              code_value = 0u;
+ 479   2          }
+ 480   1          else if (voltage_mv <= 5100u)
+ 481   1          {
+ 482   2              code_value = (sc_u8)((voltage_mv - 3900u) / 100u);
+ 483   2          }
+ 484   1          else if (voltage_mv < 8000u)
+ 485   1          {
+ 486   2              /* 5.2~7.9V 没有编码，向下钳位到 5.1V。 */
+ 487   2              code_value = 12u;
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 9   
+
+ 488   2          }
+ 489   1          else if (voltage_mv < 8200u)
+ 490   1          {
+ 491   2              code_value = 13u;
+ 492   2          }
+ 493   1          else if (voltage_mv < 8400u)
+ 494   1          {
+ 495   2              code_value = 14u;
+ 496   2          }
+ 497   1          else
+ 498   1          {
+ 499   2              code_value = 15u;
+ 500   2          }
+ 501   1      
+ 502   1          return sc89601_update_bits(SC89601_REG_VINDPM_BOOSTV_OVP,
+ 503   1                                     0x0Fu,
+ 504   1                                     code_value);
+ 505   1      }
+ 506          
+ 507          sc_u8 sc89601_set_charge_current(sc_u16 current_ma)
+ 508          {
+ 509   1          sc_u8 code_value;
+ 510   1      
+ 511   1          if (current_ma > 3000u)
+ 512   1          {
+ 513   2              current_ma = 3000u;
+ 514   2          }
+ 515   1      
+ 516   1          code_value = (sc_u8)(current_ma / 60u);
+ 517   1          return sc89601_update_bits(SC89601_REG_ICC, 0xBFu,(sc_u8)(0x80u | code_value));
+ 518   1      }
+ 519          
+ 520          sc_u8 sc89601_set_charge_voltage(sc_u16 voltage_mv)
+ 521          {
+ 522   1          sc_u8 code_value;
+ 523   1      
+ 524   1          if (voltage_mv < 3848u)
+ 525   1          {
+ 526   2              voltage_mv = 3848u;
+ 527   2          }
+ 528   1          else if (voltage_mv > 4840u)
+ 529   1          {
+ 530   2              /* REG04 五位粗调的最大值；REG0D 细调不在最小验证中使用。 */
+ 531   2              voltage_mv = 4840u;
+ 532   2          }
+ 533   1      
+ 534   1          /* 向下量化，避免实际设定高于调用值。 */
+ 535   1          code_value = (sc_u8)((voltage_mv - 3848u) / 32u);
+ 536   1          return sc89601_update_bits(SC89601_REG_VBAT_REG,
+ 537   1                                     0xF8u,
+ 538   1                                     (sc_u8)(code_value << 3));
+ 539   1      }
+ 540          
+ 541          sc_u8 sc89601_set_precharge_current(sc_u16 current_ma)
+ 542          {
+ 543   1          sc_u8 code_value;
+ 544   1      
+ 545   1          if (current_ma < 60u)
+ 546   1          {
+ 547   2              current_ma = 60u;
+ 548   2          }
+ 549   1          else if (current_ma > 960u)
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 10  
+
+ 550   1          {
+ 551   2              current_ma = 960u;
+ 552   2          }
+ 553   1      
+ 554   1          code_value = (sc_u8)((current_ma - 60u) / 60u);
+ 555   1          return sc89601_update_bits(SC89601_REG_ITC_ITERM,
+ 556   1                                     0xF0u,
+ 557   1                                     (sc_u8)(code_value << 4));
+ 558   1      }
+ 559          
+ 560          sc_u8 sc89601_set_termination_current(sc_u16 current_ma)
+ 561          {
+ 562   1          sc_u8 code_value;
+ 563   1      
+ 564   1          if (current_ma < 60u)
+ 565   1          {
+ 566   2              current_ma = 60u;
+ 567   2          }
+ 568   1          else if (current_ma > 960u)
+ 569   1          {
+ 570   2              current_ma = 960u;
+ 571   2          }
+ 572   1      
+ 573   1          code_value = (sc_u8)((current_ma - 60u) / 60u);
+ 574   1          return sc89601_update_bits(SC89601_REG_ITC_ITERM, 0x0Fu, code_value);
+ 575   1      }
+ 576          
+ 577          sc_u8 sc89601_set_acovp_threshold(sc_u16 voltage_mv)
+ 578          {
+ 579   1          sc_u8 code_value;
+ 580   1      
+ 581   1          if (voltage_mv <= 5800u)
+ 582   1          {
+ 583   2              code_value = 0u;
+ 584   2          }
+ 585   1          else if (voltage_mv <= 6400u)
+ 586   1          {
+ 587   2              code_value = 1u;
+ 588   2          }
+ 589   1          else if (voltage_mv <= 11000u)
+ 590   1          {
+ 591   2              code_value = 2u;
+ 592   2          }
+ 593   1          else
+ 594   1          {
+ 595   2              code_value = 3u;
+ 596   2          }
+ 597   1      
+ 598   1          return sc89601_update_bits(SC89601_REG_VINDPM_BOOSTV_OVP,
+ 599   1                                     0xC0u,
+ 600   1                                     (sc_u8)(code_value << 6));
+ 601   1      }
+ 602          
+ 603          sc_u8 sc89601_set_vindpm_track(sc_u16 offset_mv)
+ 604          {
+ 605   1          sc_u8 code_value;
+ 606   1      
+ 607   1          if (offset_mv == 0u)
+ 608   1          {
+ 609   2              code_value = 0u;
+ 610   2          }
+ 611   1          else if (offset_mv <= 200u)
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 11  
+
+ 612   1          {
+ 613   2              code_value = 1u;
+ 614   2          }
+ 615   1          else if (offset_mv <= 250u)
+ 616   1          {
+ 617   2              code_value = 2u;
+ 618   2          }
+ 619   1          else
+ 620   1          {
+ 621   2              code_value = 3u;
+ 622   2          }
+ 623   1      
+ 624   1          return sc89601_update_bits(SC89601_REG_CTL3, 0x03u, code_value);
+ 625   1      }
+ 626          
+ 627          sc_u8 sc89601_set_charge_enable(sc_u8 enable)
+ 628          {
+ 629   1          return sc89601_update_bits(SC89601_REG_CTL1,
+ 630   1                                     0x10u,
+ 631   1                                     (enable != 0u) ? 0x10u : 0x00u);
+ 632   1      }
+ 633          
+ 634          /* 每行：寄存器、有效位掩码、目标值。 */
+ 635          static const sc_u8 code s_sc89601_verify_table[][3] = {
+ 636              {0x00u, 0xFFu, 0x1Bu},
+ 637              {0x01u, 0xBFu, 0x18u}, /* 忽略WD_RST命令位 */
+ 638              {0x02u, 0xBFu, 0x8Fu},
+ 639              {0x03u, 0xFFu, 0x42u}, /* 预充300mA，终止180mA */
+ 640              {0x04u, 0xFFu, 0x5Eu},
+ 641              {0x05u, 0xBFu, 0x9Du},
+ 642              {0x06u, 0xFFu, 0xFFu},
+ 643              {0x07u, 0x7Fu, 0x44u}, /* 忽略输入检测命令位 */
+ 644              {0x0Cu, 0xFFu, 0x35u},
+ 645              {0x0Du, 0xFFu, 0x24u},
+ 646              {0x0Eu, 0xBFu, 0xB2u}   /* 同步1MHz配置，仍忽略输入检测状态bit6。*/
+ 647          };
+ 648          
+ 649          static sc_u8 sc89601_verify_minimal_config(void)
+ 650          {
+ 651   1          sc_u8 index;
+ 652   1          sc_u8 result;
+ 653   1          sc_u8 value;
+ 654   1      
+ 655   1          for (index = 0u;
+ 656   1               index < sizeof(s_sc89601_verify_table) /
+ 657   1                       sizeof(s_sc89601_verify_table[0]);
+ 658   1               index++) {
+ 659   2      
+ 660   2              result = sc89601_read_reg(
+ 661   2                  s_sc89601_verify_table[index][0], &value);
+ 662   2      
+ 663   2              if (result != SC89601_OK) {
+ 664   3                  return result;
+ 665   3              }
+ 666   2      
+ 667   2              if ((value & s_sc89601_verify_table[index][1]) !=
+ 668   2                  s_sc89601_verify_table[index][2]) {
+ 669   3                  return SC89601_ERR_VERIFY;
+ 670   3              }
+ 671   2          }
+ 672   1      
+ 673   1          return SC89601_OK;
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 12  
+
+ 674   1      }
+ 675          
+ 676          /*
+ 677           * 读取芯片寄存器，保存原始数据，并解析电源、充电和故障状态。
+ 678           * snapshot指向调用者提供的结构体，函数直接更新该结构体。
+ 679           *
+ 680           * 返回OK表示本轮读取和解析完成；中途失败时，快照可能仅部分更新，
+ 681           * 调用者应先检查返回值，再根据快照进行业务判断。
+ 682           */
+ 683          sc_u8 sc89601_read_snapshot(volatile sc89601_snapshot_t *snapshot)
+ 684          {
+ 685   1          sc_u8 result;
+ 686   1          sc_u8 reg;
+ 687   1          sc_u8 value;
+ 688   1      
+ 689   1          /* 未提供快照存储对象，不能继续访问其成员。 */
+ 690   1          if (snapshot == 0)
+ 691   1          {
+ 692   2              return SC89601_ERR_NULL;
+ 693   2          }
+ 694   1      
+ 695   1          /*
+ 696   1           * 按地址逐个读取寄存器，保存到MCU内的reg[]数组。
+ 697   1           * REG09具有故障锁存读取特性，留到后面单独连续读取。
+ 698   1           */
+ 699   1          for (reg = 0u; reg < SC89601_REG_COUNT; reg++)
+ 700   1          {
+ 701   2              if (reg == SC89601_REG_FAULT)
+ 702   2              {
+ 703   3                  continue;  /* 仅跳过当前地址，继续读取后续寄存器。 */
+ 704   3              }
+ 705   2      
+ 706   2              /*
+ 707   2               * result接收操作结果；寄存器读回的字节通过&value输出。
+ 708   2               * 读取失败立即返回，交给调用者处理通信异常。
+ 709   2               */
+ 710   2              result = sc89601_read_reg(reg, &value);
+ 711   2              if (result != SC89601_OK)
+ 712   2              {
+ 713   3                  return result;
+ 714   3              }
+ 715   2      
+ 716   2              /* 保存原始字节，供后面的字段解析和上层配置检查使用。 */
+ 717   2              snapshot->reg[reg] = value;
+ 718   2          }
+ 719   1      
+ 720   1          /*
+ 721   1           * REG09连续读取两次：
+ 722   1           * 第一次保存此前锁存的故障状态，不代表故障此刻仍然存在。
+ 723   1           * 第二次取得当前故障状态。
+ 724   1           */
+ 725   1          result = sc89601_read_reg(SC89601_REG_FAULT, &value);
+ 726   1          if (result != SC89601_OK)
+ 727   1          {
+ 728   2              return result;
+ 729   2          }
+ 730   1          snapshot->fault_latched = value;
+ 731   1      
+ 732   1          result = sc89601_read_reg(SC89601_REG_FAULT, &value);
+ 733   1          if (result != SC89601_OK)
+ 734   1          {
+ 735   2              return result;
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 13  
+
+ 736   2          }
+ 737   1          snapshot->fault_current = value;
+ 738   1      
+ 739   1          /* 原始寄存器数组也保存第二次读到的当前故障值。 */
+ 740   1          snapshot->reg[SC89601_REG_FAULT] = value;
+ 741   1      
+ 742   1          /*
+ 743   1           * 以下从已保存的原始字节中提取字段，不再进行I2C读取。
+ 744   1           * &保留目标位，右移则将字段移到最低位，便于上层比较。
+ 745   1           */
+ 746   1      
+ 747   1          /* DEVICE：bit6~3为芯片型号编码，bit1~0为版本编码。 */
+ 748   1          value = snapshot->reg[SC89601_REG_DEVICE];
+ 749   1          snapshot->part_number = (value & 0x78u) >> 3;
+ 750   1          snapshot->revision = value & 0x03u;
+ 751   1      
+ 752   1          value = snapshot->reg[SC89601_REG_STAT1];
+ 753   1      
+ 754   1          /* STAT1 bit7~5：输入源状态编码，0表示无输入。 */
+ 755   1          snapshot->vbus_status = (value & 0xE0u) >> 5;
+ 756   1      
+ 757   1          /*
+ 758   1           * STAT1 bit4~3：充电状态编码。
+ 759   1           * 0=未充电，1=小电流充电，2=快充，3=充电终止。
+ 760   1           */
+ 761   1          snapshot->charge_status = (value & 0x18u) >> 3;
+ 762   1      
+ 763   1          /* STAT1 bit2：输入电源是否就绪，0=未就绪，1=就绪。 */
+ 764   1          snapshot->power_good = (value & 0x04u) >> 2;
+ 765   1      
+ 766   1          /*
+ 767   1           * STAT2 bit7：VBUS接入标志。
+ 768   1           * 上层RUNNING分支根据此字段判断是否转入等待输入。
+ 769   1           */
+ 770   1          value = snapshot->reg[SC89601_REG_STAT2];
+ 771   1          snapshot->vbus_good = (value & 0x80u) >> 7;
+ 772   1      
+ 773   1          /* CTL5 bit6：INPUT_DET_DONE，手册标为DP/DM识别完成状态。 */
+ 774   1          value = snapshot->reg[SC89601_REG_CTL5];
+ 775   1          snapshot->input_det_done = (value & 0x40u) >> 6;
+ 776   1      
+ 777   1          return SC89601_OK;
+ 778   1      }
+ 779          
+ 780          #define SC89601_STEP_WAIT_INPUT  6u
+ 781          #define SC89601_STEP_RUNNING     17u
+ 782          
+ 783          volatile sc_u8  g_sc89601_init_result = SC89601_PENDING;
+ 784          volatile sc_u8  g_sc89601_poll_result = SC89601_PENDING;
+ 785          volatile sc89601_snapshot_t g_sc89601_snapshot;
+ 786          
+ 787          static sc_u8 s_sc89601_step = 0u;
+ 788          static sc_u8 s_sc89601_wait_ticks = 0u;
+ 789          static sc_u8 s_sc89601_input_absent = 0u;
+ 790          
+ 791          /* 失败后释放主循环，约5秒后重新初始化。 */
+ 792          static void sc89601_service_failed(sc_u8 result)
+ 793          {
+ 794   1      #if APP_CHARGE_DEBUG
+ 795   1          g_sc89601_debug_ready = 0u; /* 进入重试后，不再把旧快照标为新数据。 */
+ 796   1      #endif
+ 797   1          g_sc89601_init_result = result;
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 14  
+
+ 798   1      
+ 799   1          s_sc89601_step = 0u;
+ 800   1          s_sc89601_wait_ticks = 49u;
+ 801   1          s_sc89601_input_absent = 0u;
+ 802   1      
+ 803   1          s_sc89601_wdt_enabled = 0u;
+ 804   1          s_sc89601_wdt_seconds = 0u;
+ 805   1      }
+ 806          
+ 807          /* 正常运行和STOP巡检共用；只能在主循环中调用。 */
+ 808          void sc89601_tick_1s(void)
+ 809          {
+ 810   1          sc_u8 result;
+ 811   1          sc_u8 value;
+ 812   1      
+ 813   1          if (!s_sc89601_wdt_enabled) {
+ 814   2              return;
+ 815   2          }
+ 816   1      
+ 817   1          if (++s_sc89601_wdt_seconds <
+ 818   1              SC89601_WDT_FEED_INTERVAL_S) {
+ 819   2              return;
+ 820   2          }
+ 821   1      
+ 822   1          /*
+ 823   1           * 先检查配置，再喂狗。
+ 824   1           * R05目标为9D；看门狗复位后的默认9F需要重新配置。
+ 825   1           * 忽略保留位bit6。
+ 826   1           */
+ 827   1          result = sc89601_read_reg(SC89601_REG_CTL2, &value);
+ 828   1      
+ 829   1          if (result == SC89601_OK) {
+ 830   2              if ((value & 0xBFu) != 0x9Du) {
+ 831   3                  result = SC89601_ERR_VERIFY;
+ 832   3              }
+ 833   2          }
+ 834   1      
+ 835   1          if (result == SC89601_OK) {
+ 836   2              /* 置WD_RST，保留当前充电状态。 */
+ 837   2              result = sc89601_update_bits(
+ 838   2                  SC89601_REG_CTL1, 0x40u, 0x40u);
+ 839   2          }
+ 840   1      
+ 841   1          if (result == SC89601_OK) {
+ 842   2              s_sc89601_wdt_seconds = 0u;
+ 843   2              return;
+ 844   2          }
+ 845   1      
+ 846   1          /* 通信或配置异常时，尽力关闭充电和OTG。 */
+ 847   1          (void)sc89601_update_bits(
+ 848   1              SC89601_REG_CTL1, 0x30u, 0x00u);
+ 849   1      
+ 850   1          sc89601_service_failed(result);
+ 851   1      }
+ 852          
+ 853          /* 仅在整机启动时调用，STOP 返回后不重复初始化。 */
+ 854          void sc89601_service_init(void)
+ 855          {
+ 856   1          sc_u8 reg;
+ 857   1      
+ 858   1          sc89601_gpio_init();
+ 859   1      
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 15  
+
+ 860   1          s_sc89601_step = 0u;
+ 861   1          s_sc89601_wait_ticks = 1u;
+ 862   1          s_sc89601_input_absent = 0u;
+ 863   1          s_sc89601_wdt_enabled = 0u;
+ 864   1          s_sc89601_wdt_seconds = 0u;
+ 865   1        
+ 866   1          g_sc89601_init_result = SC89601_PENDING;
+ 867   1          g_sc89601_poll_result = SC89601_PENDING;
+ 868   1      
+ 869   1          for (reg = 0u; reg < SC89601_REG_COUNT; reg++) {
+ 870   2              g_sc89601_snapshot.reg[reg] = 0u;
+ 871   2          }
+ 872   1      
+ 873   1          g_sc89601_snapshot.fault_latched = 0u;
+ 874   1          g_sc89601_snapshot.fault_current = 0u;
+ 875   1          g_sc89601_snapshot.part_number = 0u;
+ 876   1          g_sc89601_snapshot.revision = 0u;
+ 877   1          g_sc89601_snapshot.vbus_status = 0u;
+ 878   1          g_sc89601_snapshot.charge_status = 0u;
+ 879   1          g_sc89601_snapshot.power_good = 0u;
+ 880   1          g_sc89601_snapshot.vbus_good = 0u;
+ 881   1          g_sc89601_snapshot.input_det_done = 0u;
+ 882   1      }
+ 883          
+ 884          /*
+ 885           * 正常运行期间每 100ms 调用。
+ 886           * 输入识别分次检查，保留主循环处理按键、串口和喂狗的机会。
+ 887           */
+ 888          void sc89601_service_100ms(void)
+ 889          {
+ 890   1          sc_u8 result;
+ 891   1          sc_u8 device_reg;
+ 892   1          sc_u8 reg08;
+ 893   1          sc_u8 reg0a;
+ 894   1      
+ 895   1          if (s_sc89601_wait_ticks != 0u) {
+ 896   2              s_sc89601_wait_ticks--;
+ 897   2              return;
+ 898   2          }
+ 899   1      
+ 900   1          result = SC89601_OK;
+ 901   1      
+ 902   1          switch (s_sc89601_step) {
+ 903   2              case 0u:
+ 904   2                  g_sc89601_init_result = SC89601_PENDING;
+ 905   2                  g_sc89601_poll_result = SC89601_PENDING;
+ 906   2                  result = sc89601_bus_recover();
+ 907   2                  break;
+ 908   2      
+ 909   2              case 1u:
+ 910   2                  result = sc89601_check_device(&device_reg);
+ 911   2                  if (result == SC89601_OK) {
+ 912   3                      g_sc89601_snapshot.reg[SC89601_REG_DEVICE] =
+ 913   3                          device_reg;
+ 914   3                      g_sc89601_snapshot.part_number =
+ 915   3                          (device_reg & 0x78u) >> 3;
+ 916   3                      g_sc89601_snapshot.revision =
+ 917   3                          device_reg & 0x03u;
+ 918   3                  }
+ 919   2                  break;
+ 920   2      
+ 921   2      case 2u:
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 16  
+
+ 922   2          s_sc89601_wdt_enabled = 0u;
+ 923   2          s_sc89601_wdt_seconds = 0u;
+ 924   2      
+ 925   2          result = sc89601_reset_registers();
+ 926   2          break;
+ 927   2      
+ 928   2      case 3u:
+ 929   2          /* SYS_MIN=3.4V，配置期间关闭充电和OTG。 */
+ 930   2          result = sc89601_write_reg(
+ 931   2              SC89601_REG_CTL1, 0x08u);
+ 932   2              break;
+ 933   2      
+ 934   2              case 4u:
+ 935   2                  result = sc89601_update_bits(
+ 936   2                      SC89601_REG_IINDPM, 0x80u, 0x00u);
+ 937   2                  break;
+ 938   2      
+ 939   2      case 5u:
+ 940   2          /* 必须先建立12V输入配置，再等待输入识别。 */
+ 941   2          result = sc89601_write_reg(
+ 942   2              SC89601_REG_VINDPM_BOOSTV_OVP, 0xFFu);
+ 943   2          if (result != SC89601_OK) {
+ 944   3              break;
+ 945   3          }
+ 946   2      
+ 947   2          /* 40秒看门狗，其余位匹配目标表，保留bit6。 */
+ 948   2          result = sc89601_update_bits(
+ 949   2              SC89601_REG_CTL2, 0xBFu, 0x9Du);
+ 950   2          if (result != SC89601_OK) {
+ 951   3              break;
+ 952   3          }
+ 953   2      
+ 954   2          /* 立即喂一次，建立软件计时起点。 */
+ 955   2          result = sc89601_update_bits(
+ 956   2              SC89601_REG_CTL1, 0x40u, 0x40u);
+ 957   2      
+ 958   2          if (result == SC89601_OK) {
+ 959   3              s_sc89601_wdt_enabled = 1u;
+ 960   3              s_sc89601_wdt_seconds = 0u;
+ 961   3          }
+ 962   2          break;
+ 963   2      
+ 964   2              case SC89601_STEP_WAIT_INPUT:
+ 965   2      #if APP_CHARGE_DEBUG
+ 966   2                  /* 打印模式读取完整快照，未插电时也能观察各寄存器。 */
+ 967   2                  result = sc89601_read_snapshot(&g_sc89601_snapshot);
+ 968   2      
+ 969   2                  g_sc89601_debug_ready =
+ 970   2                      (result == SC89601_OK) ? 1u : 0u;
+ 971   2      
+ 972   2                  if (result != SC89601_OK) {
+ 973   3                      break;
+ 974   3                  }
+ 975   2      
+ 976   2                  reg08 = g_sc89601_snapshot.reg[SC89601_REG_STAT1];
+ 977   2                  reg0a = g_sc89601_snapshot.reg[SC89601_REG_STAT2];
+ 978   2      #else
+                          result = sc89601_read_reg(
+                              SC89601_REG_STAT2, &reg0a);
+                          if (result != SC89601_OK) {
+                              break;
+                          }
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 17  
+
+              
+                          result = sc89601_read_reg(
+                              SC89601_REG_STAT1, &reg08);
+                          if (result != SC89601_OK) {
+                              break;
+                          }
+              #endif
+ 991   2      
+ 992   2                  g_sc89601_snapshot.reg[SC89601_REG_STAT1] = reg08;
+ 993   2                  g_sc89601_snapshot.reg[SC89601_REG_STAT2] = reg0a;
+ 994   2                  g_sc89601_snapshot.vbus_status =
+ 995   2                      (reg08 >> 5) & 0x07u;
+ 996   2                  g_sc89601_snapshot.charge_status =
+ 997   2                      (reg08 >> 3) & 0x03u;
+ 998   2                  g_sc89601_snapshot.power_good =
+ 999   2                      (reg08 >> 2) & 0x01u;
+1000   2                  g_sc89601_snapshot.vbus_good =
+1001   2                      (reg0a >> 7) & 0x01u;
+1002   2      
+1003   2                  s_sc89601_input_absent =
+1004   2                      ((reg0a & 0x80u) == 0u) ? 1u : 0u;
+1005   2      
+1006   2                  /*
+1007   2                   * 沿用最小板验证条件。
+1008   2                   * 未满足时约 500ms 后再查，不复位寄存器。
+1009   2                   */
+1010   2                  if (((reg0a & 0x80u) == 0u) ||
+1011   2                      ((reg08 & 0x04u) == 0u) ||
+1012   2                      ((reg08 & 0xE0u) == 0u)) {
+1013   3                      s_sc89601_wait_ticks = 4u;
+1014   3                      return;
+1015   3                  }
+1016   2                  break;
+1017   2      
+1018   2              case 7u:
+1019   2                  result = sc89601_set_input_voltage_limit(
+1020   2                      SC89601_TEST_VINDPM_MV);
+1021   2                  break;
+1022   2      
+1023   2              case 8u:
+1024   2                  result = sc89601_set_acovp_threshold(
+1025   2                      SC89601_TEST_ACOVP_MV);
+1026   2                  break;
+1027   2      
+1028   2              case 9u:
+1029   2                  result = sc89601_set_input_current_limit(
+1030   2                      SC89601_TEST_IINDPM_MA);
+1031   2                  break;
+1032   2      
+1033   2              case 10u:
+1034   2                  result = sc89601_set_vindpm_track(
+1035   2                      SC89601_TEST_VINDPM_TRACK_MV);
+1036   2                  break;
+1037   2      
+1038   2              case 11u:
+1039   2                  result = sc89601_set_precharge_current(
+1040   2                      SC89601_TEST_IPRECHG_MA);
+1041   2                  break;
+1042   2      
+1043   2              case 12u:
+1044   2                  result = sc89601_set_termination_current(
+1045   2                      SC89601_TEST_ITERM_MA);
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 18  
+
+1046   2                  break;
+1047   2      
+1048   2      case 13u:
+1049   2          result = sc89601_set_charge_voltage(
+1050   2              SC89601_TEST_VREG_MV);
+1051   2      
+1052   2          if (result == SC89601_OK) {
+1053   3              /* 补充充电45分钟，回充压差100mV。 */
+1054   3              result = sc89601_update_bits(
+1055   3                  SC89601_REG_VBAT_REG, 0x07u, 0x06u);
+1056   3          }
+1057   2          break;
+1058   2      
+1059   2              case 14u:
+1060   2                  result = sc89601_set_charge_current(
+1061   2                      SC89601_TEST_ICHG_MA);
+1062   2                  break;
+1063   2      
+1064   2              case 15u:
+1065   2                  result = sc89601_set_charge_enable(1u);
+1066   2                  break;
+1067   2      
+1068   2              case 16u:
+1069   2                  result = sc89601_verify_minimal_config();
+1070   2                  break;
+1071   2      
+1072   2              case SC89601_STEP_RUNNING:
+1073   2                  result = sc89601_read_snapshot(
+1074   2                      &g_sc89601_snapshot);
+1075   2      #if APP_CHARGE_DEBUG
+1076   2                  /* 正常巡检完成后，通知打印任务取走完整快照。 */
+1077   2                  g_sc89601_debug_ready =
+1078   2                      (result == SC89601_OK) ? 1u : 0u;
+1079   2      #endif
+1080   2                  g_sc89601_poll_result = result;
+1081   2      
+1082   2                  if (result != SC89601_OK) {
+1083   3                      break;
+1084   3                  }
+1085   2                  /* 看门狗超时或配置丢失，进入重新初始化流程。 */
+1086   2                  if ((g_sc89601_snapshot.fault_current & 0x80u) ||
+1087   2                      ((g_sc89601_snapshot.reg[SC89601_REG_CTL2] &
+1088   2                        0xBFu) != 0x9Du)) {
+1089   3      
+1090   3                      (void)sc89601_update_bits(
+1091   3                          SC89601_REG_CTL1, 0x30u, 0x00u);
+1092   3      
+1093   3                      sc89601_service_failed(SC89601_ERR_VERIFY);
+1094   3                      return;
+1095   3                  }
+1096   2                  if (g_sc89601_snapshot.vbus_good == 0u) {
+1097   3                      /*拔电后等待新的输入识别。
+1098   3                       * 再次插电时重新应用参数，不在此复位芯片。*/
+1099   3                      s_sc89601_input_absent = 1u;
+1100   3                      s_sc89601_step = SC89601_STEP_WAIT_INPUT;
+1101   3                      s_sc89601_wait_ticks = 4u;
+1102   3                      g_sc89601_init_result = SC89601_PENDING;
+1103   3                  } else {
+1104   3                      s_sc89601_input_absent = 0u;
+1105   3                      s_sc89601_wait_ticks = 9u;
+1106   3                  }
+1107   2                  return;
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 19  
+
+1108   2      
+1109   2              default:
+1110   2                  s_sc89601_step = 0u;
+1111   2                  s_sc89601_input_absent = 0u;
+1112   2                  return;
+1113   2          }
+1114   1      
+1115   1          if (result != SC89601_OK) {
+1116   2              /* 参数配置失败时，尽力关闭充电，保存原始错误码。 */
+1117   2              if ((s_sc89601_step >= 7u) &&
+1118   2                  (s_sc89601_step <= 16u)) {
+1119   3                  (void)sc89601_set_charge_enable(0u);
+1120   3              }
+1121   2      
+1122   2              sc89601_service_failed(result);
+1123   2              return;
+1124   2          }
+1125   1      
+1126   1          s_sc89601_step++;
+1127   1      
+1128   1          if (s_sc89601_step == SC89601_STEP_RUNNING) {
+1129   2              g_sc89601_init_result = SC89601_OK;
+1130   2          }
+1131   1      }
+1132          
+1133          /* 配置过程保持运行；确认无外部输入后才允许 STOP。 */
+1134          sc_u8 sc89601_can_stop(void)
+1135          {
+1136   1          return ((s_sc89601_step == SC89601_STEP_WAIT_INPUT) &&
+1137   1                  s_sc89601_input_absent) ? 1u : 0u;
+1138   1      }
+1139          
+1140          /*
+1141           * 仅在休眠巡检中调用。
+1142           * 通过寄存器识别插电，不依赖尚未有效的 Type-C IO。
+1143           */
+1144          sc_u8 sc89601_sleep_wake_required(void)
+1145          {
+1146   1          sc_u8 result;
+1147   1          sc_u8 reg0a;
+1148   1      /* 秒任务发现异常后，必须退出STOP才能执行初始化重试。 */
+1149   1      if (!sc89601_can_stop()) {
+1150   2          return 1u;
+1151   2      }
+1152   1          result = sc89601_read_reg(SC89601_REG_STAT2, &reg0a);
+1153   1          if (result != SC89601_OK) {
+1154   2              sc89601_service_failed(result);
+1155   2              return 1u;
+1156   2          }
+1157   1      
+1158   1          if ((reg0a & 0x80u) != 0u) {
+1159   2              s_sc89601_input_absent = 0u;
+1160   2              s_sc89601_wait_ticks = 0u;
+1161   2              return 1u;
+1162   2          }
+1163   1      
+1164   1          return 0u;
+1165   1      }
+1166          
+1167          /* 旧驱动没有OTG功能；此接口仅用于当前工程的充电对照测试。 */
+1168          void sc89601_set_otg_allowed(sc_u8 allowed)
+1169          {
+C51 COMPILER V9.60.7.0   SC89601                                                           10/22/2026 15:13:09 PAGE 20  
+
+1170   1          (void)allowed; /* 接收调用，不执行升压操作。 */
+*** WARNING C275 IN LINE 1170 OF ..\PWR\sc89601.c: expression with possibly no effect
+1171   1      }
+1172          
+1173          sc_u8 sc89601_otg_is_active(void)
+1174          {
+1175   1          return 0u; /* 旧驱动未启动OTG。 */
+1176   1      }
+1177          
+1178          sc_u8 sc89601_fault_is_latched(void)
+1179          {
+1180   1          return 0u; /* 旧驱动采用延时重试，没有故障锁定状态。 */
+1181   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   2624    ----
+   CONSTANT SIZE    =     33    ----
+   XDATA SIZE       =     32      36
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

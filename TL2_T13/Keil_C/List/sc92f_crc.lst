@@ -1,0 +1,218 @@
+C51 COMPILER V9.60.7.0   SC92F_CRC                                                         10/13/2026 10:46:31 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SC92F_CRC
+OBJECT MODULE PLACED IN ..\Output\sc92f_crc.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\FWLib\SC92F_Lib\src\sc92f_crc.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE IN
+                    -CDIR(..\FWLib\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753x
+                    -) DEBUG PRINT(..\List\sc92f_crc.lst) TABS(2) OBJECT(..\Output\sc92f_crc.obj)
+
+line level    source
+
+   1          /**
+   2           ******************************************************************************
+   3           * @file    sc92f_CRC.c
+   4           * @author  SOC AE Team
+   5           * @version V1.2.4
+   6           * @date    2026-2-28
+   7           * @brief   CRC function module
+   8           ******************************************************************************
+   9           * @attention
+  10           *
+  11           *1.This software is supplied by SinOne Microelectronics Co.,Ltd. and is only 
+  12           *intended for use with SinOne products. No other uses are authorized. This 
+  13           *software is owned by SinOne Microelectronics Co.,Ltd. and is protected under 
+  14           *all applicable laws, including copyright laws. 
+  15           *2.The software which is for guidance only aims at providing customers with 
+  16           *coding information regarding their products in order for them to save time. 
+  17           *As a result, SinOne shall not be held liable for any direct, indirect or 
+  18           *consequential damages with respect to any claims arising from the content of 
+  19           *such software and/or the use made by customers of the coding information 
+  20           *contained herein in connection with their products.
+  21           *
+  22           *  COPYRIGHT 2025 SinOne Microelectronics
+  23           ******************************************************************************
+  24           */
+  25          
+  26          /* Includes ------------------------------------------------------------------*/
+  27          #include "sc92f_crc.h"
+  28          #include "intrins.H"
+  29          
+  30          #if defined(SC92F6x1x)  || defined(SC92R436) || defined(SC92R438)||defined(SC92L840x) || defined(SC92R439)
+             -\
+  31              || defined(SC92R422A) || defined(SC92F652x) || defined(SC92R51x_R52x) || defined(SC92F552x) || defined
+             -(SC92F663x)
+              
+              /** @addtogroup sc92f_StdPeriph_Driver
+               * @{
+               */
+              
+              /** @defgroup CRC
+               * @brief CRC driver modules
+               * @{
+               */
+              
+              /** @defgroup CRC_Functions
+               * @{
+               */
+              
+              /** @defgroup CRC_Group1 Data calculation functions
+               *  @brief   Data calculation functions
+               *
+               
+              @verbatim
+               ===============================================================================
+C51 COMPILER V9.60.7.0   SC92F_CRC                                                         10/13/2026 10:46:31 PAGE 2   
+
+                                   ##### Data calculation functions #####
+               ===============================================================================
+              @endverbatim
+                * @{
+                */
+              #if !defined(SC92L840x)
+              /**
+                * @brief  To calculate the CRC32 checksum of the project HEX file,the result will vary based on the IAR 
+             -Range option.
+                * @param  None
+                * @retval 32-bit CRC
+                */
+              uint32_t CRC_All()
+              {
+               return CRC_CodeAllOption();
+              }
+              #endif
+              /**
+                * @brief  Calculate the CRC check value of the input frame.
+                * @param  buff:Input the array that needs to be computed for CRC.
+                * @param  Length:Length of the array to be calculated.
+                * @retval CRC_Result:32-bit CRC.
+                */
+              uint32_t CRC_Frame(uint8_t* buff, uint8_t Length)
+              {
+                uint8_t i;
+                uint32_t CRC_Input ,CRC_Result;
+                
+                CRC_ResetDROption();
+                for(i = 0; i < Length; i++)
+                {
+                  CRC_Input = *(buff + i);
+                  CRC_CalcOption(CRC_Input);
+                }
+                CRC_Result = CRC_GetOption();
+                return CRC_Result;
+              }
+              
+              #elif  defined (SC92L853x) || defined (SC92L753x) || defined(SC92F646x) || defined(SC92F546x) || defined(S
+             -C92F542x) 
+  90          /**
+  91            * @brief  To calculate the CRC32 checksum of the project HEX file,the result will vary based on the IAR 
+             -Range option.
+  92            * @param  None
+  93            * @retval 32-bit CRC
+  94            */
+  95          uint32_t CRC_All()
+  96          {
+  97   1        uint32_t CRC_Result;
+  98   1        OPERCON |= 0x01;
+  99   1        _nop_();
+ 100   1        _nop_();
+ 101   1        _nop_();
+ 102   1        _nop_();
+ 103   1        _nop_();
+ 104   1        _nop_();
+ 105   1        _nop_();
+ 106   1        _nop_();
+ 107   1        _nop_();
+ 108   1        _nop_();
+ 109   1        CRCINX = 0x00;
+ 110   1        CRC_Result = CRCREG;
+C51 COMPILER V9.60.7.0   SC92F_CRC                                                         10/13/2026 10:46:31 PAGE 3   
+
+ 111   1        CRC_Result = CRCREG * 256 + CRC_Result;
+ 112   1        CRC_Result = CRCREG * 65536 + CRC_Result;
+ 113   1        CRC_Result = CRCREG * 16777216 + CRC_Result;
+ 114   1        return CRC_Result;
+ 115   1      }
+ 116          
+ 117          /**
+ 118            * @brief  Calculate the CRC check value of the input frame.
+ 119            * @param  buff:Input the array that needs to be computed for CRC.
+ 120            * @param  Length:Length of the array to be calculated.
+ 121            * @retval CRC_Result:32-bit CRC.
+ 122            */
+ 123          uint32_t CRC_Frame(uint8_t *buff, uint8_t Length)
+ 124          {
+ 125   1        uint8_t i;
+ 126   1        uint32_t CRC_Result = 0;
+ 127   1        
+ 128   1        EA = 0;
+ 129   1        OPERCON |= 0x02;
+ 130   1        _nop_();
+ 131   1        _nop_();
+ 132   1        _nop_();
+ 133   1        _nop_();
+ 134   1        _nop_();
+ 135   1        _nop_();
+ 136   1        _nop_();
+ 137   1        _nop_();
+ 138   1        _nop_();
+ 139   1        _nop_();
+ 140   1      
+ 141   1        for (i = 0; i < Length; i++)
+ 142   1        {
+ 143   2          CRC_Result = *(buff + i);
+ 144   2          CRCREG = CRC_Result;
+ 145   2          _nop_();
+ 146   2          _nop_();
+ 147   2          _nop_();
+ 148   2          _nop_();
+ 149   2          _nop_();
+ 150   2          _nop_();
+ 151   2          _nop_();
+ 152   2          _nop_();
+ 153   2          _nop_();
+ 154   2          _nop_();
+ 155   2        }
+ 156   1      
+ 157   1        CRCINX = 0x00;
+ 158   1        CRC_Result = CRCREG;
+ 159   1        CRC_Result = CRCREG * 256 + CRC_Result;
+ 160   1        CRC_Result = CRCREG * 65536 + CRC_Result;
+ 161   1        CRC_Result = CRCREG * 16777216 + CRC_Result;
+ 162   1        EA = 1;
+ 163   1      
+ 164   1        return CRC_Result;
+ 165   1      }
+ 166          #endif
+ 167          /**
+ 168           * @}
+ 169           */
+ 170          
+ 171          /**
+ 172           * @}
+C51 COMPILER V9.60.7.0   SC92F_CRC                                                         10/13/2026 10:46:31 PAGE 4   
+
+ 173           */
+ 174          
+ 175          /**
+ 176           * @}
+ 177           */
+ 178          /******************* (C) COPYRIGHT 2025 SinOne Microelectronics *****END OF FILE****/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    326    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----      13
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,92 @@
+C51 COMPILER V9.60.7.0   CALLBACKFUNCTION                                                  10/13/2026 10:46:28 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE CALLBACKFUNCTION
+OBJECT MODULE PLACED IN ..\Output\CallBackFunction.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\User\CallBackFunction.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE INCDIR(..\
+                    -FWLib\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753x) DEBUG 
+                    -PRINT(..\List\CallBackFunction.lst) TABS(2) OBJECT(..\Output\CallBackFunction.obj)
+
+line level    source
+
+   1          /***************************************************************************************
+   2            * @copyright  (c)  Shenzhen Saiyuan Microelectronics Co., Ltd
+   3            * @file CallBackFunction.c
+   4            * @author 
+   5            * @version  V3.0
+   6            * @date 2022.07.14
+   7            * @brief  Write the logic you want to implement in the function body
+   8            * @details
+   9            **************************************************************************************/ 
+  10          #include "SC_Init.h"
+  11          #include "SC_it.h"
+  12          #include "..\Drivers\SCDriver_list.h"
+  13          #include "HeadFiles\SysFunVarDefine.h"
+  14          
+  15          /**
+  16            * @brief  µÍ¹¦ºÄÊµÏÖÀûÓÃÁËBTM×ÊÔ´£¬ÓÃ»§ÐèÒªÔÚBTMÖÐÊµÏÖµÄÄÚÈÝÔÚ´Ëº¯ÊýÊµÏÖ
+  17            * @note   ¸Ãº¯ÊýÒÑÔÚTKDriver.CÎÄ¼þLowPower_Touchkey_Scan()º¯ÊýÖÐµ÷ÓÃ
+  18            *         //¸Ãº¯ÊýÒÑÔÚµÍ¹¦ºÄÄ£Ê½É¨Ãèº¯ÊýÖÐµ÷ÓÃ
+  19            *         //´Ëº¯ÊýÎªBTM¶¨Ê±»½ÐÑºó£¬ÓÃ»§µÄ´¦Àíº¯Êý
+  20            *         //µÍ¹¦ºÄÄ£Ê½ÏÂ£¬ÓÃ»§ÐèÔÚBTMÖÐÊµÏÖµÄ¹¦ÄÜ¿ÉÔÚ´Ëº¯ÊýÊµÏÖ
+  21            *         //±ÈÈç²éÑ¯Ä³¸öIO£¬µçÆ½·¢Éú±ä»¯µÈÌõ¼þ³ÉÁ¢£¬(TK»½ÐÑ³ýÍâ)ÐèÍË³öµÍ¹¦ºÄÄ£Ê½¿ÉÔÚ´Ëº¯ÊýÖÐµ÷ÓÃTouchKey
+             -_QuitLowPowerMode()
+  22            * @param  None
+  23            * @retval None
+  24            */
+  25          void Customer_BTM_Dispose()
+  26          {
+  27   1        
+  28   1      }
+  29          /**
+  30            * @brief  ÔÚ½øÈëµÍ¹¦ºÄÇ°£¬ÓÃ»§ÐèÒª¹Ø±ÕÍâÎ§ºÄµçµÄµçÂ·£¬Ê¹µçÁ÷×îµÍ
+  31            * @note   ¸Ãº¯ÊýÒÑÔÚTKDriver.CÎÄ¼þTouchKey_IntoLowPowerMode()º¯ÊýÖÐµ÷ÓÃ,ÓÃ»§Ö»ÐèÌîÐ´º¯ÊýÄÚ²¿ÊµÏÖ£¨¹ØÍâÉè
+             -£©
+  32            *         //½øÈëµÍ¹¦ºÄÇ°ÉèÖÃ
+  33            *         //¸Ãº¯ÊýÒÑÔÚTouchKey_IntoLowPowerMode()Àïµ÷ÓÃ
+  34            *         //ÓÃ»§ÎÞÐèµ÷ÓÃ¸Ãº¯Êý£¡£¡£¡
+  35            *         //ÓÃ»§ÐèÒª×Ô¼º±àÐ´¸Ãº¯ÊýÊµÌå£¡£¡£¡
+  36            *     //¹Ø±ÕºÄµçµÄÍâÉè£¬±£³Ö×îµÍ¹¦ºÄ
+  37            * @param  None
+  38            * @retval None
+  39            */
+  40          void Customer_IntoLowPowerMode_Init()
+  41          {
+  42   1        
+  43   1      }
+  44          /**
+  45            * @brief  ÔÚÍË³öµÍ¹¦ºÄÇ°£¬ÓÃ»§½øÐÐµÄ±ØÒª²Ù×÷£¨¿ªÍâÉè£©
+  46            * @note   ¸Ãº¯ÊýÒÑÔÚTKDriver.CÎÄ¼þTouchKey_QuitLowPowerMode()º¯ÊýÖÐµ÷ÓÃ£¬ÓÃ»§Ö»ÐèÌîÐ´º¯ÊýÄÚ²¿ÊµÏÖ£¨¿ªÍâÉ
+             -è£©
+  47            *         //ÍË³öµÍ¹¦ºÄÇ°ÉèÖÃ
+  48            *         //¸Ãº¯ÊýÒÑÔÚµÍ¹¦ºÄÏÂÂú×ãTK»½ÐÑÍË³öµÍ¹¦ºÄÊ±µ÷ÓÃ£¬¼´ÔÚTouchKey_QuitLowPowerMode()ÖÐµ÷ÓÃ
+  49            *         //ÓÃ»§ÎÞÐèµ÷ÓÃ¸Ãº¯Êý£¡£¡£¡
+  50            *         //ÓÃ»§ÐèÒª×Ô¼º±àÐ´¸Ãº¯ÊýÊµÌå£¡£¡£¡
+C51 COMPILER V9.60.7.0   CALLBACKFUNCTION                                                  10/13/2026 10:46:28 PAGE 2   
+
+  51            *     //»Ö¸´±ØÒªµÄÍâÉè
+  52            * @param  None
+  53            * @retval None
+  54            */
+  55          void Customer_QuitLowPowerMode_Init()
+  56          {
+  57   1        
+  58   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =      3    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

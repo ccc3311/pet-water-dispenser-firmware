@@ -1,0 +1,1337 @@
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SC92F_ADC
+OBJECT MODULE PLACED IN ..\Output\sc92f_adc.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\FWLib\SC92F_Lib\src\sc92f_adc.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE IN
+                    -CDIR(..\FWLib\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753x
+                    -) DEBUG PRINT(..\List\sc92f_adc.lst) TABS(2) OBJECT(..\Output\sc92f_adc.obj)
+
+line level    source
+
+   1          /**
+   2           ******************************************************************************
+   3           * @file    sc92f_adc.c
+   4           * @author  SOC AE Team
+   5           * @version V1.2.4
+   6           * @date    2026-2-28
+   7           * @brief   ADC function module
+   8           ******************************************************************************
+   9           * @attention
+  10           *
+  11           *1.This software is supplied by SinOne Microelectronics Co.,Ltd. and is only 
+  12           *intended for use with SinOne products. No other uses are authorized. This 
+  13           *software is owned by SinOne Microelectronics Co.,Ltd. and is protected under 
+  14           *all applicable laws, including copyright laws. 
+  15           *2.The software which is for guidance only aims at providing customers with 
+  16           *coding information regarding their products in order for them to save time. 
+  17           *As a result, SinOne shall not be held liable for any direct, indirect or 
+  18           *consequential damages with respect to any claims arising from the content of 
+  19           *such software and/or the use made by customers of the coding information 
+  20           *contained herein in connection with their products.
+  21           *
+  22           *  COPYRIGHT 2025 SinOne Microelectronics
+  23           ******************************************************************************
+  24           */
+  25          
+  26          /* Includes ------------------------------------------------------------------*/
+  27          #include "sc92f_adc.h"
+  28          
+  29          #if !defined(SC92F827X) && !defined(SC92F837X) && !defined(SC92F637x)
+  30          /** @addtogroup sc92f_StdPeriph_Driver
+  31           * @{
+  32           */
+  33           
+  34          /** @defgroup ADC
+  35           * @brief ADC driver modules
+  36           * @{
+  37           */
+  38           
+  39          /** @defgroup ADC_Exported_Functions
+  40           * @{
+  41           */
+  42           
+  43          /** @defgroup ADC_Exported_Functions_Group1 Configuration of the ADC computation unit functions
+  44           *  @brief   Configuration of the ADC computation unit functions
+  45           *
+  46           
+  47          @verbatim
+  48           ===============================================================================
+  49                               ##### ADC configuration functions #####
+  50           ===============================================================================
+  51          @endverbatim
+  52            * @{
+  53            */
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 2   
+
+  54           
+  55          /**
+  56           * @brief  DeInitializes the ADC peripheral
+  57           * @param  None         
+  58           * @retval None
+  59           */
+  60          void ADC_DeInit(void)
+  61          {
+  62   1        ADCCON = 0x00;
+  63   1        ADCCFG0 = 0X00;
+  64   1      #if !defined(SC92F6x1x) && !defined(SC92F5x1x)&& !defined(SC92R436)&& !defined(SC92R438)&& !defined(SC92R4
+             -39)&& !defined(SC92R422A)&& !defined(SC92F652x)&& !defined(SC92R51x_R52x)\
+  65   1        && !defined(SC92F552x) && !defined(SC92F5x5x)&& !defined(SC92F531x) && !defined(SC92F663x)
+  66   1        ADCCFG1 = 0X00;
+  67   1      #endif
+  68   1      #if defined(SC92F854x) || defined(SC92F754x) || defined(SC92F844xB) || defined(SC92F744xB) || defined(SC92
+             -F84Ax_2) || defined(SC92F74Ax_2)\
+  69   1        || defined(SC92F846xB) || defined(SC92F746xB) || defined(SC92F836xB) || defined(SC92F736xB) || defined(SC
+             -92F84Ax) || defined(SC92F74Ax)\
+  70   1        || defined(SC92F83Ax) || defined(SC92F73Ax) || defined(SC92F848x) || defined(SC92F748x) || defined (SC92F
+             -859x) || defined (SC92F759x)\
+  71   1        || defined (SC92L853x) || defined (SC92L753x) || defined (SC92R511x) || defined (SC92R342) || defined (S
+             -C92F841x) || defined (SC92F741x)\
+  72   1        || defined(SC92F646x) || defined(SC92F546x) || defined(SC92F542x) || defined(SC92F6x1x) || defined(SC92F5
+             -x1x) || defined(SC92R436)|| defined(SC92R438)\
+  73   1        || defined(SC92L840x) || defined(SC92R439)|| defined (SC92Fx41xB)|| defined (SC92R445) || defined (SC92R
+             -422A) || defined(SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x)|| defined(SC92F5x5x)\
+  74   1        || defined(SC92F531x) || defined(SC92F663x) 
+  75   1        ADCCFG2 = 0X00;
+  76   1      #endif
+  77   1      #if defined(SC92F84Hx) || defined(SC92F83Hx)
+                ADCCFG3 = 0X00;
+              #endif
+  80   1        ADCVL = 0X00;
+  81   1        ADCVH = 0X00;
+  82   1        EADC = 0;
+  83   1        IPADC = 0;
+  84   1      }
+  85          
+  86          /**
+  87           * @brief  Initializes the ADC peripheral
+  88           * @param  ADC_PrescalerSelection[in]: Select ADC prescaler.
+  89           * if the model is SC92F854x,SC92F754x,SC92F844xB,SC92F744xB,SC92F84Ax_2,SC92F74Ax_2 or SC92FWxx
+  90           *                  - ADC_PRESSEL_FOSC_D6: Select ADC clock division by 6.
+  91           *                  - ADC_PRESSEL_FOSC_D12: Select ADC clock division by 12.
+  92           * if the model is SC92F846xB,SC92F746xB,SC92F836xB,SC92F736xB,SC92F83Ax,SC92F73Ax,SC92F84Ax
+  93           *                 SC92F74Ax,SC92F7003,SC92F8003,SC92F8003B,SC92F740x,SC92R342,SC92F841x,SC92Fx41xB,SC92R4
+             -45
+  94           *                 SC92F741x,SC92F84Hx,SC92F83Hx
+  95           *                  - ADC_PRESSEL_FSYS_D32: Select ADC clock division by 32.
+  96           *                  - ADC_PRESSEL_FSYS_D24: Select ADC clock division by 24.
+  97           *                  - ADC_PRESSEL_FSYS_D16: Select ADC clock division by 16.
+  98           *                  - ADC_PRESSEL_FSYS_D12: Select ADC clock division by 12.
+  99           *                  - ADC_PRESSEL_FSYS_D8: Select ADC clock division by 8.
+ 100           *                  - ADC_PRESSEL_FSYS_D6: Select ADC clock division by 6.
+ 101           *                  - ADC_PRESSEL_FSYS_D4: Select ADC clock division by 4.
+ 102           *                  - ADC_PRESSEL_FSYS_D3: Select ADC clock division by 3.
+ 103           * if the model is SC92F742x,SC92F730x,SC92F725X,SC92F735X,SC92F732X,SC93F833x,SC93F843x
+ 104           *                 SC93F743x,SC92F730x_2,SC92F720x,SC92F7308B
+ 105           *                  - ADC_PRESSEL_2_MHz: Select ADC clock as 2Mhz.
+ 106           *                  - ADC_PRESSEL_333_kHz: Select ADC clock as 333Khz.
+ 107           * if the model is SC92F848x,SC92F748x
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 3   
+
+ 108           *                  - ADC_PRESSEL_FSYS_D16: Select ADC clock division by 16.
+ 109           *                  - ADC_PRESSEL_FSYS_D12: Select ADC clock division by 12.
+ 110           *                  - ADC_PRESSEL_FSYS_D8: Select ADC clock division by 8.
+ 111           *                  - ADC_PRESSEL_FSYS_D6: Select ADC clock division by 6.
+ 112           *                  - ADC_PRESSEL_FSYS_D4: Select ADC clock division by 4.
+ 113           *                  - ADC_PRESSEL_FSYS_D3: Select ADC clock division by 3.
+ 114           *                  - ADC_PRESSEL_FSYS_D2: Select ADC clock division by 2.
+ 115           *                  - ADC_PRESSEL_FSYS_D1: Select ADC clock division by 1.
+ 116           * if the model is SC92F859x,SC92F759x,SC92R511x,SC92F6x1x,SC92F5x1x,SC92R436,SC92R439,SC92R422A,SC92F652x
+             -,SC92F5x5x
+ 117           *                  - ADC_PRESSEL_FSYS_D16: Select ADC clock division by 16.
+ 118           *                  - ADC_PRESSEL_FSYS_D12: Select ADC clock division by 12.
+ 119           *                  - ADC_PRESSEL_FSYS_D6: Select ADC clock division by 6.
+ 120           *                  - ADC_PRESSEL_FSYS_D4: Select ADC clock division by 4.
+ 121           * if the model is SC92L853x,SC92L753x
+ 122           *                  - ADC_PRESSEL_3CLOCK: Sampling time is 3 system clocks.
+ 123           *                  - ADC_PRESSEL_6CLOCK: Sampling time is 6 system clocks.
+ 124           *                  - ADC_PRESSEL_16CLOCK: Sampling time is 16 system clocks.
+ 125           *                  - ADC_PRESSEL_32CLOCK: Sampling time is 32 system clocks.
+ 126           * if the model is SC92F646x,SC92F546x,SC92F542x,SC92F531x
+ 127           *                  - ADC_PRESSEL_Null: no prescaler.
+ 128           * @param  ADC_Cycle[in]:Select ADC sampling clock cyclef.
+ 129           * if the model is SC92F854x,SC92F754x,SC92F844xB,SC92F744xB,SC92F84Ax_2,SC92F74Ax_2,SC92F846xB,SC92F746xB
+             -,SC92F836xB
+ 130           *                 SC92FWxx,SC92F859x,SC92F759x,SC92R511x,SC92F740x,SC92F736xB,SC92F83Ax,SC92F73Ax,
+ 131           *                 SC92F84Ax,SC92F74Ax,SC92F7003,SC92F8003,SC92F8003B,SC92F848x,SC92F748x,SC92R342,SC92F84
+             -1x,SC92Fx41xB,SC92R445,SC92F741x,SC92F84Hx,SC92F83Hx
+ 132           *                  - ADC_Cycle_6Cycle: Select 6 ADC clock cycles.
+ 133           *                  - ADC_Cycle_36Cycle: Select 36 ADC clock cycles.
+ 134           * if the model is SC92F742x,SC92F730x,SC92F725X,SC92F735X,SC92F732X,SC92F7490,SC93F833x,SC93F843x,
+ 135           *                 SC93F743x,SC92L853x,SC92L753x,SC92F730x_2,SC92F720x,SC92F7308B
+ 136           *                  - ADC_Cycle_Null: Don't select ADC cycles.    
+ 137           * if the model is SC92F646x,SC92F546x,SC92F542x,SC92F652x,SC92F531x,SC92R51x_R52x,SC92F552x,SC92F531x,SC9
+             -2F663x
+ 138           *                  - ADC_Cycle_3Cycle: Select 3 ADC clock cycles.  
+ 139           *                  - ADC_Cycle_6Cycle: Select 6 ADC clock cycles.
+ 140           *                  - ADC_Cycle_16Cycle: Select 16 ADC clock cycles.  
+ 141           *                  - ADC_Cycle_32Cycle: Select 32 ADC clock cycles.
+ 142           * if the model is SC92F6x1x,SC92F5x1x,SC92R436,SC92R438,SC92R439,SC92R422A,SC92F5x5x
+ 143           *                  - ADC_Cycle1_20Cycle: Select 20 ADC clock cycles.  
+ 144           *                  - ADC_Cycle1_50Cycle: Select 50 ADC clock cycles.
+ 145           *                  - ADC_Cycle2_20Cycle: Select 20 ADC clock cycles.  
+ 146           *                  - ADC_Cycle2_50Cycle: Select 50 ADC clock cycles.
+ 147           * @retval None
+ 148           */
+ 149          #if defined(SC92F854x) || defined(SC92F754x) || defined(SC92F844xB) || defined(SC92F744xB) || defined(SC92
+             -F84Ax_2) || defined(SC92F74Ax_2)\
+ 150            || defined(SC92F846xB) || defined(SC92F746xB) || defined(SC92F836xB) || defined(SC92F736xB) || defined(SC
+             -92F84Ax) || defined(SC92F74Ax)\
+ 151            || defined(SC92F83Ax) || defined(SC92F73Ax) || defined(SC92FWxx) || defined(SC92F848x) || defined(SC92F74
+             -8x)\
+ 152            || defined (SC92F859x) || defined (SC92F759x) || defined (SC92R511x) || defined (SC92R342) || defined (SC
+             -92F841x) || defined (SC92F741x)\
+ 153            || defined(SC92F84Hx) || defined(SC92F83Hx) || defined(SC92F6x1x) || defined(SC92F5x1x) || defined(SC92R
+             -436)|| defined(SC92R438)|| defined(SC92R439)\
+ 154            || defined(SC92L840x)|| defined(SC92R439) || defined (SC92Fx41xB)|| defined (SC92R445)|| defined (SC92R42
+             -2A)|| defined (SC92F652x)\ 
+ 155            || defined (SC92F5x5x)
+              void ADC_Init(ADC_PresSel_TypeDef ADC_PrescalerSelection,
+                      ADC_Cycle_TypeDef ADC_Cycle)
+              {
+                /* Configure ADC clock division and sampling period */
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 4   
+
+                ADCCFG2 = ADC_PrescalerSelection | ADC_Cycle;
+              }
+              #elif defined(SC92F7003) || defined(SC92F8003) || defined(SC92F8003B) || defined(SC92F740x)
+              void ADC_Init(ADC_PresSel_TypeDef ADC_PrescalerSelection,
+                      ADC_Cycle_TypeDef ADC_Cycle)
+              {
+                /* Configure ADC clock division and sampling period */
+                ADCCFG1 = ADC_PrescalerSelection | ADC_Cycle;
+              }
+              #elif defined(SC92F742x) || defined(SC92F725X) || defined(SC92F735X) || defined(SC92F730x) || defined(SC92
+             -F732X) || defined(SC92F7490)\
+                || defined(SC93F833x) || defined(SC93F843x) || defined(SC93F743x) || defined(SC92F730x_2) || defined(SC9
+             -2F720x) || defined (SC92F7308B)
+              void ADC_Init(ADC_PresSel_TypeDef ADC_PrescalerSelection,
+                      ADC_Cycle_TypeDef ADC_Cycle)
+              {
+                ADC_Cycle = 0; //SC92F742x does not have this function
+                /* Configure ADC clock divider */
+                ADCCON = (ADCCON & 0xDF) | ADC_PrescalerSelection;
+              }
+              #elif defined (SC92L853x) || defined (SC92L753x)
+ 179          void ADC_Init(ADC_PresSel_TypeDef ADC_PrescalerSelection, ADC_Cycle_TypeDef ADC_Cycle)
+ 180          {
+ 181   1        ADC_Cycle = 0x00; //The input parameter is invalid in the 92L series.
+ 182   1        /* Configure ADC clock divider */
+ 183   1        ADCCFG2 = ADC_PrescalerSelection;
+ 184   1      }
+ 185          #elif defined(SC92F646x) || defined(SC92F546x) || defined(SC92F542x) || defined (SC92F531x) || defined(SC9
+             -2R51x_R52x) || defined (SC92F552x)\
+ 186           || defined(SC92F663x) 
+              void ADC_Init(ADC_PresSel_TypeDef ADC_PrescalerSelection,
+                      ADC_Cycle_TypeDef ADC_Cycle)
+              {
+                ADC_PrescalerSelection = 0x00;//The input parameter is invalid. 
+                /* Configure ADC clock division and sampling period */
+                ADCCFG2 = (ADCCFG2 & 0xE3) | ADC_Cycle;
+              }
+              #endif
+ 195          
+ 196          /**
+ 197           * @brief  Configure the ADC input channel
+ 198           * @param  ADC_Channel[in]: ADC input channel selection.
+ 199           *              SC92F854x,SC92F754x,SC92F844xB,SC92F744xB,SC92F84Ax_2,SC92F74Ax_2,SC92FWxx,SC92F859x,
+ 200           *              SC92F759x,SC92R511x 
+ 201           *                   Selection range(ADC_CHANNEL_0 - ADC_CHANNEL_15,ADC_CHANNEL_VDD_D4)
+ 202           *              SC92F84Hx,SC92F83Hx
+ 203           *                   Selection range(ADC_CHANNEL_0 - ADC_CHANNEL_19,ADC_CHANNEL_VDD_D4)
+ 204           *              SC92F646x,SC92F546x,SC92F542x
+ 205           *                   Selection range(ADC_CHANNEL_0 - ADC_CHANNEL_11,ADC_CHANNEL_VDD_D4)
+ 206           *              SC92F7003,SC92F8003,SC92F8003B,SC92F740x
+ 207           *                   Selection range(ADC_CHANNEL_0 - ADC_CHANNEL_6,ADC_CHANNEL_VDD_D4)
+ 208           *              SC92F846xB,SC92F746xB,SC92F836xB,SC92F736xB,SC92F83Ax,SC92F73Ax,SC92F84Ax,SC92F74Ax,
+ 209           *              SC92F742x,SC92F725X,SC92F735X,SC92F732X,SC92F848x,SC92F748x,SC92L853x,SC92L753x,SC92R342
+ 210           *              SC92F841x,SC92Fx41xB,SC92F741x ,SC92R445
+ 211           *                   Selection range(ADC_CHANNEL_0 - ADC_CHANNEL_9,ADC_CHANNEL_VDD_D4)
+ 212           *              SC92F730x,SC92F7308B
+ 213           *                   Selection range(ADC_CHANNEL_0,ADC_CHANNEL_1,ADC_CHANNEL_6,ADC_CHANNEL_7,ADC_CHANNEL_V
+             -DD_D4)
+ 214           *              SC92F730x_2,SC92F720x
+ 215           *                   Selection range(ADC_CHANNEL_0,ADC_CHANNEL_1,ADC_CHANNEL_4 - ADC_CHANNEL_9,ADC_CHANNEL
+             -_VDD_D4)
+ 216           *              SC92F7490
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 5   
+
+ 217           *                   Selection range(ADC_CHANNEL_0,ADC_CHANNEL_1,ADC_CHANNEL_VDD_D4)
+ 218           *              SC93F833x,SC93F843x,SC93F743x
+ 219           *                   Selection range(ADC_CHANNEL_0 - ADC_CHANNEL_9,ADC_CHANNEL_9_PGA,ADC_CHANNEL_Temp,ADC_
+             -CHANNEL_VDD_D4)
+ 220           *              SC92F6x1x,SC92F5x1x,SC92R436,SC92R439,SC92R422A
+ 221           *                   Selection range(ADC_CHANNEL_0 - ADC_CHANNEL_25,ADC_CHANNEL_VDD_D4)
+ 222           *              SC92F652x,SC92R51x_R52x,SC92F552x
+ 223           *                   Selection range(ADC_CHANNEL_0 - ADC_CHANNEL_30,ADC_CHANNEL_VDD_D4)
+ 224           *              SC92F5x5x
+ 225           *                   Selection range(ADC_CHANNEL_0 - ADC_CHANNEL_1,ADC_CHANNEL_5,ADC_CHANNEL_8,ADC_CHANNEL
+             -_10 - ADC_CHANNEL_14,ADC_CHANNEL_18 - ADC_CHANNEL_21,ADC_CHANNEL_VDD_D4)
+ 226           *              SC92F531x
+ 227           *                   Selection range(ADC_CHANNEL_0 - ADC_CHANNEL_21,ADC_CHANNEL_OP,ADC_CHANNEL_VDD_D4)
+ 228           *              SC92F663x
+ 229           *                   Selection range(ADC_CHANNEL_0 - ADC_CHANNEL_8,ADC_CHANNEL_VDD_D4)
+ 230           *                         - ADC_CHANNEL_0 : ADC input channel 0 
+ 231           *                         - ADC_CHANNEL_1 : ADC input channel 1 
+ 232           *                         - ADC_CHANNEL_2 : ADC input channel 2 
+ 233           *                         - ADC_CHANNEL_3 : ADC input channel 3  
+ 234           *                         - ADC_CHANNEL_4 : ADC input channel 4  
+ 235           *                         - ADC_CHANNEL_5 : ADC input channel 5  
+ 236           *                         - ADC_CHANNEL_6 : ADC input channel 6  
+ 237           *                         - ADC_CHANNEL_7 : ADC input channel 7  
+ 238           *                         - ADC_CHANNEL_8 : ADC input channel 8 
+ 239           *                         - ADC_CHANNEL_9 : ADC input channel 9
+ 240           *                         - ADC_CHANNEL_9_PGA : ADC input channel 9_PGA
+ 241           *                         - ADC_CHANNEL_10 :ADC input channel 10  
+ 242           *                         - ADC_CHANNEL_11 :ADC input channel 11 
+ 243           *                         - ADC_CHANNEL_12 :ADC input channel 12  
+ 244           *                         - ADC_CHANNEL_13 :ADC input channel 13 
+ 245           *                         - ADC_CHANNEL_14 :ADC input channel 14
+ 246           *                         - ADC_CHANNEL_15 :ADC input channel 15 
+ 247           *                         - ADC_CHANNEL_16 :ADC input channel 16 
+ 248           *                         - ADC_CHANNEL_17 :ADC input channel 17
+ 249           *                         - ADC_CHANNEL_18 :ADC input channel 18 
+ 250           *                         - ADC_CHANNEL_19 :ADC input channel 19 
+ 251           *                         - ADC_CHANNEL_20 :ADC input channel 20 
+ 252           *                         - ADC_CHANNEL_21 :ADC input channel 21
+ 253           *                         - ADC_CHANNEL_22 :ADC input channel 22 
+ 254           *                         - ADC_CHANNEL_23 :ADC input channel 23 
+ 255           *                         - ADC_CHANNEL_24 :ADC input channel 24 
+ 256           *                         - ADC_CHANNEL_25 :ADC input channel 25 
+ 257           *                         - ADC_CHANNEL_26 :ADC input channel 26
+ 258           *                         - ADC_CHANNEL_27 :ADC input channel 27 
+ 259           *                         - ADC_CHANNEL_28 :ADC input channel 28 
+ 260           *                         - ADC_CHANNEL_29 :ADC input channel 29 
+ 261           *                         - ADC_CHANNEL_30 :ADC input channel 30 
+ 262           *                         - ADC_CHANNEL_VDD_D4:ADC_CHANNEL VDD Divide 4
+ 263           *                         - ADC_CHANNEL_Temp:Temperature sensor serves as an ADC input
+ 264           * @param  NewState[in]: new state of the ADCx peripheral.
+ 265           *                  - DISABLE:Function disable
+ 266           *                  - ENABLE:Function enable  
+ 267           * @retval None
+ 268           */
+ 269          #if defined(SC92F854x) || defined(SC92F754x) || defined(SC92F844xB) || defined(SC92F744xB) || defined(SC92
+             -F84Ax_2) || defined(SC92F74Ax_2)\
+ 270              || defined(SC92F846xB) || defined(SC92F746xB) || defined(SC92F836xB) || defined(SC92F736xB) || defined(S
+             -C92F84Ax) || defined(SC92F74Ax)\
+ 271              || defined(SC92F83Ax) || defined(SC92F73Ax) || defined(SC92FWxx) || defined(SC92F848x) || defined(SC92F7
+             -48x)\
+ 272              || defined(SC92F859x) || defined(SC92F759x) || defined (SC92L853x) || defined (SC92L753x) || defined (SC
+             -92R511x) || defined (SC92R342)\
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 6   
+
+ 273              || defined (SC92F841x) || defined (SC92F741x) || defined(SC92F646x) || defined(SC92F546x) || defined(SC9
+             -2F542x) || defined (SC92Fx41xB)\
+ 274              || defined (SC92R445) 
+ 275          void ADC_ChannelConfig(ADC_Channel_TypeDef ADC_Channel, FunctionalState NewState)
+ 276          {
+ 277   1        uint16_t TempReg;
+ 278   1        /* Set the ADC channel type */
+ 279   1        ADCCON = (ADCCON & 0XE0) | ADC_Channel;
+ 280   1        
+ 281   1        /*Configure ADC external sampling channel*/
+ 282   1        if (ADC_Channel < ADC_CHANNEL_VDD_D4) //Internal sampling channels do not need configuration
+ 283   1        {
+ 284   2          TempReg = (0x0001 << ADC_Channel);
+ 285   2        if (NewState == DISABLE)//Enable ADC sampling channel
+ 286   2        {
+ 287   3          ADCCFG0 &= (~(uint8_t)TempReg);
+ 288   3          ADCCFG1 &= (~(uint8_t)(TempReg >> 8));
+ 289   3        }
+ 290   2        else  // Disable ADC sampling channel
+ 291   2        {
+ 292   3          ADCCFG0 |= ((uint8_t)TempReg);
+ 293   3          ADCCFG1 |= ((uint8_t)(TempReg >> 8));
+ 294   3        }
+ 295   2        }
+ 296   1      }
+ 297          #elif defined(SC92F84Hx) || defined(SC92F83Hx) 
+              void ADC_ChannelConfig(ADC_Channel_TypeDef ADC_Channel, FunctionalState NewState)
+              {
+                uint32_t TempReg;
+                /* Set the ADC channel type */
+                ADCCON = (ADCCON & 0XE0) | ADC_Channel;
+                
+                /*Configure ADC external sampling channel*/
+                if (ADC_Channel < ADC_CHANNEL_VDD_D4) //Internal sampling channels do not need configuration
+                {
+                  TempReg = (0x0001UL << ADC_Channel);
+                if (NewState == DISABLE)// Enable ADC sampling channel
+                {
+                  ADCCFG0 &= (~(uint8_t)TempReg);
+                  ADCCFG1 &= (~(uint8_t)(TempReg >> 8));
+                  ADCCFG3 &= (~(uint8_t)(TempReg >> 16));
+                }
+                else  //Disable ADC sampling channel
+                {
+                  ADCCFG0 |= ((uint8_t)TempReg);
+                  ADCCFG1 |= ((uint8_t)(TempReg >> 8));
+                  ADCCFG3 |= ((uint8_t)(TempReg >> 16));
+                }
+                }
+              }
+              #elif defined(SC92F7003) || defined(SC92F8003) || defined(SC92F8003B) || defined(SC92F740x) || defined(SC9
+             -2F7490)
+              void ADC_ChannelConfig(ADC_Channel_TypeDef ADC_Channel, FunctionalState NewState)
+              {
+                uint8_t TempReg;
+                /* Set the ADC channel type */
+                ADCCON = (ADCCON & 0xE0) | ADC_Channel;
+                
+                /*Configure ADC external sampling channel*/
+                if (ADC_Channel < ADC_CHANNEL_VDD_D4) //Internal sampling channels do not need configuration
+                {
+                  TempReg = (0x01 << ADC_Channel);
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 7   
+
+                  if (ADC_Channel < ADC_CHANNEL_VDD_D4)
+                  {
+                    if (NewState == DISABLE)  //Disable ADC sampling channel
+                    {
+                      ADCCFG0 &= (~TempReg);
+                    }
+                    else  //Enable ADC sampling channel
+                    {
+                      ADCCFG0 |= TempReg;
+                    }
+                  }
+                }
+              }
+              #elif defined(SC92F742x) || defined(SC92F730x) || defined(SC92F725X) || defined(SC92F735X) || defined(SC92
+             -F732X) || defined(SC92F730x_2) || defined(SC92F720x) \
+              ||defined (SC92F7308B) ||defined (SC92L840x)
+              void ADC_ChannelConfig(ADC_Channel_TypeDef ADC_Channel, FunctionalState NewState)
+              {
+                uint16_t TempReg;
+                /* Set the ADC channel type */
+                ADCCON = (ADCCON & 0xF0) | ADC_Channel;
+                
+                /*Configure ADC external sampling channel*/
+                if (ADC_Channel < ADC_CHANNEL_VDD_D4) //Internal sampling channels do not need configuration
+                {
+                TempReg = (0x0001 << ADC_Channel);
+                if (NewState == DISABLE)
+                {
+                  ADCCFG0 &= (~(uint8_t)TempReg);
+                  ADCCFG1 &= (~(uint8_t)(TempReg >> 8));
+                }
+                else
+                {
+                  ADCCFG0 |= ((uint8_t)TempReg);
+                  ADCCFG1 |= ((uint8_t)(TempReg >> 8));
+                }
+                }
+              }
+              #elif defined(SC93F833x) || defined(SC93F843x) || defined(SC93F743x)
+              void ADC_ChannelConfig(ADC_Channel_TypeDef ADC_Channel, FunctionalState NewState)
+              {
+                uint16_t TempReg;
+                /* Set the ADC channel type */
+                ADCCON = (ADCCON & 0xF0) | ADC_Channel;
+                
+                /*Configure ADC external sampling channel*/
+                if (ADC_Channel < ADC_CHANNEL_Temp) //Internal sampling channels do not need configuration
+                {
+                TempReg = (0x0001 << ADC_Channel);
+                if (NewState == DISABLE)
+                {
+                  ADCCFG0 &= (~(uint8_t)TempReg);
+                  ADCCFG1 &= (~(uint8_t)(TempReg >> 8));
+                }
+                else
+                {
+                  ADCCFG0 |= ((uint8_t)TempReg);
+                  ADCCFG1 |= ((uint8_t)(TempReg >> 8));
+                }
+                }
+                else if (ADC_Channel == ADC_CHANNEL_Temp) //Internal temperature sampling channel
+                {
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 8   
+
+                if (NewState == DISABLE)
+                {
+                  TSCFG &= 0X7F;
+                }
+                else
+                {
+                  /* ADC reference voltage selected internal 2.4V as reference */ 
+                  OPINX = 0xC2;
+                  OPREG = OPREG & 0X7F | 0x80;
+                    
+                  TSCFG |= 0x80;
+                }
+                }
+                else if (ADC_Channel == ADC_CHANNEL_9_PGA) //Variable gain amplifier sampling channel
+                {
+                  unsigned char code *IFBAddr = 0x3D;
+                if (NewState == DISABLE)
+                {
+                  ADCCFG1 &= (~(uint8_t)0x02); //Close channel 9
+                  PGACON &= 0x7F;              //ENABLE PGA
+                }
+                  /* Read PGA internal factory calibration values */
+                else
+                {
+                  ADCCFG1 |= ((uint8_t)0x02); //The PGA input channel is multiplexed with channel 9;Enable channel 9
+              
+                  IAPADE = 0x01;       //Pointer points to IFB area
+                  PGACFG = *(IFBAddr); //Read calibration values
+                  IAPADE = 0x00;       //The pointer points to the ROM area
+              
+                  PGACON |= 0x80; //ENABLE PGA
+                }
+                }
+              }
+              #elif defined(SC92F6x1x) || defined(SC92F5x1x) || defined(SC92R436)|| defined(SC92R438)|| defined(SC92R439
+             -)|| defined(SC92R422A)\
+                    || defined(SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x)
+              void ADC_ChannelConfig(ADC_Channel_TypeDef ADC_Channel, FunctionalState NewState)
+              {
+               
+                /* Set the ADC channel type */
+                ADCCON = (ADCCON & 0xE0) | ADC_Channel;
+                
+                /*Configure ADC external sampling channel*/
+                if (ADC_Channel < ADC_CHANNEL_VDD_D4) //Internal sampling channels do not need configuration
+                {
+                  if (NewState == DISABLE)
+                  {
+                      if(ADC_Channel<8)
+                      {
+                        ADCCFG2 &=~(0xC0);
+                        ADCCFG0 &= ~(1<<ADC_Channel);   //Set the channel as the sampling port
+                      }
+                      else if(ADC_Channel<16)
+                      {
+                        ADCCFG2 &=~(0xC0);
+                        ADCCFG2 |=0x40;
+                        ADCCFG0 &= ~(1<<(ADC_Channel-8));   //Set the channel as the sampling port
+                      }
+                      else if(ADC_Channel<24)
+                      {
+                       ADCCFG2 &=~(0xC0);
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 9   
+
+                        ADCCFG2 |=0x80;
+                        ADCCFG0 &= ~(1<<(ADC_Channel-16));   //Set the channel as the sampling port
+                      }
+                      else 
+                      {
+                        ADCCFG2 &=~(0xC0);
+                        ADCCFG2 |=0xC0;
+                        ADCCFG0 &= ~(1<<(ADC_Channel-24));   //Set the channel as the sampling port
+                      }
+                  }
+                  else
+                  {
+                      if(ADC_Channel<8)
+                      {
+                        ADCCFG2 &=~(0xC0);
+                        ADCCFG0 = 1<<ADC_Channel;   //Set the channel as the sampling port
+                      }
+                      else if(ADC_Channel<16)
+                      {
+                        ADCCFG2 &=~(0xC0);
+                        ADCCFG2 |=0x40;
+                        ADCCFG0 = 1<<(ADC_Channel-8);   //Set the channel as the sampling port
+                      }
+                      else if(ADC_Channel<24)
+                      {
+                       ADCCFG2 &=~(0xC0);
+                        ADCCFG2 |=0x80;
+                        ADCCFG0 = 1<<(ADC_Channel-16);   //Set the channel as the sampling port
+                      }
+                      else 
+                      {
+                        ADCCFG2 &=~(0xC0);
+                        ADCCFG2 |=0xC0;
+                        ADCCFG0 = 1<<(ADC_Channel-24);   //Set the channel as the sampling port
+                      }
+              
+                  }
+                }
+              }
+              #elif defined(SC92F5x5x) || defined(SC92F531x)
+              void ADC_ChannelConfig(ADC_Channel_TypeDef ADC_Channel, FunctionalState NewState)
+              {
+               
+                /* Set the ADC channel type */
+                ADCCON = (ADCCON & 0xE0) | ADC_Channel;
+                
+                /*Configure ADC external sampling channel*/
+                if (ADC_Channel < ADC_CHANNEL_VDD_D4) //Internal sampling channels do not need configuration
+                {
+                  if (NewState == DISABLE)
+                  {
+                      if(ADC_Channel<8)
+                      {
+                        ADCCFG2 &=~(0xC0);
+                        ADCCFG0 &= ~(1<<ADC_Channel);   //Set the channel as the sampling port
+                      }
+                      else if(ADC_Channel<16)
+                      {
+                        ADCCFG2 &=~(0xC0);
+                        ADCCFG2 |=0x40;
+                        ADCCFG0 &= ~(1<<(ADC_Channel-8));   //Set the channel as the sampling port
+                      }
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 10  
+
+                      else if(ADC_Channel<24)
+                      {
+                       ADCCFG2 &=~(0xC0);
+                        ADCCFG2 |=0x80;
+                        ADCCFG0 &= ~(1<<(ADC_Channel-16));   //Set the channel as the sampling port
+                      }
+                  }
+                  else
+                  {
+                      if(ADC_Channel<8)
+                      {
+                        ADCCFG2 &=~(0xC0);
+                        ADCCFG0 = 1<<ADC_Channel;   //Set the channel as the sampling port
+                      }
+                      else if(ADC_Channel<16)
+                      {
+                        ADCCFG2 &=~(0xC0);
+                        ADCCFG2 |=0x40;
+                        ADCCFG0 = 1<<(ADC_Channel-8);   //Set the channel as the sampling port
+                      }
+                      else if(ADC_Channel<24)
+                      {
+                       ADCCFG2 &=~(0xC0);
+                        ADCCFG2 |=0x80;
+                        ADCCFG0 = 1<<(ADC_Channel-16);   //Set the channel as the sampling port
+                      }
+                  }
+                }
+              }
+              #elif defined(SC92F663x)
+              void ADC_ChannelConfig(ADC_Channel_TypeDef ADC_Channel, FunctionalState NewState)
+              {
+               
+                /* Set the ADC channel type */
+                ADCCON = (ADCCON & 0xE0) | ADC_Channel;
+                
+                /*Configure ADC external sampling channel*/
+                if (ADC_Channel < ADC_CHANNEL_VDD_D4) //Internal sampling channels do not need configuration
+                {
+                  if (NewState == DISABLE)
+                  {
+                      if(ADC_Channel<8)
+                      {
+                        ADCCFG2 &=~(0x40);
+                        ADCCFG0 &= ~(1<<ADC_Channel);   //Set the channel as the sampling port
+                      }
+                      else if(ADC_Channel<16)
+                      {
+                        ADCCFG2 &=~(0x40);
+                        ADCCFG2 |=0x40;
+                        ADCCFG0 &= ~(1<<(ADC_Channel-8));   //Set the channel as the sampling port
+                      }
+                  }
+                  else
+                  {
+                      if(ADC_Channel<8)
+                      {
+                        ADCCFG2 &=~(0x40);
+                        ADCCFG0 = 1<<ADC_Channel;   //Set the channel as the sampling port
+                      }
+                      else if(ADC_Channel<16)
+                      {
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 11  
+
+                        ADCCFG2 &=~(0x40);
+                        ADCCFG2 |=0x40;
+                        ADCCFG0 = 1<<(ADC_Channel-8);   //Set the channel as the sampling port
+                      }
+                  }
+                }
+              }
+              #endif
+ 587          
+ 588          /**
+ 589           * @brief  Configure ADC IO mode
+ 590           * @param  ADC_EAIN_Select[in]:Select the ADC port that needs to be configured.
+ 591           *              SC92F854x,SC92F754x,SC92F844xB,SC92F744xB,SC92F84Ax_2,SC92F74Ax_2,SC92FWxx,SC92F859x,
+ 592           *              SC92F759x,SC92R511x 
+ 593           *                   Selection range(ADC_EAIN_0 - ADC_EAIN_15)
+ 594           *              SC92F84Hx,SC92F83Hx
+ 595           *                   Selection range(ADC_EAIN_0 - ADC_EAIN_19)
+ 596           *              SC92F646x,SC92F546x,SC92F542x
+ 597           *                   Selection range(ADC_EAIN_0 - ADC_EAIN_11)
+ 598           *              SC92F7003,SC92F8003,SC92F8003B,SC92F740x
+ 599           *                   Selection range(ADC_EAIN_0 - ADC_EAIN_6)
+ 600           *              SC92F846xB,SC92F746xB,SC92F836xB,SC92F736xB,SC92F83Ax,SC92F73Ax,SC92F84Ax,SC92F74Ax,
+ 601           *              SC92F742x,SC92F725X,SC92F735X,SC92F732X,SC92F848x,SC92F748x,SC92L853x,SC92L753x,SC92R342
+ 602           *              SC92F841x,SC92Fx41xB,SC92R445,SC92F741x 
+ 603           *                   Selection range(ADC_EAIN_0 - ADC_EAIN_9)
+ 604           *              SC92F730x,SC92F7308B
+ 605           *                   Selection range(ADC_EAIN_0,ADC_EAIN_1,ADC_EAIN_6,ADC_EAIN_7)
+ 606           *              SC92F730x_2,SC92F720x
+ 607           *                   Selection range(ADC_EAIN_0,ADC_EAIN_1,ADC_EAIN_4 - ADC_EAIN_9)
+ 608           *              SC92F7490
+ 609           *                   Selection range(ADC_EAIN_0,ADC_EAIN_1)
+ 610           *              SC93F833x,SC93F843x,SC93F743x
+ 611           *                   Selection range(ADC_EAIN_0 - ADC_EAIN_9)
+ 612           *              SC92F6x1x,SC92F5x1x,SC92R436,SC92R439,SC92R422A
+ 613           *                   Selection range(ADC_EAIN_0 - ADC_EAIN_25)
+ 614           *              SC92F652x,SC92R51x_R52x,SC92F552x
+ 615           *                   Selection range(ADC_EAIN_0 - ADC_EAIN_30)
+ 616           *              SC92F5x5x
+ 617           *                   Selection range(ADC_EAIN_0,ADC_EAIN_1,ADC_EAIN_5,ADC_EAIN_8 - ADC_EAIN_14,ADC_EAIN_18
+             - - ADC_EAIN_21)
+ 618           *              SC92F531x
+ 619           *                   Selection range(ADC_EAIN_0 - ADC_EAIN_21)
+ 620           *              SC92F663x
+ 621           *                   Selection range(ADC_EAIN_0 - ADC_EAIN_8)
+ 622           *                      - ADC_EAIN_0:Select AIN0.
+ 623           *                      - ADC_EAIN_1:Select AIN1.
+ 624           *                      - ADC_EAIN_2:Select AIN2.
+ 625           *                      - ADC_EAIN_3:Select AIN3.
+ 626           *                      - ADC_EAIN_4:Select AIN4.
+ 627           *                      - ADC_EAIN_5:Select AIN5.
+ 628           *                      - ADC_EAIN_6:Select AIN6.
+ 629           *                      - ADC_EAIN_7:Select AIN7.
+ 630           *                      - ADC_EAIN_8:Select AIN8.
+ 631           *                      - ADC_EAIN_9:Select AIN9.
+ 632           *                      - ADC_EAIN_10:Select AIN10.
+ 633           *                      - ADC_EAIN_11:Select AIN11.
+ 634           *                      - ADC_EAIN_12:Select AIN12.
+ 635           *                      - ADC_EAIN_13:Select AIN13.
+ 636           *                      - ADC_EAIN_14:Select AIN14.
+ 637           *                      - ADC_EAIN_15:Select AIN15.
+ 638           *                      - ADC_EAIN_16:Select AIN16.
+ 639           *                      - ADC_EAIN_17:Select AIN17.
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 12  
+
+ 640           *                      - ADC_EAIN_18:Select AIN18.
+ 641           *                      - ADC_EAIN_19:Select AIN19.
+ 642           *                      - ADC_EAIN_20:Select AIN20.
+ 643           *                      - ADC_EAIN_21:Select AIN21.
+ 644           *                      - ADC_EAIN_22:Select AIN22.
+ 645           *                      - ADC_EAIN_23:Select AIN23.
+ 646           *                      - ADC_EAIN_24:Select AIN24.
+ 647           *                      - ADC_EAIN_25:Select AIN25.
+ 648           *                      - ADC_EAIN_26:Select AIN26.
+ 649           *                      - ADC_EAIN_27:Select AIN27.
+ 650           *                      - ADC_EAIN_28:Select AIN28.
+ 651           *                      - ADC_EAIN_29:Select AIN29.
+ 652           *                      - ADC_EAIN_30:Select AIN30.
+ 653           * @param  NewState[in]:new state of the ADCx peripheral.
+ 654           *                  - DISABLE:Function disable
+ 655           *                  - ENABLE:Function enable
+ 656           * @retval None
+ 657           */
+ 658          void ADC_EAINConfig(uint32_t ADC_EAIN_Select,
+ 659                    FunctionalState NewState)
+ 660          {
+ 661   1        if (NewState == DISABLE)
+ 662   1        {
+ 663   2      #if !defined(SC92F6x1x) && !defined(SC92F5x1x) && !defined(SC92R436)&& !defined(SC92R438)&& !defined(SC92R
+             -439)&& !defined(SC92R422A)\
+ 664   2          && !defined(SC92F652x) && !defined(SC92R51x_R52x) && !defined(SC92F552x) && !defined(SC92F5x5x)&& !defin
+             -ed(SC92F531x)\
+ 665   2          && !defined(SC92F663x)
+ 666   2        ADCCFG0 &= (~(uint8_t)ADC_EAIN_Select);
+ 667   2      #if defined (SC92F854x) || defined (SC92F754x) || defined  (SC92F844xB) || defined (SC92F744xB) || defined
+             -  (SC92F84Ax_2) || defined (SC92F74Ax_2)\
+ 668   2          || defined (SC92F846xB) || defined (SC92F746xB) || defined (SC92F836xB) || defined (SC92F736xB)||defined
+             -  (SC92F84Ax) || defined (SC92F74Ax)\
+ 669   2          || defined(SC92F83Ax) || defined(SC92F73Ax) || defined(SC92F848x) || defined(SC92F748x) || defined(SC92F
+             -859x)  || defined (SC92F759x)\
+ 670   2          || defined (SC92L853x) || defined (SC92L753x) || defined (SC92R511x) || defined (SC92R342) || defined (S
+             -C92F841x) || defined (SC92F741x)\
+ 671   2          || defined(SC92F646x) || defined(SC92F546x) || defined(SC92F542x) || defined(SC92F730x_2) || defined(SC9
+             -2F720x) || defined(SC92L840x)\
+ 672   2          || defined (SC92Fx41xB)|| defined (SC92R445)
+ 673   2        ADCCFG1 &= (~(uint8_t)(ADC_EAIN_Select >> 8));
+ 674   2      #elif defined(SC92F84Hx) || defined(SC92F83Hx)
+                ADCCFG1 &= (~(uint8_t)(ADC_EAIN_Select >> 8));
+                ADCCFG3 &= (~(uint8_t)(ADC_EAIN_Select >> 16));
+              #endif
+ 678   2      #endif
+ 679   2      #if defined(SC92F6x1x) || defined(SC92F5x1x) || defined(SC92R436)|| defined(SC92R438)|| defined(SC92R439)|
+             -| defined(SC92R422A)|| defined(SC92F652x)\
+ 680   2          || defined(SC92R51x_R52x) || defined (SC92F552x)
+                  if(ADC_EAIN_Select<=0X80)
+                  {
+                    ADCCFG2 &=~(0xC0);
+                    ADCCFG0 &= (~(uint8_t)(ADC_EAIN_Select));   //Set the channel as the sampling port
+                  }
+                  else if(ADC_EAIN_Select<=0X8000)
+                  {
+                    ADCCFG2 &=~(0xC0);
+                    ADCCFG2 |=0x40;
+                    ADCCFG0 &= (~(uint8_t)(ADC_EAIN_Select>>8));   //Set the channel as the sampling port
+                  }
+                  else if(ADC_EAIN_Select<=0X800000)
+                  {
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 13  
+
+                   ADCCFG2 &=~(0xC0);
+                    ADCCFG2 |=0x80;
+                    ADCCFG0 &= (~(uint8_t)(ADC_EAIN_Select>>16));   //Set the channel as the sampling port
+                  }
+                  else 
+                  {
+                    ADCCFG2 &=~(0xC0);
+                    ADCCFG2 |=0xC0;
+                    ADCCFG0 &= (~(uint8_t)(ADC_EAIN_Select>>24));   //Set the channel as the sampling port
+                  }
+              #endif
+ 705   2      #if defined(SC92F5x5x) || defined(SC92F531x)
+                  if(ADC_EAIN_Select<=0X80)
+                  {
+                    ADCCFG2 &=~(0xC0);
+                    ADCCFG0 &= (~(uint8_t)(ADC_EAIN_Select));   //Set the channel as the sampling port
+                  }
+                  else if(ADC_EAIN_Select<=0X8000)
+                  {
+                    ADCCFG2 &=~(0xC0);
+                    ADCCFG2 |=0x40;
+                    ADCCFG0 &= (~(uint8_t)(ADC_EAIN_Select>>8));   //Set the channel as the sampling port
+                  }
+                  else if(ADC_EAIN_Select<=0X800000)
+                  {
+                   ADCCFG2 &=~(0xC0);
+                    ADCCFG2 |=0x80;
+                    ADCCFG0 &= (~(uint8_t)(ADC_EAIN_Select>>16));   //Set the channel as the sampling port
+                  }
+              #endif  
+ 724   2      #if defined(SC92F663x)
+                  if(ADC_EAIN_Select<=0X80)
+                  {
+                    ADCCFG2 &=~(0x40);
+                    ADCCFG0 &= (~(uint8_t)(ADC_EAIN_Select));   //Set the channel as the sampling port
+                  }
+                  else if(ADC_EAIN_Select<=0X8000)
+                  {
+                    ADCCFG2 &=~(0x40);
+                    ADCCFG2 |=0x40;
+                    ADCCFG0 &= (~(uint8_t)(ADC_EAIN_Select>>8));   //Set the channel as the sampling port
+                  }
+              #endif
+ 737   2        }
+ 738   1        else
+ 739   1        {
+ 740   2      #if !defined(SC92F6x1x) && !defined(SC92F5x1x) && !defined(SC92F652x) && !defined(SC92R51x_R52x) && !defin
+             -ed(SC92F552x) && !defined(SC92F5x5x) && !defined(SC92F531x)\
+ 741   2          && !defined(SC92F663x)
+ 742   2        ADCCFG0 |= ((uint8_t)ADC_EAIN_Select);
+ 743   2      #if defined (SC92F854x) || defined (SC92F754x) || defined (SC92F844xB) || defined (SC92F744xB)||defined  (
+             -SC92F84Ax_2) || defined (SC92F74Ax_2)\
+ 744   2          || defined (SC92F846xB) || defined (SC92F746xB) || defined (SC92F836xB) || defined (SC92F736xB) || defin
+             -ed  (SC92F84Ax) || defined (SC92F74Ax)\
+ 745   2          || defined(SC92F83Ax) || defined(SC92F73Ax) || defined(SC92F848x) || defined(SC92F748x) || defined(SC92F
+             -859x) || defined (SC92F759x)\
+ 746   2          || defined (SC92L853x) || defined (SC92L753x) || defined (SC92R511x) || defined (SC92R342) || defined (S
+             -C92F841x) || defined (SC92F741x)\
+ 747   2          || defined(SC92F646x) || defined(SC92F546x) || defined(SC92F542x) || defined(SC92F730x_2) || defined(SC9
+             -2F720x)  || defined(SC92L840x)\
+ 748   2          || defined (SC92Fx41xB) || defined (SC92R445)
+ 749   2        ADCCFG1 |= ((uint8_t)(ADC_EAIN_Select >> 8));
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 14  
+
+ 750   2      #elif defined(SC92F84Hx) || defined(SC92F83Hx)
+                ADCCFG1 |= ((uint8_t)(ADC_EAIN_Select >> 8));
+                ADCCFG3 |= ((uint8_t)(ADC_EAIN_Select >> 16));
+              #endif
+ 754   2      #endif
+ 755   2      #if defined(SC92F6x1x) || defined(SC92F5x1x) || defined(SC92R436) || defined(SC92R438)|| defined(SC92R439)
+             -|| defined(SC92R422A)|| defined(SC92F652x)\
+ 756   2          || defined(SC92R51x_R52x) || defined (SC92F552x)
+                  if(ADC_EAIN_Select<=0X80)
+                  {
+                    ADCCFG2 &=~(0xC0);
+                    ADCCFG0 |= (uint8_t)(ADC_EAIN_Select);   //Set the channel as the sampling port
+                  }
+                  else if(ADC_EAIN_Select<=0X8000)
+                  {
+                    ADCCFG2 &=~(0xC0);
+                    ADCCFG2 |=0x40;
+                    ADCCFG0 |= (uint8_t)(ADC_EAIN_Select>>8);   //Set the channel as the sampling port
+                  }
+                  else if(ADC_EAIN_Select<=0X800000)
+                  {
+                   ADCCFG2 &=~(0xC0);
+                    ADCCFG2 |=0x80;
+                    ADCCFG0 |= (uint8_t)(ADC_EAIN_Select>>16);   //Set the channel as the sampling port
+                  }
+                  else 
+                  {
+                    ADCCFG2 &=~(0xC0);
+                    ADCCFG2 |=0xC0;
+                    ADCCFG0 |= (uint8_t)(ADC_EAIN_Select>>24);   //Set the channel as the sampling port
+                  }
+              #endif
+ 781   2      #if defined(SC92F5x5x) || defined(SC92F531x)
+                  if(ADC_EAIN_Select<=0X80)
+                  {
+                    ADCCFG2 &=~(0xC0);
+                    ADCCFG0 |= (uint8_t)(ADC_EAIN_Select);   //Set the channel as the sampling port
+                  }
+                  else if(ADC_EAIN_Select<<=0X8000)
+                  {
+                    ADCCFG2 &=~(0xC0);
+                    ADCCFG2 |=0x40;
+                    ADCCFG0 |= (uint8_t)(ADC_EAIN_Select>>8);   //Set the channel as the sampling port
+                  }
+                  else if(ADC_EAIN_Select<=0X800000)
+                  {
+                   ADCCFG2 &=~(0xC0);
+                    ADCCFG2 |=0x80;
+                    ADCCFG0 |= (uint8_t)(ADC_EAIN_Select>>16);   //Set the channel as the sampling port
+                  }
+              #endif
+ 800   2      #if defined(SC92F663x)
+                  if(ADC_EAIN_Select<=0X80)
+                  {
+                    ADCCFG2 &=~(0x40);
+                    ADCCFG0 |= (uint8_t)(ADC_EAIN_Select);   //Set the channel as the sampling port
+                  }
+                  else if(ADC_EAIN_Select<=0X8000)
+                  {
+                    ADCCFG2 &=~(0x40);
+                    ADCCFG2 |=0x40;
+                    ADCCFG0 |= (uint8_t)(ADC_EAIN_Select>>8);   //Set the channel as the sampling port
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 15  
+
+                  }
+              #endif
+ 813   2        }
+ 814   1      }
+ 815          
+ 816          /**
+ 817           * @brief  Enables or disables the specified ADC peripheral.
+ 818           * @param  NewState[in]: new state of the ADCx peripheral.
+ 819           *                  @ DISABLE:Function disable
+ 820           *                  @ ENABLE:Function enable  
+ 821           * @retval None
+ 822           */
+ 823          void ADC_Cmd(FunctionalState NewState)
+ 824          {
+ 825   1        if (NewState == DISABLE)
+ 826   1        {
+ 827   2          /* Disable the ADC Counter */
+ 828   2        ADCCON &= 0X7F;
+ 829   2        }
+ 830   1        else
+ 831   1        {
+ 832   2          /* Enable the ADC Counter */
+ 833   2        ADCCON |= 0x80;
+ 834   2        }
+ 835   1      }
+ 836          
+ 837          /**
+ 838           * @}
+ 839           */
+ 840          /* End of ADC_Group1. */
+ 841          
+ 842          /** @defgroup ADC_Group2 Conversion management functions
+ 843           *  @brief   Conversion management functions
+ 844           *
+ 845          @verbatim
+ 846           ===============================================================================
+ 847                               ##### ADC Conversion management functions #####
+ 848           ===============================================================================
+ 849          @endverbatim
+ 850            * @{
+ 851            */
+ 852          
+ 853          /**
+ 854           * @brief  Returns the last ADCx conversion result data for regular channel.
+ 855           * @param  None
+ 856           * @retval the result of the latest ADCx conversion
+ 857           */
+ 858          unsigned int ADC_GetConversionValue(void)
+ 859          {
+ 860   1        return ((ADCVH << 4) + (ADCVL >> 4));
+ 861   1      }
+ 862          
+ 863          #if defined (SC92F854x) || defined (SC92F754x) || defined  (SC92F844xB) || defined (SC92F744xB) || defined
+             -  (SC92F84Ax_2) || defined (SC92F74Ax_2)\
+ 864            || defined (SC92F846xB) || defined (SC92F746xB) || defined (SC92F836xB) || defined (SC92F736xB) || define
+             -d (SC92F848x) || defined (SC92F748x)\
+ 865            || defined (SC92F859x) || defined (SC92F759x) || defined (SC92L853x) || defined (SC92L753x) || defined (S
+             -C92R511x) || defined (SC92R342)\
+ 866            || defined (SC92F841x) || defined (SC92F741x) || defined(SC92F84Hx) || defined(SC92F83Hx) || defined(SC92
+             -F646x) || defined(SC92F546x) || defined(SC92F542x)\
+ 867            || defined (SC92Fx41xB)|| defined (SC92R445)
+ 868          /*  Using MDU to reduce computation time */
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 16  
+
+ 869          #include "sc92f_mdu.h"
+ 870          uint16_t ADC_GetConversionAverageValue(ADC_SamplesNum_TypeDef ADC_SamplesNum)
+ 871          {
+ 872   1        uint8_t tmpCnt;
+ 873   1        uint16_t tmpValueSum = 0, tmpValue;
+ 874   1        uint16_t tmpValue_Max = 0, tmpValue_Min = 0xFFFF;
+ 875   1        bit tmpStaus = EADC;
+ 876   1        EADC = 0;
+ 877   1      
+ 878   1        for (tmpCnt = 0; tmpCnt < ADC_SamplesNum; tmpCnt++)
+ 879   1        {
+ 880   2          ADC_StartConversion();      //Start an ADC conversion.
+ 881   2          while (!ADC_GetFlagStatus());     //Waiting for ADC conversion to complete.
+ 882   2          ADC_ClearFlag();      //Clear ADC conversion flag.
+ 883   2          tmpValue = ADC_GetConversionValue();      //Obtain a single conversion value.
+ 884   2      
+ 885   2          /*Get the maximum value among multiple conversion values */
+ 886   2          if (tmpValue > tmpValue_Max)
+ 887   2            tmpValue_Max = tmpValue;
+ 888   2          /* Get the minimum value among multiple conversion results */
+ 889   2          if (tmpValue < tmpValue_Min)
+ 890   2            tmpValue_Min = tmpValue;
+ 891   2      
+ 892   2          tmpValueSum += tmpValue;//The sum of accumulated conversion values
+ 893   2        }
+ 894   1      
+ 895   1        /* Calculate the average using hardware multiplier/divider */
+ 896   1        {
+ 897   2          OPERCON |= 0X40;
+ 898   2          /* Dividend is a 16-bit data */
+ 899   2          tmpValueSum -= (tmpValue_Max + tmpValue_Min);
+ 900   2          EXA0 = tmpValueSum;
+ 901   2          EXA1 = tmpValueSum >> 8;
+ 902   2          EXBL = ADC_SamplesNum - 2;      //The divisor is an 8-bit data.
+ 903   2      
+ 904   2          OPERCON |= 0x80;        //Start division calculation.
+ 905   2          while (OPERCON & 0x80);     //Waiting for computation to complete.
+ 906   2      
+ 907   2          //Acquisition Factor
+ 908   2          tmpValue = (uint16_t)EXA0;
+ 909   2          tmpValue |= EXA1 << 8;
+ 910   2        }
+ 911   1      
+ 912   1        EADC = tmpStaus;      //Restore EADC
+ 913   1        return tmpValue;      //return the average
+ 914   1      }
+ 915          
+ 916          #else
+              uint16_t ADC_GetConversionAverageValue(ADC_SamplesNum_TypeDef ADC_SamplesNum)
+              {
+                uint8_t tmpCnt;
+                uint16_t tmpValueSum = 0, tmpValue;
+                uint16_t tmpValue_Max = 0, tmpValue_Min = 0xFFFF;
+                bit tmpStaus = EADC;
+                EADC = 0;
+              
+                for (tmpCnt = 0; tmpCnt < ADC_SamplesNum; tmpCnt++)
+                {
+                  ADC_StartConversion();      //Start an ADC conversion.
+                  while (!ADC_GetFlagStatus());     //Waiting for ADC conversion to complete.
+                  ADC_ClearFlag();      //Clear ADC conversion flag.
+                  tmpValue = ADC_GetConversionValue();      //Obtain a single conversion value.
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 17  
+
+              
+                  /*Get the maximum value among multiple conversion values */
+                  if (tmpValue > tmpValue_Max)
+                    tmpValue_Max = tmpValue;
+                  /* Get the minimum value among multiple conversion results */
+                  if (tmpValue < tmpValue_Min)
+                    tmpValue_Min = tmpValue;
+              
+                  tmpValueSum += tmpValue;//The sum of accumulated conversion values
+                }
+              
+                /* Calculate the average using software multiplication and division */
+                {
+                  /* Dividend is a 16-bit data */
+                  tmpValueSum -= (tmpValue_Max + tmpValue_Min);
+              
+                  //Acquisition Factor
+                  tmpValue = tmpValueSum / (ADC_SamplesNum - 2);
+                }
+              
+                EADC = tmpStaus;      //Restore EADC
+                return tmpValue;      //return the average
+              }
+              #endif
+ 955          /**
+ 956           * @}
+ 957           */
+ 958          /* End of ADC_Group2. */
+ 959          
+ 960          /** @defgroup ADC_Group3 Interrupts and flags management functions
+ 961           *  @brief    Interrupts and flags management functions
+ 962           *
+ 963          @verbatim
+ 964           ===============================================================================
+ 965                               ##### Interrupts and flags management functions #####
+ 966           ===============================================================================
+ 967          @endverbatim
+ 968            * @{
+ 969            */
+ 970          
+ 971          /**
+ 972           * @brief  Checks whether the specified ADC flag is set or not.
+ 973           * @param  None
+ 974           * @retval The new state of ADC_FLAG (SET or RESET).
+ 975           *                  -  RESET:Flag reset
+ 976           *                  -  SET :Flag up
+ 977           */
+ 978          FlagStatus ADC_GetFlagStatus(void)
+ 979          {
+ 980   1      #if defined (SC92F854x) || defined (SC92F754x) ||defined  (SC92F844xB) || defined (SC92F744xB)||defined  (
+             -SC92F84Ax_2) || defined (SC92F74Ax_2)\
+ 981   1          || defined (SC92F846xB) || defined (SC92F746xB) || defined (SC92F836xB) || defined (SC92F736xB)||defined
+             -  (SC92F84Ax) || defined (SC92F74Ax)\
+ 982   1          || defined  (SC92F83Ax) || defined (SC92F73Ax) || defined (SC92F7003) || defined (SC92F8003) || defined(
+             -SC92F8003B) || defined (SC92F740x) || defined (SC92FWxx)\
+ 983   1          || defined(SC92F848x) || defined(SC92F748x) || defined(SC92F859x) || defined (SC92F759x)  || defined (SC9
+             -2L853x) || defined (SC92L753x)\
+ 984   1          || defined (SC92R511x) || defined (SC92R342) || defined (SC92F841x) || defined (SC92F741x) || defined(SC
+             -92F84Hx) || defined(SC92F83Hx)\
+ 985   1          || defined(SC92F646x) || defined(SC92F546x) || defined(SC92F542x) || defined(SC92F6x1x) || defined(SC92
+             -F5x1x)|| defined(SC92R436)|| defined(SC92R438)|| defined(SC92L840x)\
+ 986   1          || defined(SC92R439)  || defined (SC92Fx41xB)|| defined (SC92R445)|| defined (SC92R422A)|| defined (SC9
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 18  
+
+             -2F652x)|| defined(SC92R51x_R52x) || defined (SC92F552x)\
+ 987   1          || defined (SC92F5x5x)|| defined (SC92F531x) || defined (SC92F663x)
+ 988   1        return (bool)(ADCCON & 0x20);
+ 989   1      #elif defined(SC92F742x) || defined(SC92F730x) || defined(SC92F725X) || defined(SC92F735X) || defined(SC92
+             -F732X) || defined(SC92F7490) || defined(SC93F833x) || defined(SC93F843x) || defined(SC93F743x)\
+ 990   1           || defined(SC92F730x_2) || defined(SC92F720x) ||defined (SC92F7308B)
+                return (bool)(ADCCON & 0x10);
+              #endif
+ 993   1      }
+ 994          
+ 995          /**
+ 996           * @brief  Clears the ADCx's pending flags.
+ 997           * @param  None
+ 998           * @retval None
+ 999           */
+1000          void ADC_ClearFlag(void)
+1001          {
+1002   1      #if defined(SC92F854x) || defined(SC92F754x) || defined(SC92F844xB) || defined(SC92F744xB) || defined(SC92
+             -F84Ax_2) || defined(SC92F74Ax_2)\
+1003   1          || defined(SC92F846xB) || defined(SC92F746xB) || defined(SC92F836xB) || defined(SC92F736xB) || defined(S
+             -C92F84Ax) || defined(SC92F74Ax)\
+1004   1          || defined(SC92F83Ax) || defined(SC92F73Ax) || defined(SC92F8003) || defined(SC92F8003B) || defined(SC92
+             -F740x) || defined(SC92F848x) || defined(SC92F748x)\
+1005   1          || defined(SC92F859x) || defined(SC92F759x) || defined (SC92L853x) || defined (SC92L753x) || defined (SC
+             -92R511x) || defined (SC92R342)\
+1006   1          || defined (SC92F841x) || defined (SC92F741x) || defined(SC92F84Hx) || defined(SC92F83Hx) || defined(SC9
+             -2F646x) || defined(SC92F546x) || defined(SC92F542x)\
+1007   1          || defined(SC92F6x1x) || defined(SC92F5x1x)|| defined(SC92R436)|| defined(SC92R438)|| defined(SC92L840x
+             -)|| defined(SC92R439)|| defined (SC92Fx41xB)|| defined (SC92R445)\
+1008   1          || defined (SC92R422A)|| defined (SC92F652x)|| defined(SC92R51x_R52x) || defined (SC92F552x)|| defined 
+             -(SC92F5x5x)|| defined (SC92F531x) || defined (SC92F663x)
+1009   1        ADCCON &= 0xdf;
+1010   1      #endif
+1011   1      #if defined(SC92F742x) || defined(SC92F730x) || defined(SC92F725X) || defined(SC92F735X) || defined(SC92F7
+             -32X) || defined(SC92F7490) || defined(SC93F833x) || defined(SC93F843x) || defined(SC93F743x)\
+1012   1        || defined(SC92F730x_2) || defined(SC92F720x) || defined (SC92F7308B)
+                ADCCON &= 0xef;
+              #endif
+1015   1      }
+1016          
+1017          /**
+1018           * @}
+1019           */
+1020          /* End of ADC_Group3. */
+1021          
+1022          /** @defgroup ADC_Group4 Temperature sensor and PGA management functions
+1023           *  @brief    Temperature sensor  and PGA management functions
+1024           *
+1025          @verbatim
+1026           ===============================================================================
+1027                               ##### Temperature sensor and PGA management functions #####
+1028           ===============================================================================
+1029          @endverbatim
+1030            * @{
+1031            */
+1032          #if defined(SC93F833x) || defined(SC93F843x) || defined(SC93F743x)
+              unsigned int ADC_TS_StandardData = 0x8000;
+              
+              /**
+               * @brief  Switch temperature sensor function.
+               * @param  NewState[in]:new state of the temperature sensor sources.
+               *                  @ DISABLE:Function disable
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 19  
+
+               *                  @ ENABLE:Function enable  
+               * @retval None
+               */
+              void ADC_TSCmd(FunctionalState NewState)
+              {
+                if (NewState == DISABLE)
+                {
+                TSCFG &= 0X7F;
+                }
+                else
+                {
+                TSCFG |= 0X80;
+                }
+              }
+              
+              /**
+               * @brief  Temperature sensor high/low selection.
+               * @param  NewState[in]:new state of the temperature sensor sources.
+               *                  @ LOW:Pull-up compensation offset application control bit.
+               *                  @ HIGH:Pull-down compensation offset application control bit.
+               * @retval None
+               */
+              void ADC_CHOPConfig(PriorityStatus NewState)
+              {
+                if (NewState == LOW)
+                {
+                TSCFG &= 0XFE;
+                }
+                else
+                {
+                TSCFG |= 0x01;
+                }
+              }
+              
+              /**
+               * @brief  The conversion value of ADC at 25 degrees Celsius when it leaves the factory.
+               * @param  None
+               * @retval ADC_TS_StandardData:
+               */
+              uint16_t ADC_Get_TS_StandardData(void)
+              {
+                unsigned int code *IFBAddr = 0x3E;
+                IAPADE = 0x01; //Pointer points to IFB area.
+                ADC_TS_StandardData = *(IFBAddr);
+                IAPADE = 0x00; //Pointer points to ROM area.
+                return ADC_TS_StandardData;
+              }
+              
+              /**
+               * @brief  Get the current temperature value.
+               * @param  None
+              * @retval Temperature value:Return the temperature value as a float type.
+               */
+              float ADC_GetTSValue(void)
+              {
+                unsigned char EADC_Flag = EADC; //Get the status of the EA flag.
+                unsigned int ADC_Value1 = 0, ADC_Value2 = 0, ADC_Value = 0;
+                unsigned int code *IFBAddr = 0x3E;
+              
+                ADC_Get_TS_StandardData();
+                disableInterrupts();   //Disable interrupts
+                ADC_CHOPConfig(LOW);   //Lower the application control bit of offset cancellation.
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 20  
+
+                ADC_StartConversion(); //Start AD conversion
+                while(!ADC_GetFlagStatus());    //Waiting for conversion to complete.
+                ADC_ClearFlag();                       //Clear conversion flag.
+                ADC_Value1 = ADC_GetConversionValue(); //Retrieve the conversion value for the first AD.
+                ADC_CHOPConfig(HIGH);                  //Pull-up to offset application control bit.
+                ADC_StartConversion();                 //Start AD conversion.
+                while(!ADC_GetFlagStatus());   //Waiting for conversion to complete.
+                ADC_ClearFlag();                           //Clear conversion flag.
+                ADC_Value2 = ADC_GetConversionValue();     //Retrieve the conversion value for the second AD.
+                ADC_Value = (ADC_Value1 + ADC_Value2) / 2; //Calculate the average of two AD samples.
+              
+                if (EADC_Flag) //Restore the EA flag before joining the operation.
+                {
+                enableInterrupts();
+                }
+                return (25 + ((float)ADC_Value - (float)ADC_TS_StandardData) / 8);
+              }
+              
+              /**
+               * @brief  Configure PGA related parameters.
+               * @param  ADC_PGACOM[in]:PGA common-mode voltage selection.
+               *                     - ADC_PGACOM_0V:The common mode voltage is 0V.
+               *                     - ADC_PGACOM_1_2V:The common mode voltage is 1.2V.
+               * @param  ADC_PGAGAN[in]:Programmable Gain Amplifier.
+               *                     - ADC_PGAGAN_NonInvert20:The gain in-phase is 20, and the gain out-of-phase is 19.
+               *                     - ADC_PGAGAN_NonInvert100:The gain in-phase is 100, and the gain out-of-phase is 99
+             -.
+               * @param  ADC_PGAIPT[in]:Programmable Gain Amplifier Phase/Amplitude Selection.
+               *                     - ADC_PGAIPT_NonInvert:NonInvert input.
+               *                     - ADC_PGAIPT_Invert:inverted input.
+               * @retval None
+               */
+              void ADC_PGAConfig(ADC_PGACOM_TypeDef ADC_PGACOM, ADC_PGAGAN_TypeDef ADC_PGAGAN, ADC_PGAIPT_TypeDef ADC_PG
+             -AIPT)
+              {
+                PGACON &= 0x8F;
+                PGACON |= (ADC_PGACOM | ADC_PGAGAN | ADC_PGAIPT);
+              }
+              
+              /**
+               * @brief  switch PGA function.
+               * @param  NewState[in]:PGA common-mode voltage selection.
+               *                     - LOW:Disable PGA .
+               *                     - HIGH:Enable PGA .
+               * @retval None
+               */
+              void ADC_PGACmd(PriorityStatus NewState)
+              {
+                if (NewState == LOW)
+                {
+                PGACON &= 0XFE;
+                }
+                else
+                {
+                PGACON |= 0x01;
+                }
+              }
+              #endif
+1157          
+1158          /**
+1159           * @brief  ADC reference voltage selection
+1160           * @param  ADC_Vref[in]:Select reference voltage.
+C51 COMPILER V9.60.7.0   SC92F_ADC                                                         10/13/2026 10:46:30 PAGE 21  
+
+1161           *              SC92F859x,SC92F759x,SC92F848x,SC92F748x,SC92L853x,SC92L753x,SC92R511x,SC92F646x,
+1162           *              SC92F546x,SC92F542x,SC92F6x1x,SC92F5x1x,SC92R436,SC92R439,SC92R422A,SC92F652x,
+1163           *              SC92R51x_R52x,SC92F552x,SC92F5x5x,SC92F531x,SC92F663x
+1164           *                   Selection range(ADC_VREF_VDD - ADC_VREF_2_048V)
+1165           *              else
+1166           *                   Selection range(ADC_VREF_VDD,ADC_VREF_2_4V)
+1167           *                     - ADC_VREF_VDD:Select VDD as the reference voltage.
+1168           *                     - ADC_VREF_1_024V:Select 1.024V as the reference voltage.
+1169           *                     - ADC_VREF_2_4V:Select 2.4V as the reference voltage.
+1170           *                     - ADC_VREF_2_048V:Select 2.048V as the reference voltage.
+1171           * @retval None
+1172           */
+1173          void ADC_VrefConfig(ADC_Vref_TypeDef ADC_Vref)
+1174          {
+1175   1        OPINX = 0xC2;
+1176   1        OPREG = OPREG & 0X3F | ADC_Vref;
+1177   1      }
+1178          
+1179          /**
+1180           * @}
+1181           */
+1182          /* End of ADC_Group4. */
+1183          
+1184          /**
+1185           * @}
+1186           */
+1187          
+1188          /**
+1189           * @}
+1190           */
+1191          
+1192          /**
+1193           * @}
+1194           */
+1195          #endif
+1196          
+1197          /******************* (C) COPYRIGHT 2025 SinOne Microelectronics *****END OF FILE****/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    422    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----      15
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       1
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

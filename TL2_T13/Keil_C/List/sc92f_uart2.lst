@@ -1,0 +1,1235 @@
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SC92F_UART2
+OBJECT MODULE PLACED IN ..\Output\sc92f_uart2.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\FWLib\SC92F_Lib\src\sc92f_uart2.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE 
+                    -INCDIR(..\FWLib\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L75
+                    -3x) DEBUG PRINT(..\List\sc92f_uart2.lst) TABS(2) OBJECT(..\Output\sc92f_uart2.obj)
+
+line level    source
+
+   1          /**
+   2           ******************************************************************************
+   3           * @file    sc92f_uart2.c
+   4           * @author  SOC AE Team
+   5           * @version V1.2.4
+   6           * @date    2026-2-28
+   7           * @brief   UART2 function module
+   8           *******************************************************************************
+   9           * @attention
+  10           *
+  11           *1.This software is supplied by SinOne Microelectronics Co.,Ltd. and is only 
+  12           *intended for use with SinOne products. No other uses are authorized. This 
+  13           *software is owned by SinOne Microelectronics Co.,Ltd. and is protected under 
+  14           *all applicable laws, including copyright laws. 
+  15           *2.The software which is for guidance only aims at providing customers with 
+  16           *coding information regarding their products in order for them to save time. 
+  17           *As a result, SinOne shall not be held liable for any direct, indirect or 
+  18           *consequential damages with respect to any claims arising from the content of 
+  19           *such software and/or the use made by customers of the coding information 
+  20           *contained herein in connection with their products.
+  21           *
+  22           *  COPYRIGHT 2025 SinOne Microelectronics
+  23           ******************************************************************************
+  24           */
+  25           
+  26          /* Includes ------------------------------------------------------------------*/
+  27          #include "sc92f_uart2.h"
+  28          
+  29          /** @addtogroup sc92f_StdPeriph_Driver
+  30           * @{
+  31           */
+  32          
+  33          /** @defgroup UART2
+  34           * @brief UART2 driver modules
+  35           * @{
+  36           */
+  37          
+  38          /** @defgroup UART2_Functions
+  39           * @{
+  40           */
+  41           
+  42          #if defined (SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x)
+              
+              /** @defgroup UART2_Group1 Configuration of the UART2 computation unit functions
+               *  @brief   Configuration of the UART2 computation unit functions
+               *
+               
+              @verbatim
+               ===============================================================================
+                                   ##### UART2 configuration functions #####
+               ===============================================================================
+              @endverbatim
+                * @{
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 2   
+
+                */
+              
+              /**
+               * @brief  UART2œ‡πÿºƒ¥Ê∆˜∏¥Œª÷¡»± °÷µ
+               * @param  None
+               * @retval None
+               */ 
+              void UART2_DeInit(void)
+              {
+                U2SCON = 0X00;
+                IE &= 0XDF;
+                IP &= 0XDF;
+              }
+              
+              /**
+               * @brief  UART2≥ı ºªØ≈‰÷√∫Ø ˝
+               * @param  Uart2Fsys[in]:œµÕ≥ ±÷”∆µ¬ 
+               * @param  BaudRate[in]:≤®Ãÿ¬ 
+               * @param  Mode[in]:π§◊˜ƒ£ Ω
+               *          - UART2_Mode_10B:UART2π§◊˜ƒ£ Ω:10Œª»´À´π§
+               *          - UART2_Mode_11B:UART2π§◊˜ƒ£ Ω:11Œª»´À´π§
+               * @param  RxMode[in]:Ω” ’‘ –Ì—°‘Ò
+               *          - UART2_RX_ENABLE:‘ –ÌΩ” ’ ˝æ›
+               *          - UART2_RX_DISABLE:≤ª‘ –ÌΩ” ’ ˝æ›
+               * @retval None
+               */
+              void UART2_Init(uint32_t Uart2Fsys, 
+                              uint32_t BaudRate,
+                              UART2_Mode_Typedef Mode,
+                              UART2_RX_Typedef RxMode)
+              {
+                U2SCON  = (U2SCON & 0X2F) | Mode | RxMode;  //…Ë÷√UARTπ§◊˜ƒ£ Ω,…Ë÷√Ω” ’‘ –ÌŒª
+              
+                /* ≈‰÷√UART2≤®Ãÿ¬  */
+                U2BAUDH = (Uart2Fsys / BaudRate) / 256;
+                U2BAUDL = (Uart2Fsys / BaudRate) % 256;
+              }
+              
+              /**
+               * @}
+               */
+              /* End of UART2_Group1. */
+              
+              /** @defgroup UART2_Group2 Base functions
+               *  @brief   UART2 functions
+               *
+              @verbatim
+               ===============================================================================
+                                   ##### Base functions #####
+               ===============================================================================
+              @endverbatim
+                * @{
+                */
+              
+              
+              /**
+               * @brief  UART2∑¢ÀÕ8Œª ˝æ›
+               * @param  Data[in]:UART2∑¢ÀÕ8Œª ˝æ›
+               * @retval None
+               */
+              void UART2_SendData8(uint8_t Data)
+              {
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 3   
+
+                U2SBUF = Data;
+              }
+              
+              /**
+               * @brief  ªÒµ√SBUF÷–µƒ÷µ
+               * @param  None
+               * @retval UARTΩ” ’µΩµƒ8Œª ˝æ›
+               */
+              uint8_t UART2_ReceiveData8(void)
+              {
+                return U2SBUF;
+              }
+              
+              /**
+               * @brief  UART2∑¢ÀÕ9Œª ˝æ›
+               * @param  Data[in]:∑¢ÀÕµƒ ˝æ›
+               * @retval None
+               */
+              void UART2_SendData9(uint16_t Data)
+              {
+                uint8_t Data_9Bit;
+                Data_9Bit = (Data >> 8);
+              
+                if(Data_9Bit)
+                {
+                  U2SCON |= 0X08;
+                }
+                else
+                {
+                  U2SCON &= 0XF7;
+                }
+              
+                U2SBUF = (uint8_t)Data;
+              }
+              
+              /**
+               * @brief  ªÒµ√SBUF÷–µƒ÷µº∞µ⁄æ≈Œªµƒ÷µ
+               * @param  None
+               * @retval UARTΩ” ’µΩµƒ ˝æ›
+               */
+              uint16_t UART2_ReceiveData9(void)
+              {
+                uint16_t Data9;
+                Data9 =  U2SBUF + ((uint16_t)(U2SCON & 0X04) << 6);
+                U2SCON &= 0XFB;
+                return Data9;
+              }
+              
+              /**
+               * @brief  UART‘⁄¬÷—Øƒ£ Ωœ¬∑¢ÀÕ¥Û¡ø ˝æ›
+               * @param  UART_HANDLE[out]:÷∏œÚ∞¸∫¨÷∏∂®UARTƒ£øÈµƒ≈‰÷√–≈œ¢Ω·ππÃÂµƒ÷∏’Î
+               * @param  pData[out]:Ω” ’ ˝æ›µƒ¥Ê∑≈«¯
+               * @param  Size[in]:¥˝Ω” ’µƒ ˝æ›¡ø
+               * @param  timeout[in]:≥¨ ± ±º‰…Ë÷√
+               * @retval SSI ◊¥Ã¨
+               *          - Status_ERROR:¥ÌŒÛ
+               *          - Status_OK:’˝≥£
+               *          - Status_BUSY:’˝√¶
+               *          - Status_TIMEOUT:≥¨ ±
+               */
+              StatusTypeDef UART2_Transmit(UART2_HandleInfoDef* UART_HANDLE, uint8_t* pData, uint8_t Size, uint32_t Time
+             -out)
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 4   
+
+              {
+                  uint32_t TimeoutCnt;
+                  /* ºÏ≤È“ª∏ˆ∑¢ÀÕΩ¯≥Ã «∑Ò’˝‘⁄Ω¯–– */
+                  if (UART_HANDLE->TxState == UART2_STATE_READY)
+                  {
+                      /* ¥˝∑¢ÀÕ ˝æ›≥§∂»±ÿ–Î¥Û”⁄0£¨∑Ò‘Ú∑µªÿ¥ÌŒÛ◊¥Ã¨ */
+                      if (Size == 0U)
+                      {
+                          return  Status_ERROR;
+                      }
+              
+                      UART_HANDLE->TxState = UART2_STATE_BUSY;      //∑¢ÀÕΩ¯≥Ã√¶¬µ÷–
+                      UART2_ClearFlag(UART2_FLAG_TI); //∑¢ÀÕ«∞«Â≥˝∑¢ÀÕ±Í÷æ,–¥1«Â0
+                      UART_HANDLE->pTxBuffPtr.Size_u8 = pData;      //÷∏œÚ¥˝∑¢ÀÕ ˝æ›µƒµÿ÷∑
+                      UART_HANDLE->TxXferSize = Size;     //∏¸–¬¥˝∑¢ÀÕµƒ ˝æ›¡ø
+                      UART_HANDLE->TxXferCount = 0;     //∑¢ÀÕº∆ ˝∆˜«Â¡„
+              
+                      while (UART_HANDLE->TxXferCount < UART_HANDLE->TxXferSize)//≈–∂œ «∑ÒΩ” ’À˘”– ˝æ›
+                      {
+                          if (U2SCON & 0x80 == UART2_Mode_11B)
+                          {
+                              U2SCON &= ~0x08;
+                              U2SCON |= (*(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount) >> 5);//…Ë÷√µ⁄9Œ
+             -ª–£—ÈŒª
+                              U2SBUF = *(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount);
+                          }
+                          else
+                          {
+                              U2SBUF = *(UART_HANDLE->pTxBuffPtr.Size_u8 + UART_HANDLE->TxXferCount);
+                          }
+              
+                          while (!(UART2_GetFlagStatus(UART2_FLAG_TI))) //µ»¥˝∑¢ÀÕÕÍ≥…
+                          {
+                              if (TimeoutCnt++ > Timeout)
+                              {
+                                  UART_HANDLE->TxState = UART2_STATE_TIMEOUT;//∑¢ÀÕ≥¨ ±
+                                  return Status_TIMEOUT;
+                              }
+                              WDTCON |= 0x10;;          //Œππ∑∫Ø ˝£¨∑¿÷πø¥√≈π∑∏¥Œª
+                          }
+              
+                          UART2_ClearFlag(UART2_FLAG_TI); //∑¢ÀÕ÷–∂œ±Í÷æ«Â≥˝£¨–¥1«Â¡„
+                          TimeoutCnt = 0;
+                          UART_HANDLE->TxXferCount++; //∑¢ÀÕ ˝æ›¡øº∆ ˝
+                      }
+              
+                      if (UART_HANDLE->TxXferCount == UART_HANDLE->TxXferSize)
+                      {
+                          UART_HANDLE->TxState = UART2_STATE_READY; //∑¢ÀÕÕÍ≥…
+                          return Status_OK;
+                      }
+                      else
+                      {
+                          UART_HANDLE->TxState = UART2_STATE_ERROR;//∑¢…˙∑¢ÀÕ¥ÌŒÛ
+                          return Status_ERROR;
+                      }
+                  }
+                  else
+                  {
+                      return Status_BUSY;//∑µªÿ√¶¬µ◊¥Ã¨
+                  }
+              }
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 5   
+
+              
+              /**
+               * @brief  UART‘⁄÷–∂œƒ£ Ωœ¬∑¢ÀÕ¥Û¡ø ˝æ› ±£¨œ»‘⁄main∫Ø ˝÷–µ˜”√¥À∫Ø ˝
+               * @param  UART_HANDLE[out]:÷∏’Î÷∏œÚUART ˝æ›–≈œ¢¥Ê∑≈«¯
+               * @param  pData[out]:Ω” ’ ˝æ›µƒ¥Ê∑≈«¯
+               * @param  Size[in]:¥˝Ω” ’µƒ ˝æ›¡ø
+               * @param  timeout[in]:≥¨ ± ±º‰…Ë÷√
+               * @retval ∫Ø ˝÷¥––◊¥Ã¨
+               *          - Status_ERROR:¥ÌŒÛ
+               *          - Status_OK:’˝≥£
+               *          - Status_BUSY:’˝√¶
+               *          - Status_TIMEOUT:≥¨ ±
+               */
+              StatusTypeDef UART2_Transmit_IT(UART2_HandleInfoDef* UART_HANDLE, uint8_t* pData, uint8_t Size)
+              {
+                  /* ºÏ≤È“ª∏ˆ∑¢ÀÕΩ¯≥Ã «∑Ò’˝‘⁄Ω¯–– */
+                  if (UART_HANDLE->TxState == UART2_STATE_READY)
+                  {
+                      /* √ª”–ø™∆ÙUART2÷–∂œªÚ∑¢ÀÕ ˝æ›¡ø¥Û–°Œ™0£¨∑µªÿ¥ÌŒÛ */
+                      if ((IE1&0x20 == 0) || (UART_HANDLE->TxXferSize == 0U))
+                      {
+                          return Status_ERROR;
+                      }
+              
+                      UART_HANDLE->TxState = UART2_STATE_BUSY;      //∑¢ÀÕΩ¯≥Ã√¶¬µ÷–
+                      UART2_ClearFlag(UART2_FLAG_TI);  //∑¢ÀÕ«∞«Â≥˝∑¢ÀÕ±Í÷æ,–¥1«Â0
+                      UART_HANDLE->pTxBuffPtr.Size_u8 = pData;      //÷∏œÚ¥˝∑¢ÀÕ ˝æ›µƒµÿ÷∑
+                      UART_HANDLE->TxXferSize = Size;     //∏¸–¬¥˝∑¢ÀÕµƒ ˝æ›¡ø
+                      UART_HANDLE->TxXferCount = 0;     //∑¢ÀÕº∆ ˝∆˜«Â¡„
+              
+              
+                      /* ∑¢ÀÕµ⁄1÷° ˝æ› */
+                      if (U2SCON & 0x80 == UART2_Mode_11B)
+                      {
+                          U2SCON |= (*(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount) >> 5) & 0x08;//…Ë÷√µ
+             -⁄9Œª–£—ÈŒª
+                          U2SBUF = *(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount);
+                      }
+                      else
+                      {
+                          U2SBUF = *(UART_HANDLE->pTxBuffPtr.Size_u8 + UART_HANDLE->TxXferCount);
+                      }
+                      return Status_OK;
+                  }
+                  else
+                  {
+                      return Status_BUSY;//∑µªÿ±Í÷æŒª
+                  }
+              }
+              
+              /**
+               * @brief  UART‘⁄÷–∂œƒ£ Ωœ¬∑¢ÀÕ¥Û¡ø ˝æ› ±£¨‘⁄÷–∂œ∑˛ŒÒ∫Ø ˝÷–µ˜”√
+               * @param  UART_HANDLE[out]:÷∏œÚ∞¸∫¨÷∏∂®UARTƒ£øÈµƒ≈‰÷√–≈œ¢Ω·ππÃÂµƒ÷∏’Î
+               * @retval ∫Ø ˝÷¥––◊¥Ã¨
+               *          - Status_ERROR:¥ÌŒÛ
+               *          - Status_OK:’˝≥£
+               *          - Status_BUSY:’˝√¶
+               *          - Status_TIMEOUT:≥¨ ±
+               */
+              StatusTypeDef UART2_Transmit_IRQHandler(UART2_HandleInfoDef* UART_HANDLE)
+              {
+                  /* ¥¶”⁄∑¢ÀÕœﬂ≥Ã */
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 6   
+
+                  if (UART_HANDLE->TxState == UART2_STATE_BUSY)
+                  {
+                      UART_HANDLE->TxXferCount++;
+                      /* ≈–∂œ…œ“ª¥Œ∑¢ÀÕ «∑Ò «◊Ó∫Û“ª¥Œ */
+                      if (UART_HANDLE->TxXferCount < UART_HANDLE->TxXferSize)
+                      {
+                          /* ¥˝∑¢ÀÕ ˝æ›¡øŒ¥Œ™0£¨ºÃ–¯∑¢ÀÕ */
+                          if (U2SCON & 0x80 == UART2_Mode_11B)
+                          {
+                              U2SCON |= (*(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount) >> 5) & 0x08;//…
+             -Ë÷√µ⁄9Œª–£—ÈŒª
+                              U2SBUF = *(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount);
+                          }
+                          else
+                          {
+                              U2SBUF = *(UART_HANDLE->pTxBuffPtr.Size_u8 + UART_HANDLE->TxXferCount);
+                          }
+                          return Status_BUSY;
+                      }
+                      else if (UART_HANDLE->TxXferCount == UART_HANDLE->TxXferSize)
+                      {
+                          /* ∑¢ÀÕÕÍ≥… */
+                          UART_HANDLE->TxState = UART2_STATE_READY;
+                          return Status_OK;
+                      }
+                      else
+                      {
+                          /* ∑¢ÀÕ ˝æ›¡øŒ™0 ±ªπ∑¢ÀÕ ˝æ›£¨∑µªÿ¥ÌŒÛ */
+                          UART_HANDLE->TxState = UART2_STATE_ERROR;
+                          return Status_ERROR;
+                      }
+                  }
+                  else
+                  {
+                      return Status_ERROR;
+                  }
+              }
+              
+              /**
+               * @brief  UART‘⁄¬÷—Øƒ£ Ωœ¬Ω” ’¥Û¡ø ˝æ›
+               * @param  UART_HANDLE[out]:÷∏’Î÷∏œÚUART ˝æ›–≈œ¢¥Ê∑≈«¯
+               * @param  pData[out]:Ω” ’ ˝æ›µƒ¥Ê∑≈«¯
+               * @param  Size[in]:¥˝Ω” ’µƒ ˝æ›¡ø
+               * @param  timeout[in]:≥¨ ± ±º‰…Ë÷√
+               * @retval ∫Ø ˝÷¥––◊¥Ã¨
+               *          - Status_ERROR:¥ÌŒÛ
+               *          - Status_OK:’˝≥£
+               *          - Status_BUSY:’˝√¶
+               *          - Status_TIMEOUT:≥¨ ±
+               */
+              StatusTypeDef UART2_Receive(UART2_HandleInfoDef* UART_HANDLE, uint8_t* pData, uint8_t Size, uint32_t Timeo
+             -ut)
+              {
+                  uint32_t TimeoutCnt = 0;
+                  /* ºÏ≤ÈΩ” ’Ω¯≥Ã’˝‘⁄‘À–– */
+                  if (UART_HANDLE->RxState == UART2_STATE_READY)
+                  {
+                      /* ºÏ≤ÈΩ” ’ ˝æ›¡ø¥Û–°∫Õ «∑Òø™∆ÙΩ” ’ πƒ‹ */
+                      if ((UART_HANDLE->RxXferSize == 0U) || ((U2SCON & 0x10) == UART2_RX_ENABLE))
+                      {
+                          return  Status_ERROR;
+                      }
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 7   
+
+              
+                      UART_HANDLE->RxState = UART2_STATE_BUSY;      //◊¥Ã¨∏¸–¬Œ™Ω” ’√¶¬µ÷–
+                      UART2_ClearFlag(UART2_FLAG_RI);      //Ω” ’«∞«Â≥˝Ω” ’÷–∂œ±Í÷æ
+                      UART_HANDLE->pRxBuffPtr.Size_u8 = pData;      //÷∏œÚ¥˝∑¢ÀÕ ˝æ›µƒµÿ÷∑
+                      UART_HANDLE->RxXferSize = Size;     //∏¸–¬¥˝∑¢ÀÕµƒ ˝æ›¡ø
+                      UART_HANDLE->RxXferCount = 0;     //∑¢ÀÕº∆ ˝∆˜«Â¡„
+              
+                      while (UART_HANDLE->RxXferCount < UART_HANDLE->RxXferSize) //≈–∂œ «∑ÒΩ” ’À˘”– ˝æ›
+                      {
+                          if (UART2_GetFlagStatus(UART2_FLAG_RI)) //≈–∂œΩ” ’±Í÷æŒª
+                          {
+                              if (U2SCON & 0x80 == UART2_Mode_11B)
+                              {
+                                  *(UART_HANDLE->pRxBuffPtr.Size_u16 + UART_HANDLE->RxXferCount) = U2SBUF + ((uint16_t)(
+             -U2SCON & 0X04) << 6); //Ω” ’ ˝æ›
+                              }
+                              else
+                              {
+                                  *(UART_HANDLE->pRxBuffPtr.Size_u8 + UART_HANDLE->RxXferCount) = U2SBUF;     //Ω” ’ ˝æ›
+                              }
+                              UART2_ClearFlag(UART2_FLAG_RI);     //Ω” ’±Í÷æŒª«Â¡„
+                              UART_HANDLE->RxXferCount++; //Ω” ’ ˝æ›¡øº∆ ˝º”1
+                              TimeoutCnt = 0;// ’µΩ ˝æ›£¨≥¨ ±º∆ ˝«Â¡„
+                          }
+                          else
+                          {
+                              if (TimeoutCnt++ > Timeout)//º∆ ±“Á≥ˆ
+                              {
+                                  UART_HANDLE->RxState = UART2_STATE_TIMEOUT;//∑¢ÀÕ≥¨ ±
+                                  return Status_TIMEOUT;
+                              }
+                              WDTCON |= 0x10;;      //Œππ∑£¨∑¿÷πµ»¥˝ ±º‰π˝≥§£¨µº÷¬WDT∏¥Œª
+                          }
+                      }
+              
+                      if (UART_HANDLE->RxXferCount == UART_HANDLE->RxXferSize)
+                      {
+                          UART_HANDLE->RxState = UART2_STATE_READY; //Ω” ’ÕÍ≥…
+                          return Status_OK;
+                      }
+                      else
+                      {
+                          UART_HANDLE->RxState = UART2_STATE_ERROR;//Ω” ’¥ÌŒÛ
+                          return Status_ERROR;
+                      }
+                  }
+                  else
+                  {
+                      return Status_BUSY;//∑µªÿ±Í÷æŒª
+                  }
+              }
+              
+              /**
+               * @brief  UART‘⁄÷–∂œƒ£ Ωœ¬Ω” ’¥Û¡ø ˝æ› ±£¨œ»‘⁄main∫Ø ˝÷–µ˜”√¥À∫Ø ˝
+               * @param  UART_HANDLE[out]:÷∏’Î÷∏œÚUART ˝æ›–≈œ¢¥Ê∑≈«¯
+               * @param  pData[out]:Ω” ’ ˝æ›µƒ¥Ê∑≈«¯
+               * @param  Size[in]:¥˝Ω” ’µƒ ˝æ›¡ø
+               * @retval ∫Ø ˝÷¥––◊¥Ã¨
+               *          - Status_ERROR:¥ÌŒÛ
+               *          - Status_OK:’˝≥£
+               *          - Status_BUSY:’˝√¶
+               *          - Status_TIMEOUT:≥¨ ±
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 8   
+
+               */
+              StatusTypeDef UART2_Receive_IT(UART2_HandleInfoDef* UART_HANDLE, uint8_t* pData, uint8_t Size)
+              {
+                  /* ºÏ≤È“ª∏ˆΩ” ’Ω¯≥Ã «∑Ò’˝‘⁄Ω¯–– */
+                  if (UART_HANDLE->RxState == UART2_STATE_READY)
+                  {
+                      /* ºÏ≤È «∑Òø™∆ÙUART2÷–∂œªÚ∑¢ÀÕ ˝æ›¡ø¥Û–°Œ™0ªÚ «∑Òø™∆ÙΩ” ’ πƒ‹£¨∑µªÿ¥ÌŒÛ */
+                      if ((IE1&0x20 == 0) || (Size == 0U) || ((U2SCON & 0x10) == UART2_RX_ENABLE))
+                      {
+                          return UART2_STATE_ERROR;
+                      }
+              
+                      UART_HANDLE->RxState = UART2_STATE_BUSY;
+                      UART_HANDLE->pRxBuffPtr.Size_u8 = pData;      //÷∏œÚΩ” ’ ˝æ›µƒ¥Ê∑≈µÿ÷∑
+                      UART_HANDLE->RxXferSize = Size;     //∏¸–¬¥˝Ω” ’µƒ ˝æ›¡ø
+                      UART_HANDLE->RxXferCount = 0;     //∑¢ÀÕº∆ ˝∆˜«Â¡„
+              
+                      return Status_OK;
+                  }
+                  else
+                  {
+                      return Status_BUSY;//∑µªÿ±Í÷æŒª
+                  }
+              }
+              
+              /**
+               * @brief  UART‘⁄÷–∂œƒ£ Ωœ¬Ω” ’¥Û¡ø ˝æ› ±£¨‘⁄÷–∂œ∑˛ŒÒ∫Ø ˝÷–µ˜”√ ◊¢£∫∏√∫Ø ˝µ˜”√–Ë“™≈–∂œ÷–∂œ±Í÷æŒª «∑Ò÷√∆
+               * @param  UART_HANDLE[out]:÷∏’Î÷∏œÚSSI ˝æ›–≈œ¢¥Ê∑≈«¯
+               * @retval ∫Ø ˝÷¥––◊¥Ã¨
+               *          - Status_ERROR:¥ÌŒÛ
+               *          - Status_OK:’˝≥£
+               *          - Status_BUSY:’˝√¶
+               *          - Status_TIMEOUT:≥¨ ±
+               */
+              StatusTypeDef UART2_Receive_IRQHandler(UART2_HandleInfoDef* UART_HANDLE)
+              {
+                  /* ºÏ≤È“ª∏ˆΩ” ’Ω¯≥Ã «∑Ò’˝‘⁄Ω¯–– */
+                  if (UART_HANDLE->RxState == UART2_STATE_BUSY)
+                  {
+                      /* ¥¶”⁄Ω” ’œﬂ≥Ã£¨ºÏ≤È¥˝Ω” ’ ˝æ›¡ø «∑ÒŒ™0 */
+                      if (UART_HANDLE->RxXferCount < UART_HANDLE->RxXferSize)
+                      {
+                          if (U2SCON & 0x80 == UART2_Mode_11B)
+                          {
+                              *(UART_HANDLE->pRxBuffPtr.Size_u16 + UART_HANDLE->RxXferCount) = U2SBUF + ((uint16_t)(U2SC
+             -ON & 0X04) << 6); //Ω” ’ ˝æ›
+                          }
+                          else
+                          {
+                              *(UART_HANDLE->pRxBuffPtr.Size_u8 + UART_HANDLE->RxXferCount) = U2SBUF;     //Ω” ’ ˝æ›
+                          }
+                          UART_HANDLE->RxXferCount++;
+                          /* ≈–∂œ…œ“ª¥Œ∑¢ÀÕ «∑Ò «◊Ó∫Û“ª¥Œ */
+                          if (UART_HANDLE->RxXferCount == UART_HANDLE->RxXferSize)
+                          {
+                              /* Ω” ’ÕÍ≥… */
+                              UART_HANDLE->RxState = UART2_STATE_READY;
+                              return Status_OK;
+                          }
+                          return Status_BUSY;
+                      }
+                      else
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 9   
+
+                      {
+                          /* Ω” ’ ˝æ›¡øŒ™0 ±ªπΩ” ’ ˝æ›£¨∑µªÿ¥ÌŒÛ */
+                          UART_HANDLE->RxState = UART2_STATE_ERROR;
+                          return Status_ERROR;
+                      }
+                  }
+                  else
+                  {
+                      return Status_BUSY;
+                  }
+              }
+              /**
+               * @}
+               */
+              /* End of UART2_Group2. */
+              
+              /** @defgroup UART2_Group3 Interrupts and flags management functions
+               *  @brief   Interrupts and flags management functions
+               *
+              @verbatim
+               ===============================================================================
+                                   ##### Interrupts and flags management functions #####
+               ===============================================================================
+              @endverbatim
+                * @{
+                */
+              
+              /**
+               * @brief  UART2÷–∂œ≥ı ºªØ
+               * @param  NewState[in]: ∂œ πƒ‹/πÿ±’—°‘Ò
+               *              - DISABLE:πÿ±’
+               *              - ENABLE: πƒ‹
+               * @param  Priority[in]: ÷–∂œ”≈œ»º∂—°‘Ò
+               *              - LOW:µÕ
+               *              - HIGH:∏ﬂ
+               * @retval None
+               */ 
+              void UART2_ITConfig(FunctionalState NewState,
+                                  PriorityStatus Priority)
+              {
+                if(NewState == DISABLE)
+                {
+                  IE1 &= 0XDF;
+                }
+                else
+                {
+                  IE1 |= 0X20;
+                }
+              
+                //…Ë÷√÷–∂œ”≈œ»º∂
+                if(Priority == LOW)
+                {
+                  IP1 &= 0XDF;
+                }
+                else
+                {
+                  IP1 |= 0X20;
+                }
+              }
+              
+              /**
+               * @brief  «Â≥˝UART2±Í÷æ◊¥Ã¨
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 10  
+
+               * @param  UART2_FLAG[in]:À˘–Ë«Â≥˝µƒ±Í÷æŒª
+               *              - UART2_FLAG_TI:UART2∑¢ÀÕ÷–∂œ±Í÷æŒªTI
+               *              - UART2_FLAG_RI:UART2Ω” ’÷–∂œ±Í÷æŒªRI
+               * @retval None
+               */
+              void UART2_ClearFlag(UART2_Flag_Typedef UART2_FLAG)
+              {
+                if(UART2_FLAG == UART2_FLAG_TI)
+                {
+                  U2SCON &= (~UART2_FLAG_RI);
+                }
+                else
+                {
+                  U2SCON &= (~UART2_FLAG_TI);
+                }
+              }
+              /**
+               * @}
+               */
+              /* End of UART2_Group3. */
+              
+              #elif defined (SC92F663x)
+              /** @defgroup UART2_Group1 Configuration of the UART2 computation unit functions
+               *  @brief   Configuration of the UART2 computation unit functions
+               *
+               
+              @verbatim
+               ===============================================================================
+                                   ##### UART2 configuration functions #####
+               ===============================================================================
+              @endverbatim
+                * @{
+                */
+              
+              /**
+               * @brief  UART2œ‡πÿºƒ¥Ê∆˜∏¥Œª÷¡»± °÷µ
+               * @param  None
+               * @retval None
+               */ 
+              void UART2_DeInit(void)
+              {
+                TMCON &= 0X7F;
+                UXCON = 0X00;
+                IE2 &= 0XFE;
+                IP2 &= 0XFE;
+              }
+              
+              /**
+               * @brief  UART2≥ı ºªØ≈‰÷√∫Ø ˝
+               * @param  Uart2Fsys[in]:œµÕ≥ ±÷”∆µ¬ 
+               * @param  BaudRate[in]:≤®Ãÿ¬ 
+               * @param  Mode[in]:π§◊˜ƒ£ Ω
+               *          - UART2_Mode_8B:UART2π§◊˜ƒ£ Ω:8Œª∞ÎÀ´π§
+               *          - UART2_Mode_10B:UART2π§◊˜ƒ£ Ω:10Œª»´À´π§
+               *          - UART2_Mode_11B:UART2π§◊˜ƒ£ Ω:11Œª»´À´π§
+               * @param  RxMode[in]:Ω” ’‘ –Ì—°‘Ò
+               *          - UART2_RX_ENABLE:‘ –ÌΩ” ’ ˝æ›
+               *          - UART2_RX_DISABLE:≤ª‘ –ÌΩ” ’ ˝æ›
+               * @retval None
+               */
+              void UART2_Init(uint32_t Uart2Fsys, 
+                              uint32_t BaudRate,
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 11  
+
+                              UART2_Mode_Typedef Mode,
+                              UART2_RX_Typedef RxMode)
+              {
+                TMCON &= 0X7F;  //UARTøÿ÷∆ºƒ¥Ê∆˜÷∏’Î÷∏œÚUART2
+                UXCON  = (UXCON & 0X2F) | Mode | RxMode;  //…Ë÷√UARTπ§◊˜ƒ£ Ω,…Ë÷√Ω” ’‘ –ÌŒª
+              
+                if (Mode == UART2_Mode_8B)
+                {
+                  if (BaudRate == UART2_BaudRate_FsysDIV12)
+                  {
+                    UXCON &= 0XDF;
+                  }
+                  else if (BaudRate == UART2_BaudRate_FsysDIV4)
+                  {
+                    UXCON |= 0X20;
+                  }
+                }
+                
+                /* ≈‰÷√UART2≤®Ãÿ¬  */
+                UXBAUDH = (Uart2Fsys / BaudRate) / 256;
+                UXBAUDL = (Uart2Fsys / BaudRate) % 256;
+              }
+              
+              
+              uint8_t xdata SPOS_UART2 _at_ 0x1028;
+              /**
+               * @brief  UART2∂Àø⁄”≥…‰∫Ø ˝
+               * @param  UART2_TX_MappingPin[in]: UART2_TX”≥…‰π‹Ω≈—°‘Ò
+               *          - UART2TX_Mapped_to_P02:UART2TX”≥…‰µΩP02
+               *          - UART2TX_Mapped_to_P03:UART2TX”≥…‰µΩP03
+               *          - UART2TX_Mapped_to_P52:UART2TX”≥…‰µΩP52
+               *          - UART2TX_Mapped_to_P53:UART2TX”≥…‰µΩP53
+               *          - UART2TX_Mapped_to_P26:UART2TX”≥…‰µΩP26
+               *          - UART2TX_Mapped_to_P27:UART2TX”≥…‰µΩP27
+               *          - UART2TX_Mapped_to_P00:UART2TX”≥…‰µΩP00
+               *          - UART2TX_Mapped_to_P01:UART2TX”≥…‰µΩP01
+               * @param  UART2_RX_MappingPin[in]: UART2_RX”≥…‰π‹Ω≈—°‘Ò
+               *          - UART2RX_Mapped_to_P02:UART2RX”≥…‰µΩP02
+               *          - UART2RX_Mapped_to_P03:UART2RX”≥…‰µΩP03
+               *          - UART2RX_Mapped_to_P52:UART2RX”≥…‰µΩP52
+               *          - UART2RX_Mapped_to_P53:UART2RX”≥…‰µΩP53
+               *          - UART2RX_Mapped_to_P26:UART2RX”≥…‰µΩP26
+               *          - UART2RX_Mapped_to_P27:UART2RX”≥…‰µΩP27
+               *          - UART2RX_Mapped_to_P00:UART2RX”≥…‰µΩP00
+               *          - UART2RX_Mapped_to_P01:UART2RX”≥…‰µΩP01
+               * @retval None
+               */
+              void UART2_PortMapping(UART2TX_PortMappingPin_TypeDef UART2_TX_MappingPin,
+                                     UART2RX_PortMappingPin_TypeDef UART2_RX_MappingPin)
+              {
+                SPOS_UART2 = SPOS_UART2 & 0x88 | UART2_TX_MappingPin | (UART2_RX_MappingPin<<4);
+              }
+              
+              /**
+               * @}
+               */
+              /* End of UART2_Group1. */
+              
+              /** @defgroup UART2_Group2 Base functions
+               *  @brief   UART2 functions
+               *
+              @verbatim
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 12  
+
+               ===============================================================================
+                                   ##### Base functions #####
+               ===============================================================================
+              @endverbatim
+                * @{
+                */
+              
+              
+              /**
+               * @brief  UART2∑¢ÀÕ8Œª ˝æ›
+               * @param  Data[in]:UART2∑¢ÀÕ8Œª ˝æ›
+               * @retval None
+               */
+              void UART2_SendData8(uint8_t Data)
+              {
+                TMCON &= 0X7F;  //UARTøÿ÷∆ºƒ¥Ê∆˜÷∏’Î÷∏œÚUART2
+                UXSBUF = Data;
+              }
+              
+              /**
+               * @brief  ªÒµ√SBUF÷–µƒ÷µ
+               * @param  None
+               * @retval UARTΩ” ’µΩµƒ8Œª ˝æ›
+               */
+              uint8_t UART2_ReceiveData8(void)
+              {
+                TMCON &= 0X7F;  //UARTøÿ÷∆ºƒ¥Ê∆˜÷∏’Î÷∏œÚUART2
+                return UXSBUF;
+              }
+              
+              /**
+               * @brief  UART2∑¢ÀÕ9Œª ˝æ›
+               * @param  Data[in]:∑¢ÀÕµƒ ˝æ›
+               * @retval None
+               */
+              void UART2_SendData9(uint16_t Data)
+              {
+                uint8_t Data_9Bit;
+                Data_9Bit = (Data >> 8);
+                
+                TMCON &= 0X7F;  //UARTøÿ÷∆ºƒ¥Ê∆˜÷∏’Î÷∏œÚUART2
+              
+                if(Data_9Bit)
+                {
+                  UXCON |= 0X08;
+                }
+                else
+                {
+                  UXCON &= 0XF7;
+                }
+              
+                UXSBUF = (uint8_t)Data;
+              }
+              
+              /**
+               * @brief  ªÒµ√SBUF÷–µƒ÷µº∞µ⁄æ≈Œªµƒ÷µ
+               * @param  None
+               * @retval UARTΩ” ’µΩµƒ ˝æ›
+               */
+              uint16_t UART2_ReceiveData9(void)
+              {
+                uint16_t Data9;
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 13  
+
+                TMCON &= 0X7F;  //UARTøÿ÷∆ºƒ¥Ê∆˜÷∏’Î÷∏œÚUART2
+                Data9 =  UXSBUF + (((uint16_t)(UXCON & 0X04) & 0X00FF) << 6);
+                UXCON &= 0XFB;
+                return Data9;
+              }
+              
+              /**
+               * @brief  UART‘⁄¬÷—Øƒ£ Ωœ¬∑¢ÀÕ¥Û¡ø ˝æ›
+               * @param  UART_HANDLE[out]:÷∏œÚ∞¸∫¨÷∏∂®UARTƒ£øÈµƒ≈‰÷√–≈œ¢Ω·ππÃÂµƒ÷∏’Î
+               * @param  pData[out]:Ω” ’ ˝æ›µƒ¥Ê∑≈«¯
+               * @param  Size[in]:¥˝Ω” ’µƒ ˝æ›¡ø
+               * @param  timeout[in]:≥¨ ± ±º‰…Ë÷√
+               * @retval SSI ◊¥Ã¨
+               *          - Status_ERROR:¥ÌŒÛ
+               *          - Status_OK:’˝≥£
+               *          - Status_BUSY:’˝√¶
+               *          - Status_TIMEOUT:≥¨ ±
+               */
+              StatusTypeDef UART2_Transmit(UART2_HandleInfoDef* UART_HANDLE, uint8_t* pData, uint8_t Size, uint32_t Time
+             -out)
+              {
+                  uint32_t TimeoutCnt;
+                  TMCON &= 0X7F;  //UARTøÿ÷∆ºƒ¥Ê∆˜÷∏’Î÷∏œÚUART2
+                  /* ºÏ≤È“ª∏ˆ∑¢ÀÕΩ¯≥Ã «∑Ò’˝‘⁄Ω¯–– */
+                  if (UART_HANDLE->TxState == UART2_STATE_READY)
+                  {
+                      /* ¥˝∑¢ÀÕ ˝æ›≥§∂»±ÿ–Î¥Û”⁄0£¨∑Ò‘Ú∑µªÿ¥ÌŒÛ◊¥Ã¨ */
+                      if (Size == 0U)
+                      {
+                          return  Status_ERROR;
+                      }
+              
+                      UART_HANDLE->TxState = UART2_STATE_BUSY;      //∑¢ÀÕΩ¯≥Ã√¶¬µ÷–
+                      UART2_ClearFlag(UART2_FLAG_TI); //∑¢ÀÕ«∞«Â≥˝∑¢ÀÕ±Í÷æ,–¥1«Â0
+                      UART_HANDLE->pTxBuffPtr.Size_u8 = pData;      //÷∏œÚ¥˝∑¢ÀÕ ˝æ›µƒµÿ÷∑
+                      UART_HANDLE->TxXferSize = Size;     //∏¸–¬¥˝∑¢ÀÕµƒ ˝æ›¡ø
+                      UART_HANDLE->TxXferCount = 0;     //∑¢ÀÕº∆ ˝∆˜«Â¡„
+              
+                      while (UART_HANDLE->TxXferCount < UART_HANDLE->TxXferSize)//≈–∂œ «∑ÒΩ” ’À˘”– ˝æ›
+                      {
+                          if (UXCON & 0xC0 == UART2_Mode_11B)
+                          {
+                              UXCON &= ~0x08;
+                              UXCON |= (*(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount) >> 5);//…Ë÷√µ⁄9Œª
+             -–£—ÈŒª
+                              UXSBUF = *(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount);
+                          }
+                          else
+                          {
+                              UXSBUF = *(UART_HANDLE->pTxBuffPtr.Size_u8 + UART_HANDLE->TxXferCount);
+                          }
+              
+                          while (!(UART2_GetFlagStatus(UART2_FLAG_TI))) //µ»¥˝∑¢ÀÕÕÍ≥…
+                          {
+                              if (TimeoutCnt++ > Timeout)
+                              {
+                                  UART_HANDLE->TxState = UART2_STATE_TIMEOUT;//∑¢ÀÕ≥¨ ±
+                                  return Status_TIMEOUT;
+                              }
+                              WDTCON |= 0x10;;          //Œππ∑∫Ø ˝£¨∑¿÷πø¥√≈π∑∏¥Œª
+                          }
+              
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 14  
+
+                          UART2_ClearFlag(UART2_FLAG_TI); //∑¢ÀÕ÷–∂œ±Í÷æ«Â≥˝£¨–¥1«Â¡„
+                          TimeoutCnt = 0;
+                          UART_HANDLE->TxXferCount++; //∑¢ÀÕ ˝æ›¡øº∆ ˝
+                      }
+              
+                      if (UART_HANDLE->TxXferCount == UART_HANDLE->TxXferSize)
+                      {
+                          UART_HANDLE->TxState = UART2_STATE_READY; //∑¢ÀÕÕÍ≥…
+                          return Status_OK;
+                      }
+                      else
+                      {
+                          UART_HANDLE->TxState = UART2_STATE_ERROR;//∑¢…˙∑¢ÀÕ¥ÌŒÛ
+                          return Status_ERROR;
+                      }
+                  }
+                  else
+                  {
+                      return Status_BUSY;//∑µªÿ√¶¬µ◊¥Ã¨
+                  }
+              }
+              
+              /**
+               * @brief  UART‘⁄÷–∂œƒ£ Ωœ¬∑¢ÀÕ¥Û¡ø ˝æ› ±£¨œ»‘⁄main∫Ø ˝÷–µ˜”√¥À∫Ø ˝
+               * @param  UART_HANDLE[out]:÷∏’Î÷∏œÚUART ˝æ›–≈œ¢¥Ê∑≈«¯
+               * @param  pData[out]:Ω” ’ ˝æ›µƒ¥Ê∑≈«¯
+               * @param  Size[in]:¥˝Ω” ’µƒ ˝æ›¡ø
+               * @param  timeout[in]:≥¨ ± ±º‰…Ë÷√
+               * @retval ∫Ø ˝÷¥––◊¥Ã¨
+               *          - Status_ERROR:¥ÌŒÛ
+               *          - Status_OK:’˝≥£
+               *          - Status_BUSY:’˝√¶
+               *          - Status_TIMEOUT:≥¨ ±
+               */
+              StatusTypeDef UART2_Transmit_IT(UART2_HandleInfoDef* UART_HANDLE, uint8_t* pData, uint8_t Size)
+              {
+                  TMCON &= 0X7F;  //UARTøÿ÷∆ºƒ¥Ê∆˜÷∏’Î÷∏œÚUART2
+                  /* ºÏ≤È“ª∏ˆ∑¢ÀÕΩ¯≥Ã «∑Ò’˝‘⁄Ω¯–– */
+                  if (UART_HANDLE->TxState == UART2_STATE_READY)
+                  {
+                      /* √ª”–ø™∆ÙUART2÷–∂œªÚ∑¢ÀÕ ˝æ›¡ø¥Û–°Œ™0£¨∑µªÿ¥ÌŒÛ */
+                      if ((IE2&0x01 == 0) || (UART_HANDLE->TxXferSize == 0U))
+                      {
+                          return Status_ERROR;
+                      }
+              
+                      UART_HANDLE->TxState = UART2_STATE_BUSY;      //∑¢ÀÕΩ¯≥Ã√¶¬µ÷–
+                      UART2_ClearFlag(UART2_FLAG_TI);  //∑¢ÀÕ«∞«Â≥˝∑¢ÀÕ±Í÷æ,–¥1«Â0
+                      UART_HANDLE->pTxBuffPtr.Size_u8 = pData;      //÷∏œÚ¥˝∑¢ÀÕ ˝æ›µƒµÿ÷∑
+                      UART_HANDLE->TxXferSize = Size;     //∏¸–¬¥˝∑¢ÀÕµƒ ˝æ›¡ø
+                      UART_HANDLE->TxXferCount = 0;     //∑¢ÀÕº∆ ˝∆˜«Â¡„
+              
+              
+                      /* ∑¢ÀÕµ⁄1÷° ˝æ› */
+                      if (UXCON & 0xC0 == UART2_Mode_11B)
+                      {
+                          UXCON |= (*(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount) >> 5) & 0x08;//…Ë÷√µ⁄
+             -9Œª–£—ÈŒª
+                          UXSBUF = *(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount);
+                      }
+                      else
+                      {
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 15  
+
+                          UXSBUF = *(UART_HANDLE->pTxBuffPtr.Size_u8 + UART_HANDLE->TxXferCount);
+                      }
+                      return Status_OK;
+                  }
+                  else
+                  {
+                      return Status_BUSY;//∑µªÿ±Í÷æŒª
+                  }
+              }
+              
+              /**
+               * @brief  UART‘⁄÷–∂œƒ£ Ωœ¬∑¢ÀÕ¥Û¡ø ˝æ› ±£¨‘⁄÷–∂œ∑˛ŒÒ∫Ø ˝÷–µ˜”√
+               * @param  UART_HANDLE[out]:÷∏œÚ∞¸∫¨÷∏∂®UARTƒ£øÈµƒ≈‰÷√–≈œ¢Ω·ππÃÂµƒ÷∏’Î
+               * @retval ∫Ø ˝÷¥––◊¥Ã¨
+               *          - Status_ERROR:¥ÌŒÛ
+               *          - Status_OK:’˝≥£
+               *          - Status_BUSY:’˝√¶
+               *          - Status_TIMEOUT:≥¨ ±
+               */
+              StatusTypeDef UART2_Transmit_IRQHandler(UART2_HandleInfoDef* UART_HANDLE)
+              {
+                  TMCON &= 0X7F;  //UARTøÿ÷∆ºƒ¥Ê∆˜÷∏’Î÷∏œÚUART2
+                  /* ¥¶”⁄∑¢ÀÕœﬂ≥Ã */
+                  if (UART_HANDLE->TxState == UART2_STATE_BUSY)
+                  {
+                      UART_HANDLE->TxXferCount++;
+                      /* ≈–∂œ…œ“ª¥Œ∑¢ÀÕ «∑Ò «◊Ó∫Û“ª¥Œ */
+                      if (UART_HANDLE->TxXferCount < UART_HANDLE->TxXferSize)
+                      {
+                          /* ¥˝∑¢ÀÕ ˝æ›¡øŒ¥Œ™0£¨ºÃ–¯∑¢ÀÕ */
+                          if (UXCON & 0xC0 == UART2_Mode_11B)
+                          {
+                              UXCON |= (*(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount) >> 5) & 0x08;//…Ë
+             -÷√µ⁄9Œª–£—ÈŒª
+                              UXSBUF = *(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount);
+                          }
+                          else
+                          {
+                              UXSBUF = *(UART_HANDLE->pTxBuffPtr.Size_u8 + UART_HANDLE->TxXferCount);
+                          }
+                          return Status_BUSY;
+                      }
+                      else if (UART_HANDLE->TxXferCount == UART_HANDLE->TxXferSize)
+                      {
+                          /* ∑¢ÀÕÕÍ≥… */
+                          UART_HANDLE->TxState = UART2_STATE_READY;
+                          return Status_OK;
+                      }
+                      else
+                      {
+                          /* ∑¢ÀÕ ˝æ›¡øŒ™0 ±ªπ∑¢ÀÕ ˝æ›£¨∑µªÿ¥ÌŒÛ */
+                          UART_HANDLE->TxState = UART2_STATE_ERROR;
+                          return Status_ERROR;
+                      }
+                  }
+                  else
+                  {
+                      return Status_ERROR;
+                  }
+              }
+              
+              /**
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 16  
+
+               * @brief  UART‘⁄¬÷—Øƒ£ Ωœ¬Ω” ’¥Û¡ø ˝æ›
+               * @param  UART_HANDLE[out]:÷∏’Î÷∏œÚUART ˝æ›–≈œ¢¥Ê∑≈«¯
+               * @param  pData[out]:Ω” ’ ˝æ›µƒ¥Ê∑≈«¯
+               * @param  Size[in]:¥˝Ω” ’µƒ ˝æ›¡ø
+               * @param  timeout[in]:≥¨ ± ±º‰…Ë÷√
+               * @retval ∫Ø ˝÷¥––◊¥Ã¨
+               *          - Status_ERROR:¥ÌŒÛ
+               *          - Status_OK:’˝≥£
+               *          - Status_BUSY:’˝√¶
+               *          - Status_TIMEOUT:≥¨ ±
+               */
+              StatusTypeDef UART2_Receive(UART2_HandleInfoDef* UART_HANDLE, uint8_t* pData, uint8_t Size, uint32_t Timeo
+             -ut)
+              {
+                  uint32_t TimeoutCnt = 0;
+                  TMCON &= 0X7F;  //UARTøÿ÷∆ºƒ¥Ê∆˜÷∏’Î÷∏œÚUART2
+                  /* ºÏ≤ÈΩ” ’Ω¯≥Ã’˝‘⁄‘À–– */
+                  if (UART_HANDLE->RxState == UART2_STATE_READY)
+                  {
+                      /* ºÏ≤ÈΩ” ’ ˝æ›¡ø¥Û–°∫Õ «∑Òø™∆ÙΩ” ’ πƒ‹ */
+                      if ((UART_HANDLE->RxXferSize == 0U) || ((UXCON & 0x10) == UART2_RX_ENABLE))
+                      {
+                          return  Status_ERROR;
+                      }
+              
+                      UART_HANDLE->RxState = UART2_STATE_BUSY;      //◊¥Ã¨∏¸–¬Œ™Ω” ’√¶¬µ÷–
+                      UART2_ClearFlag(UART2_FLAG_RI);      //Ω” ’«∞«Â≥˝Ω” ’÷–∂œ±Í÷æ
+                      UART_HANDLE->pRxBuffPtr.Size_u8 = pData;      //÷∏œÚ¥˝∑¢ÀÕ ˝æ›µƒµÿ÷∑
+                      UART_HANDLE->RxXferSize = Size;     //∏¸–¬¥˝∑¢ÀÕµƒ ˝æ›¡ø
+                      UART_HANDLE->RxXferCount = 0;     //∑¢ÀÕº∆ ˝∆˜«Â¡„
+              
+                      while (UART_HANDLE->RxXferCount < UART_HANDLE->RxXferSize) //≈–∂œ «∑ÒΩ” ’À˘”– ˝æ›
+                      {
+                          if (UART2_GetFlagStatus(UART2_FLAG_RI)) //≈–∂œΩ” ’±Í÷æŒª
+                          {
+                              if (UXCON & 0xC0 == UART2_Mode_11B)
+                              {
+                                  *(UART_HANDLE->pRxBuffPtr.Size_u16 + UART_HANDLE->RxXferCount) = UXSBUF + ((uint16_t)(
+             -UXCON & 0X04) << 6); //Ω” ’ ˝æ›
+                              }
+                              else
+                              {
+                                  *(UART_HANDLE->pRxBuffPtr.Size_u8 + UART_HANDLE->RxXferCount) = UXSBUF;     //Ω” ’ ˝æ›
+                              }
+                              UART2_ClearFlag(UART2_FLAG_RI);     //Ω” ’±Í÷æŒª«Â¡„
+                              UART_HANDLE->RxXferCount++; //Ω” ’ ˝æ›¡øº∆ ˝º”1
+                              TimeoutCnt = 0;// ’µΩ ˝æ›£¨≥¨ ±º∆ ˝«Â¡„
+                          }
+                          else
+                          {
+                              if (TimeoutCnt++ > Timeout)//º∆ ±“Á≥ˆ
+                              {
+                                  UART_HANDLE->RxState = UART2_STATE_TIMEOUT;//∑¢ÀÕ≥¨ ±
+                                  return Status_TIMEOUT;
+                              }
+                              WDTCON |= 0x10;;      //Œππ∑£¨∑¿÷πµ»¥˝ ±º‰π˝≥§£¨µº÷¬WDT∏¥Œª
+                          }
+                      }
+              
+                      if (UART_HANDLE->RxXferCount == UART_HANDLE->RxXferSize)
+                      {
+                          UART_HANDLE->RxState = UART2_STATE_READY; //Ω” ’ÕÍ≥…
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 17  
+
+                          return Status_OK;
+                      }
+                      else
+                      {
+                          UART_HANDLE->RxState = UART2_STATE_ERROR;//Ω” ’¥ÌŒÛ
+                          return Status_ERROR;
+                      }
+                  }
+                  else
+                  {
+                      return Status_BUSY;//∑µªÿ±Í÷æŒª
+                  }
+              }
+              
+              /**
+               * @brief  UART‘⁄÷–∂œƒ£ Ωœ¬Ω” ’¥Û¡ø ˝æ› ±£¨œ»‘⁄main∫Ø ˝÷–µ˜”√¥À∫Ø ˝
+               * @param  UART_HANDLE[out]:÷∏’Î÷∏œÚUART ˝æ›–≈œ¢¥Ê∑≈«¯
+               * @param  pData[out]:Ω” ’ ˝æ›µƒ¥Ê∑≈«¯
+               * @param  Size[in]:¥˝Ω” ’µƒ ˝æ›¡ø
+               * @retval ∫Ø ˝÷¥––◊¥Ã¨
+               *          - Status_ERROR:¥ÌŒÛ
+               *          - Status_OK:’˝≥£
+               *          - Status_BUSY:’˝√¶
+               *          - Status_TIMEOUT:≥¨ ±
+               */
+              StatusTypeDef UART2_Receive_IT(UART2_HandleInfoDef* UART_HANDLE, uint8_t* pData, uint8_t Size)
+              {
+                  TMCON &= 0X7F;  //UARTøÿ÷∆ºƒ¥Ê∆˜÷∏’Î÷∏œÚUART2
+                  /* ºÏ≤È“ª∏ˆΩ” ’Ω¯≥Ã «∑Ò’˝‘⁄Ω¯–– */
+                  if (UART_HANDLE->RxState == UART2_STATE_READY)
+                  {
+                      /* ºÏ≤È «∑Òø™∆ÙUART2÷–∂œªÚ∑¢ÀÕ ˝æ›¡ø¥Û–°Œ™0ªÚ «∑Òø™∆ÙΩ” ’ πƒ‹£¨∑µªÿ¥ÌŒÛ */
+                      if ((IE2&0x01 == 0) || (Size == 0U) || ((UXCON & 0x10) == UART2_RX_ENABLE))
+                      {
+                          return UART2_STATE_ERROR;
+                      }
+              
+                      UART_HANDLE->RxState = UART2_STATE_BUSY;
+                      UART_HANDLE->pRxBuffPtr.Size_u8 = pData;      //÷∏œÚΩ” ’ ˝æ›µƒ¥Ê∑≈µÿ÷∑
+                      UART_HANDLE->RxXferSize = Size;     //∏¸–¬¥˝Ω” ’µƒ ˝æ›¡ø
+                      UART_HANDLE->RxXferCount = 0;     //∑¢ÀÕº∆ ˝∆˜«Â¡„
+              
+                      return Status_OK;
+                  }
+                  else
+                  {
+                      return Status_BUSY;//∑µªÿ±Í÷æŒª
+                  }
+              }
+              
+              /**
+               * @brief  UART‘⁄÷–∂œƒ£ Ωœ¬Ω” ’¥Û¡ø ˝æ› ±£¨‘⁄÷–∂œ∑˛ŒÒ∫Ø ˝÷–µ˜”√ ◊¢£∫∏√∫Ø ˝µ˜”√–Ë“™≈–∂œ÷–∂œ±Í÷æŒª «∑Ò÷√∆
+               * @param  UART_HANDLE[out]:÷∏’Î÷∏œÚSSI ˝æ›–≈œ¢¥Ê∑≈«¯
+               * @retval ∫Ø ˝÷¥––◊¥Ã¨
+               *          - Status_ERROR:¥ÌŒÛ
+               *          - Status_OK:’˝≥£
+               *          - Status_BUSY:’˝√¶
+               *          - Status_TIMEOUT:≥¨ ±
+               */
+              StatusTypeDef UART2_Receive_IRQHandler(UART2_HandleInfoDef* UART_HANDLE)
+              {
+                  TMCON &= 0X7F;  //UARTøÿ÷∆ºƒ¥Ê∆˜÷∏’Î÷∏œÚUART2
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 18  
+
+                  /* ºÏ≤È“ª∏ˆΩ” ’Ω¯≥Ã «∑Ò’˝‘⁄Ω¯–– */
+                  if (UART_HANDLE->RxState == UART2_STATE_BUSY)
+                  {
+                      /* ¥¶”⁄Ω” ’œﬂ≥Ã£¨ºÏ≤È¥˝Ω” ’ ˝æ›¡ø «∑ÒŒ™0 */
+                      if (UART_HANDLE->RxXferCount < UART_HANDLE->RxXferSize)
+                      {
+                          if (UXCON & 0xC0 == UART2_Mode_11B)
+                          {
+                              *(UART_HANDLE->pRxBuffPtr.Size_u16 + UART_HANDLE->RxXferCount) = UXSBUF + ((uint16_t)(UXCO
+             -N & 0X04) << 6); //Ω” ’ ˝æ›
+                          }
+                          else
+                          {
+                              *(UART_HANDLE->pRxBuffPtr.Size_u8 + UART_HANDLE->RxXferCount) = UXSBUF;     //Ω” ’ ˝æ›
+                          }
+                          UART_HANDLE->RxXferCount++;
+                          /* ≈–∂œ…œ“ª¥Œ∑¢ÀÕ «∑Ò «◊Ó∫Û“ª¥Œ */
+                          if (UART_HANDLE->RxXferCount == UART_HANDLE->RxXferSize)
+                          {
+                              /* Ω” ’ÕÍ≥… */
+                              UART_HANDLE->RxState = UART2_STATE_READY;
+                              return Status_OK;
+                          }
+                          return Status_BUSY;
+                      }
+                      else
+                      {
+                          /* Ω” ’ ˝æ›¡øŒ™0 ±ªπΩ” ’ ˝æ›£¨∑µªÿ¥ÌŒÛ */
+                          UART_HANDLE->RxState = UART2_STATE_ERROR;
+                          return Status_ERROR;
+                      }
+                  }
+                  else
+                  {
+                      return Status_BUSY;
+                  }
+              }
+              /**
+               * @}
+               */
+              /* End of UART2_Group2. */
+              
+              /** @defgroup UART2_Group3 Interrupts and flags management functions
+               *  @brief   Interrupts and flags management functions
+               *
+              @verbatim
+               ===============================================================================
+                                   ##### Interrupts and flags management functions #####
+               ===============================================================================
+              @endverbatim
+                * @{
+                */
+              
+              /**
+               * @brief  UART2÷–∂œ≥ı ºªØ
+               * @param  NewState[in]: ∂œ πƒ‹/πÿ±’—°‘Ò
+               *              - DISABLE:πÿ±’
+               *              - ENABLE: πƒ‹
+               * @param  Priority[in]: ÷–∂œ”≈œ»º∂—°‘Ò
+               *              - LOW:µÕ
+               *              - HIGH:∏ﬂ
+               * @retval None
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 19  
+
+               */ 
+              void UART2_ITConfig(FunctionalState NewState,
+                                  PriorityStatus Priority)
+              {
+                if(NewState == DISABLE)
+                {
+                  IE2 &= 0XFE;
+                }
+                else
+                {
+                  IE2 |= 0X01;
+                }
+              
+                //…Ë÷√÷–∂œ”≈œ»º∂
+                if(Priority == LOW)
+                {
+                  IP2 &= 0XFE;
+                }
+                else
+                {
+                  IP2 |= 0X01;
+                }
+              }
+              
+              /**
+               * @brief  «Â≥˝UART2±Í÷æ◊¥Ã¨
+               * @param  UART2_FLAG[in]:À˘–Ë«Â≥˝µƒ±Í÷æŒª
+               *              - UART2_FLAG_TI:UART2∑¢ÀÕ÷–∂œ±Í÷æŒªTI
+               *              - UART2_FLAG_RI:UART2Ω” ’÷–∂œ±Í÷æŒªRI
+               * @retval None
+               */
+              void UART2_ClearFlag(UART2_Flag_Typedef UART2_FLAG)
+              {
+                TMCON &= 0X7F;  //UARTøÿ÷∆ºƒ¥Ê∆˜÷∏’Î÷∏œÚUART2
+                if(UART2_FLAG == UART2_FLAG_TI)
+                {
+                  UXCON &= (~UART2_FLAG_RI);
+                }
+                else
+                {
+                  UXCON &= (~UART2_FLAG_TI);
+                }
+              }
+              /**
+               * @}
+               */
+              /* End of UART2_Group3. */
+              
+              #endif
+1143          /**
+1144           * @}
+1145           */
+1146          
+1147          /**
+1148           * @}
+1149           */
+1150          
+1151          /**
+1152           * @}
+1153           */
+1154          /******************* (C) COPYRIGHT 2025 SinOne Microelectronics *****END OF FILE****/
+
+C51 COMPILER V9.60.7.0   SC92F_UART2                                                       10/13/2026 10:46:34 PAGE 20  
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

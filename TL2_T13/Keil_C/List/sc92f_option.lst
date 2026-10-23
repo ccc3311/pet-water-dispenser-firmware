@@ -1,0 +1,358 @@
+C51 COMPILER V9.60.7.0   SC92F_OPTION                                                      10/13/2026 10:46:29 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SC92F_OPTION
+OBJECT MODULE PLACED IN ..\Output\sc92f_option.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\FWLib\SC92F_Lib\src\sc92f_option.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE
+                    - INCDIR(..\FWLib\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L7
+                    -53x) DEBUG PRINT(..\List\sc92f_option.lst) TABS(2) OBJECT(..\Output\sc92f_option.obj)
+
+line level    source
+
+   1          /**
+   2           ******************************************************************************
+   3           * @file    sc92f_option.c
+   4           * @author  SOC AE Team
+   5           * @version V1.2.4
+   6           * @date    2026-2-28
+   7           * @brief   option function module
+   8           *          -This document is for the SinOne 92F/93F/92L series microcontrollers.
+   9           ******************************************************************************
+  10           * @attention
+  11           *
+  12           *1.This software is supplied by SinOne Microelectronics Co.,Ltd. and is only 
+  13           *intended for use with SinOne products. No other uses are authorized. This 
+  14           *software is owned by SinOne Microelectronics Co.,Ltd. and is protected under 
+  15           *all applicable laws, including copyright laws. 
+  16           *2.The software which is for guidance only aims at providing customers with 
+  17           *coding information regarding their products in order for them to save time. 
+  18           *As a result, SinOne shall not be held liable for any direct, indirect or 
+  19           *consequential damages with respect to any claims arising from the content of 
+  20           *such software and/or the use made by customers of the coding information 
+  21           *contained herein in connection with their products.
+  22           *
+  23           *  COPYRIGHT 2025 SinOne Microelectronics
+  24           ******************************************************************************
+  25           */
+  26           
+  27          /* Includes ------------------------------------------------------------------*/
+  28          #include "sc92f_option.h"
+  29          
+  30          /** @addtogroup sc92f_StdPeriph_Driver
+  31           * @{
+  32           */
+  33          
+  34          /** @defgroup OPTION
+  35           *  @brief option driver modules
+  36           *  @{
+  37           */
+  38           
+  39           /** @defgroup OPTION_Functions
+  40           * @{
+  41           */
+  42           
+  43           /** @defgroup OPTION_Group1 Configuration of the option computation unit functions
+  44           *  @brief   Configuration of the option computation unit functions
+  45           *
+  46           
+  47          @verbatim
+  48           ===============================================================================
+  49                               ##### option configuration functions #####
+  50           ===============================================================================
+  51          @endverbatim
+  52            * @{
+  53            */
+C51 COMPILER V9.60.7.0   SC92F_OPTION                                                      10/13/2026 10:46:29 PAGE 2   
+
+  54            
+  55            /**
+  56            * @brief  Enables or disables the WDT peripheral.
+  57            * @param  NewState[in]:  new state of the WDT peripheral.
+  58            *                  - DISABLE:Function disable
+  59            *                  - ENABLE:Function enable 
+  60            * @retval None
+  61            */
+  62          void OPTION_WDT_Cmd(FunctionalState NewState)
+  63          {
+  64   1        OPINX = 0XC1;
+  65   1      
+  66   1        if(NewState == DISABLE)
+  67   1        {
+  68   2          OPREG &= 0X7F;
+  69   2        }
+  70   1        else
+  71   1        {
+  72   2          OPREG |= 0X80;
+  73   2        } 
+  74   1      }
+  75          
+  76          /**
+  77            * @brief  Enables or disables the XTIPLL clock.
+  78            * @param  NewState[in]: new state of the XTIPLL clock. 
+  79            *                   - DISABLE:Function disable
+  80            *                   - ENABLE:Function enable   
+  81            * @retval None
+  82            */
+  83          #if !defined(SC92F848x) && !defined(SC92F748x) && !defined(SC92F730x_2) && !defined(SC92F720x) && !defined
+             -(SC92F5x5x) && !defined(SC92F531x)\
+  84              && !defined(SC92F637x) && !defined(SC92F663x)
+  85          void OPTION_XTIPLL_Cmd(FunctionalState NewState)
+  86          {
+  87   1        OPINX = 0XC1;
+  88   1      
+  89   1        if(NewState == DISABLE)
+  90   1        {
+  91   2          OPREG &= 0XBF;
+  92   2        }
+  93   1        else
+  94   1        {
+  95   2          OPREG |= 0X40;
+  96   2        }
+  97   1      }
+  98          #endif
+  99          /**
+ 100            * @brief  System clock frequency initialization.
+ 101            * @param  SYSCLK_PresSel[in]: specifies the SYSCLK crossover frequencies. 
+ 102            *                   - SYSCLK_PRESSEL_FOSC_D1:SYSCLK clock = SYSCLK/1
+ 103            *                   - SYSCLK_PRESSEL_FOSC_D2:SYSCLK clock = SYSCLK/2 
+ 104            *                   - SYSCLK_PRESSEL_FOSC_D4:SYSCLK clock = SYSCLK/4
+ 105            *                   - SYSCLK_PRESSEL_FOSC_D12:SYSCLK clock = SYSCLK/12
+ 106            *  SC92L853x,SC92L753x SYSCLK crossover frequencies selection range
+ 107            *                   - SYSCLK_PRESSEL_FOSC_D1:SYSCLK clock = SYSCLK/1
+ 108            *                   - SYSCLK_PRESSEL_FOSC_D2:SYSCLK clock = SYSCLK/2 
+ 109            *                   - SYSCLK_PRESSEL_FOSC_D4:SYSCLK clock = SYSCLK/4
+ 110            *                   - SYSCLK_PRESSEL_FOSC_D8:SYSCLK clock = SYSCLK/8
+ 111            *  SC92R436,SC92R438,SC92R439,SC92L840x,SC92R422A SYSCLK crossover frequencies selection range
+ 112            *                   - SYSCLK_PRESSEL_FOSC_D2:SYSCLK clock = SYSCLK/2 
+ 113            *                   - SYSCLK_PRESSEL_FOSC_D4:SYSCLK clock = SYSCLK/4
+ 114            *                   - SYSCLK_PRESSEL_FOSC_D12:SYSCLK clock = SYSCLK/12
+C51 COMPILER V9.60.7.0   SC92F_OPTION                                                      10/13/2026 10:46:29 PAGE 3   
+
+ 115            * @retval None
+ 116            */
+ 117          void OPTION_SYSCLK_Init(SYSCLK_PresSel_TypeDef
+ 118                                  SYSCLK_PresSel)
+ 119          {
+ 120   1        OPINX = 0XC1;
+ 121   1        OPREG = OPREG & 0XCF | SYSCLK_PresSel;
+ 122   1      }
+ 123          
+ 124          /**
+ 125            * @brief  Enables or disables the RST Pin.
+ 126            * @param  NewState[in]:  new state of the RST Pin.
+ 127            *                  - DISABLE:Function disable
+ 128            *                  - ENABLE:Function enable 
+ 129            * @retval None
+ 130            */
+ 131          #if !defined(SC92F848x) && !defined(SC92F748x)  && !defined(SC92F859x) && !defined (SC92F759x)  && !define
+             -d(SC92L853x) && !defined (SC92L753x)\
+ 132              && !defined (SC92R511x) && !defined (SC92L840x)
+              void OPTION_RST_PIN_Cmd(FunctionalState NewState)
+              {
+                OPINX = 0XC1;
+              
+                if(NewState == DISABLE)
+                {
+                  OPREG |= 0X08;
+                }
+                else
+                {
+                  OPREG &= 0XF7;
+                }
+              }
+              #endif
+ 147          
+ 148          /**
+ 149           * @brief  Configures the LVR voltage gear.
+ 150           * @param  LVR_Config[in]: specifies the LVR voltage gear.
+ 151           *            - LVR_INVALID: LVR Reset: disable 
+ 152           *            - LVR_2_3V: LVR Reset: 2.3V  
+ 153           *            - LVR_2_9V: LVR Reset: 2.9V  
+ 154           *            - LVR_3_7V: LVR Reset: 3.7V  
+ 155           *            - LVR_4_3V: LVR Reset: 4.3V 
+ 156           * SC92F859x,SC92F759x,SC92F848x,SC92F748x,SC92R511x,SC92F663x Selection Range
+ 157           *            - LVR_INVALID: LVR Reset: disable 
+ 158           *            - LVR_1_9V: LVR Reset: 1.9V  
+ 159           *            - LVR_2_9V: LVR Reset: 2.9V  
+ 160           *            - LVR_3_7V: LVR Reset: 3.7V  
+ 161           *            - LVR_4_3V: LVR Reset: 4.3V 
+ 162           * SC92L853x,SC92L753x Selection Range
+ 163           *            - LVR_INVALID: LVR Reset: disable 
+ 164           *            - LVR_1_7V: LVR Reset: 1.9V  
+ 165           *            - LVR_2_7V: LVR Reset: 2.9V  
+ 166           *            - LVR_3_7V: LVR Reset: 3.7V  
+ 167           *            - LVR_4_3V: LVR Reset: 4.3V 
+ 168           * SC92L840x Selection Range
+ 169           *            - LVR_INVALID: LVR Reset: disable 
+ 170           *            - LVR_1_7V: LVR Reset: 1.7V  
+ 171           *            - LVR_1_9V: LVR Reset: 1.9V  
+ 172           *            - LVR_2_3V: LVR Reset: 2.3V  
+ 173           *            - LVR_2_7V: LVR Reset: 2.7V 
+ 174           * @retval None
+ 175           */
+C51 COMPILER V9.60.7.0   SC92F_OPTION                                                      10/13/2026 10:46:29 PAGE 4   
+
+ 176          void OPTION_LVR_Init(LVR_Config_TypeDef
+ 177                               LVR_Config)
+ 178          {
+ 179   1        OPINX = 0XC1;
+ 180   1        OPREG = OPREG & 0XF8 | LVR_Config;
+ 181   1      }
+ 182          
+ 183          /**
+ 184           * @brief  Configures the ADC Reference voltage gear.
+ 185           * @param  ADC_Vref[in]: specifies the ADC Reference voltage.
+ 186           *            - ADC_VREF_VDD: ADC reference voltage is VDD 
+ 187           *            - ADC_VREF_2_4V: ADC reference voltage is 2.4V
+ 188           * SC92F859x,SC92F759x,SC92F848x,SC92F748x,SC92L853x,SC92L753x,SC92R511x,SC92F646x,SC92F546x,SC92F542x,SC9
+             -2F6x1x,SC92F5x1x 
+ 189           * SC92R436,SC92R438,SC92R439,SC92R422A,SC92F652x,SC92F5x5x,SC92F531x,SC92F663x Selection Range
+ 190           *            - ADC_VREF_VDD: ADC reference voltage is VDD 
+ 191           *            - ADC_VREF_1_024V: ADC reference voltage is 1.024V
+ 192           *            - ADC_VREF_2_4V: ADC reference voltage is 2.4V
+ 193           *            - ADC_VREF_2_048V: ADC reference voltage is 2.048V
+ 194           * SC92L840x Selection Range
+ 195           *            - ADC_VREF_VDD: ADC reference voltage is VDD 
+ 196           *            - ADC_VREF_1_024V: ADC reference voltage is 2.4V
+ 197           * @retval None
+ 198           */
+ 199          #if !defined(SC92F637x)
+ 200          void OPTION_ADC_VrefConfig(ADC_Vref_TypeDef
+ 201                                     ADC_Vref)
+ 202          {
+ 203   1        OPINX = 0xC2;
+ 204   1        #if defined (SC92F859x) || defined (SC92F759x) || defined (SC92F848x) || defined (SC92F748x) || defined (
+             -SC92L853x) || defined (SC92L753x)\
+ 205   1          || defined (SC92R511x) || defined(SC92F646x) || defined(SC92F546x) || defined(SC92F542x) || defined(SC92
+             -F6x1x) || defined(SC92F5x1x)|| defined(SC92R436)\
+ 206   1          || defined(SC92R438)|| defined(SC92R439)|| defined(SC92R422A)|| defined(SC92F652x)|| defined(SC92R51x_R
+             -52x) || defined (SC92F552x)|| defined(SC92F5x5x)\
+ 207   1          || defined(SC92F531x) || defined(SC92F663x)
+ 208   1        {
+ 209   2          OPREG = OPREG & 0X3F | ADC_Vref;
+ 210   2        }
+ 211   1        #else
+                {
+                OPREG = OPREG & 0X7F | ADC_Vref;
+                }
+                #endif
+ 216   1      }
+ 217          #endif
+ 218          
+ 219          /**
+ 220           * @brief  Configures the IAP Operate Range.
+ 221           * @param  IAP_OperateRange[in]: specifies the IAP Operate Range.
+ 222           *            - IAP_OPERATERANGE_ONLY_EEPROM: Only IAP operations on EEPROM
+ 223           *            - IAP_OPERATERANGE__LAST_0_5K_CODEREGION:  Only IAP operations in the last 0.5k of FLASH
+ 224           *            - IAP_OPERATERANGE__LAST_1K_CODEREGION: Only IAP operations in the last 1k of FLASH
+ 225           *            - IAP_OPERATERANGE__ALL_CODEREGION: Only IAP operations in the all of FLASH
+ 226           *              SC92F848x,SC92F748x,SC92L853x,SC92L753x,SC92L840x,SC92F663x Selection Range
+ 227           *            - IAP_OPERATERANGE_ONLY_EEPROM: Only IAP operations on EEPROM
+ 228           *            - IAP_OPERATERANGE__LAST_1K_CODEREGION: Only IAP operations in the last 1k of FLASH
+ 229           *            - IAP_OPERATERANGE__LAST_2K_CODEREGION: Only IAP operations in the last 2k of FLASH
+ 230           *            - IAP_OPERATERANGE__ALL_CODEREGION: Only IAP operations in the all of FLASH
+ 231           * @retval None
+ 232           */
+ 233          #if !defined(SC92F5x5x) && !defined(SC92F531x) && !defined(SC92F637x)
+C51 COMPILER V9.60.7.0   SC92F_OPTION                                                      10/13/2026 10:46:29 PAGE 5   
+
+ 234          void OPTION_IAP_SetOperateRange(IAP_OperateRange_TypeDef IAP_OperateRange)
+ 235          {
+ 236   1        OPINX = 0xC2;
+ 237   1        OPREG = (OPREG & 0xF3) | IAP_OperateRange;
+ 238   1      }
+ 239          #endif
+ 240          
+ 241          #if defined (SC92F846xB) || defined (SC92F746xB) || defined (SC92F836xB) || defined (SC92F736xB)|| defined
+             - (SC92F83Ax)\
+ 242            || defined (SC92F73Ax) || defined (SC92F84Ax) || defined (SC92F74Ax) || defined (SC92F740x)\
+ 243            || defined (SC92F8003) || defined (SC92F8003B) || defined (SC92F7003) || defined (SC92R342) || defined (S
+             -C92F841x) || defined (SC92F741x)\
+ 244            ||defined (SC92L840x)   || defined (SC92Fx41xB) ||defined(SC92R445) 
+              /**
+               * @brief  Configures the XTIPPL frequency range.
+               * @param  XTIPLL_Range[in]: specifies the XTIPPL frequency Range.
+               *            - XTIPLL_HIGHER_THAN_12M: XTIPPL frequency is greater than 12 MHz
+               *            - XTIPLL_UNDER_12M:  XTIPPL frequency is less than 12 MHz
+               * @retval None
+               */
+              void OPTION_XTIPLL_SetRange(XTIPLL_Range_TypeDef
+                                          XTIPLL_Range)
+              {
+                OPINX = 0XC2;
+                OPREG = OPREG & 0XBF | XTIPLL_Range;
+              }
+              #endif
+ 259          
+ 260          #if defined (SC92F742x)||defined (SC92F83Ax) || defined (SC92F73Ax)|| defined (SC92F84Ax) || defined (SC92
+             -F74Ax) \
+ 261              ||defined (SC92F74Ax_2) || defined (SC92F84Ax_2) || defined (SC92F844xB) || defined (SC92F744xB)|| defin
+             -ed (SC92F7490) \
+ 262              ||defined (SC92F859x) || defined (SC92F759x) ||defined (SC92F848x) || defined (SC92F748x) || defined (SC
+             -92L853x) || defined (SC92L753x)\
+ 263              || defined (SC92R511x) || defined (SC92F84Hx) || defined (SC92F83Hx) || defined(SC92F646x) || defined(SC
+             -92F546x) || defined(SC92F542x)\
+ 264              || defined(SC92F8003B)|| defined(SC92F6x1x) || defined(SC92F5x1x)|| defined(SC92R436)|| defined(SC92R4
+             -38)|| defined(SC92R439) || defined(SC92L840x)\
+ 265              || defined(SC92R445) || defined(SC92R422A) || defined(SC92F652x)|| defined(SC92R51x_R52x) || defined (
+             -SC92F552x) || defined(SC92F5x5x)\
+ 266              || defined(SC92F531x) || defined(SC92F637x) || defined(SC92F663x)
+ 267          /**
+ 268           * @brief  Enables or disables the JTAG function.
+ 269           * @param  NewState[in]: new state of the JTAG peripheral. 
+ 270           *                  - DISABLE:Function disable
+ 271           *                  - ENABLE:Function enable 
+ 272           * @retval None
+ 273           */
+ 274          void OPTION_JTG_Cmd(FunctionalState NewState)
+ 275          {
+ 276   1        OPINX = 0xC2;
+ 277   1      
+ 278   1        if(NewState == DISABLE)
+ 279   1        {
+ 280   2          OPREG |= 0X10;     //1 JTAG DISABLE
+ 281   2        }
+ 282   1        else
+ 283   1        {
+ 284   2          OPREG &= 0XEF;     //0 JTAG ENABLE
+ 285   2        }
+ 286   1      }
+ 287          #endif
+C51 COMPILER V9.60.7.0   SC92F_OPTION                                                      10/13/2026 10:46:29 PAGE 6   
+
+ 288          /**
+ 289           * @}
+ 290           */
+ 291          /* End of option_Group1.  */
+ 292          
+ 293          
+ 294          /**
+ 295           * @}
+ 296           */
+ 297          
+ 298          /**
+ 299           * @}
+ 300           */
+ 301          
+ 302          /**
+ 303           * @}
+ 304           */
+ 305          /******************* (C) COPYRIGHT 2025 SinOne Microelectronics *****END OF FILE****/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     86    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,1883 @@
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SC92F_SSI
+OBJECT MODULE PLACED IN ..\Output\sc92f_ssi.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\FWLib\SC92F_Lib\src\sc92f_ssi.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE IN
+                    -CDIR(..\FWLib\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753x
+                    -) DEBUG PRINT(..\List\sc92f_ssi.lst) TABS(2) OBJECT(..\Output\sc92f_ssi.obj)
+
+line level    source
+
+   1          /**
+   2           ******************************************************************************
+   3           * @file    sc92f_ssi.c
+   4           * @author  SOC AE Team
+   5           * @version V1.2.4
+   6           * @date    2026-2-28
+   7           * @brief   SSI function module
+   8           ******************************************************************************
+   9           * @attention
+  10           *
+  11           *1.This software is supplied by SinOne Microelectronics Co.,Ltd. and is only 
+  12           *intended for use with SinOne products. No other uses are authorized. This 
+  13           *software is owned by SinOne Microelectronics Co.,Ltd. and is protected under 
+  14           *all applicable laws, including copyright laws. 
+  15           *2.The software which is for guidance only aims at providing customers with 
+  16           *coding information regarding their products in order for them to save time. 
+  17           *As a result, SinOne shall not be held liable for any direct, indirect or 
+  18           *consequential damages with respect to any claims arising from the content of 
+  19           *such software and/or the use made by customers of the coding information 
+  20           *contained herein in connection with their products.
+  21           *
+  22           *  COPYRIGHT 2025 SinOne Microelectronics
+  23           ******************************************************************************
+  24           */
+  25           
+  26          /* Includes ------------------------------------------------------------------*/
+  27          #include "sc92f_ssi.h"
+  28          
+  29          #if defined (SC92F854x) || defined (SC92F754x) ||defined  (SC92F844xB) || defined (SC92F744xB)||defined  (
+             -SC92F84Ax_2) || defined (SC92F74Ax_2)\
+  30              || defined (SC92F846xB) || defined (SC92F746xB) || defined (SC92F836xB) || defined (SC92F736xB) || defin
+             -ed (SC92F84Ax) || defined (SC92F74Ax)\
+  31              || defined (SC92F83Ax) || defined (SC92F73Ax) || defined (SC92F7003) || defined (SC92F8003) || defined (
+             -SC92F8003B) || defined (SC92F740x) || defined (SC92F827X)\
+  32              || defined (SC92F837X) || defined (SC92FWxx) || defined (SC93F833x) || defined (SC93F843x) || defined (S
+             -C93F743x)\
+  33              || defined (SC92F848x) || defined (SC92F748x) || defined (SC92F859x) || defined (SC92F759x) || defined (
+             -SC92R511x) || defined (SC92R342)\
+  34              || defined (SC92F841x)|| defined (SC92F741x) || defined(SC92F84Hx) || defined(SC92F83Hx) ||defined(SC92F
+             -6x1x)||defined(SC92F5x1x)||defined(SC92R436)||defined(SC92R438)||defined(SC92R439)\
+  35              || defined (SC92Fx41xB)||defined(SC92R445)||defined(SC92R422A)|| defined(SC92F652x)|| defined(SC92R51x_R
+             -52x) || defined (SC92F552x)|| defined(SC92F5x5x)|| defined(SC92F531x)\
+  36              || defined (SC92F637x)
+              /** @addtogroup sc92f_StdPeriph_Driver
+               * @{
+               */
+               
+              /** @defgroup SSI
+               * @brief SSI driver modules
+               * @{
+               */
+              
+              /** @defgroup SSI_Functions
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 2   
+
+               * @{
+               */
+                  
+              /** @defgroup SSI_Group1 Initialization and Configuration functions
+               *  @brief Initialization and Configuration functions
+               *
+               
+              @verbatim
+               ===============================================================================
+                                   ##### Initialization and Configuration functions #####
+               ===============================================================================
+              @endverbatim
+                * @{
+                */
+                
+              /**
+               * @brief  SSIÏà¹Ø¼Ä´æÆ÷¸´Î»ÖÁÈ±Ê¡Öµ
+               * @param  None
+               * @retval None
+               */ 
+              void SSI_DeInit(void)
+              {
+                OTCON &= 0X3F;
+                SSCON0 = 0X00;
+                SSCON1 = 0X00;
+                SSCON2 = 0X00;
+                SSDAT = 0X00;
+                IE1 &= (~0X01);
+                IP1 &= (~0X01);
+              }
+              #if defined (SC92F7003) || defined (SC92F8003) || defined (SC92F8003B) || defined (SC92F740x) || defined(S
+             -C92F84Hx) || defined(SC92F83Hx)
+              /**
+               * @brief  SSIÒý½ÅÑ¡Ôñ
+               * @param  PinSeletion[in]:Ñ¡ÔñSSIÒý½Å
+               *          SC92F7003¡¢SC92F8003¡¢SC92F8003B¡¢SC92F740x£º
+               *          - SSI_PinSelection_P10P27P26:SSI¹²ÓÃÒý½ÅÎªP10£¬P27£¬P26
+               *          - SSI_PinSelection_P21P22P23:SSI¹²ÓÃÒý½ÅÎªP21£¬P22£¬P23
+               *          - SSI_PinSelection_URATP27:SSIUARTÒý½ÅÎªP27,ÎÞRX
+               *          - SSI_PinSelection_URATP22:SSIUARTÒý½ÅÎªP22,ÎÞRX
+               *          SC92F84Hx¡¢SC92F83Hx£º
+               *          - SSI_SPI_PinRemap_Defalut:SPIÒý½ÅÎªÄ¬ÈÏÒý½Å
+               *          - SSI_SPI_PinRemap_A:SPIÒý½ÅÎªA×éÒý½Å
+               *          - SSI_UART_PinRemap_Defalut:UARTÒý½ÅÎªÄ¬ÈÏÒý½Å
+               *          - SSI_UART_PinRemap_A:UARTÒý½ÅÎªA×éÒý½Å
+               *          - SSI_TWI_PinRemap_Defalut:TWIÒý½ÅÎªÄ¬ÈÏÒý½Å
+               *          - SSI_TWI_PinRemap_A:TWIÒý½ÅÎªA×éÒý½Å
+               * @retval None
+               */ 
+              void SSI_PinSelection(SSI_PinSelection_TypeDef
+                                    PinSeletion)
+              {
+              #if defined (SC92F7003) || defined (SC92F8003) || defined (SC92F8003B) || defined (SC92F740x)
+                OTCON = OTCON & 0XDF | PinSeletion;
+              #elif defined(SC92F84Hx) || defined(SC92F83Hx)
+                OTCON = OTCON & 0XFD | PinSeletion;
+              #endif  
+              }
+              #endif
+              
+              /**
+               * @brief  SPI³õÊ¼»¯ÅäÖÃº¯Êý
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 3   
+
+               * @param  FirstBit[in]:ÓÅÏÈ´«ËÍÎ»Ñ¡Ôñ£¨MSB/LSB£©
+               *          - SPI_FIRSTBIT_MSB:MSBÓÅÏÈ·¢ËÍ
+               *          - SPI_FIRSTBIT_LSB:LSBÓÅÏÈ·¢ËÍ
+               * @param  BaudRatePrescaler[in]:Ñ¡ÔñSSIÒý½Å
+               *          - SPI_BAUDRATEPRESCALER_4:SPIÊ±ÖÓËÙÂÊÎªÏµÍ³Ê±ÖÓ³ýÒÔ4
+               *          - SPI_BAUDRATEPRESCALER_8:SPIÊ±ÖÓËÙÂÊÎªÏµÍ³Ê±ÖÓ³ýÒÔ8
+               *          - SPI_BAUDRATEPRESCALER_16:SPIÊ±ÖÓËÙÂÊÎªÏµÍ³Ê±ÖÓ³ýÒÔ16
+               *          - SPI_BAUDRATEPRESCALER_32:SPIÊ±ÖÓËÙÂÊÎªÏµÍ³Ê±ÖÓ³ýÒÔ32
+               *          - SPI_BAUDRATEPRESCALER_64:SPIÊ±ÖÓËÙÂÊÎªÏµÍ³Ê±ÖÓ³ýÒÔ64
+               *          - SPI_BAUDRATEPRESCALER_128:SPIÊ±ÖÓËÙÂÊÎªÏµÍ³Ê±ÖÓ³ýÒÔ128
+               *          - SPI_BAUDRATEPRESCALER_256:SPIÊ±ÖÓËÙÂÊÎªÏµÍ³Ê±ÖÓ³ýÒÔ256
+               *          - SPI_BAUDRATEPRESCALER_512:SPIÊ±ÖÓËÙÂÊÎªÏµÍ³Ê±ÖÓ³ýÒÔ512
+               * @param  Mode[in]:SPI¹¤×÷Ä£Ê½Ñ¡Ôñ
+               *          - SPI_MODE_MASTER:SPIÎªÖ÷Éè±¸
+               *          - SPI_MODE_SLAVE:SPIÎª´ÓÉè±¸
+               * @param  ClockPolarity[in]:Ñ¡ÔñSSIÒý½Å
+               *          - SPI_CLOCKPOLARITY_LOW:SCKÔÚ¿ÕÏÐ×´Ì¬ÏÂÎªµÍµçÆ½
+               *          - SPI_CLOCKPOLARITY_HIGH:SCKÔÚ¿ÕÏÐ×´Ì¬ÏÂÎª¸ßµçÆ½
+               * @param  ClockPhase[in]:Ñ¡ÔñSSIÒý½Å
+               *          - SPI_CLOCKPHASE_1EDGE:SCKµÄµÚÒ»ÑØ²É¼¯Êý¾Ý
+               *          - SPI_CLOCKPHASE_2EDGE:SCKµÄµÚ¶þÑØ²É¼¯Êý¾Ý
+               * @param  SPI_TXE_INT[in]:Ñ¡ÔñSSIÒý½Å
+               *          - SPI_TXE_DISINT:²»ÔÊÐí·¢ËÍÖÐ¶Ï
+               *          - SPI_TXE_ENINT:ÔÊÐí·¢ËÍÖÐ¶Ï
+               * @retval None
+               */
+              void SSI_SPI_Init(SPI_FirstBit_TypeDef FirstBit,
+                                SPI_BaudRatePrescaler_TypeDef BaudRatePrescaler,
+                                SPI_Mode_TypeDef Mode,
+                                SPI_ClockPolarity_TypeDef ClockPolarity,
+                                SPI_ClockPhase_TypeDef ClockPhase,
+                                SPI_TXE_INT_TypeDef SPI_TXE_INT)
+              {
+                OTCON = (OTCON & 0X3F) | 0X40;
+                SPI_TXE_INT = SPI_TXE_DISINT;//SPI_TXE_INT¸Ã¹¦ÄÜÔÚSSIÐ¾Æ¬ÉÏÎÞÐ§
+                SSCON1 = SSCON1 & (~0X05) | FirstBit ;
+                SSCON0 = SSCON0 & 0X80 | BaudRatePrescaler | Mode
+                         | ClockPolarity | ClockPhase;
+              }
+              /**
+               * @}
+               */
+              /* End of SSI_Group1. */
+              
+              /** @defgroup SSI_Group2 Base functions
+               *  @brief   SSI functions
+               *
+              @verbatim
+               ===============================================================================
+                                   ##### Base functions #####
+               ===============================================================================
+              @endverbatim
+                * @{
+                */
+              
+              /**
+               * @brief  SPI¹¦ÄÜ¿ª¹Øº¯Êý
+               * @param  NewState[in]:¹¦ÄÜÆô¶¯/¹Ø±ÕÑ¡Ôñ
+               *          - DISABLE:Ê§ÄÜ
+               *          - ENABLE:Ê¹ÄÜ
+               * @retval None
+               */ 
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 4   
+
+              void SSI_SPI_Cmd(FunctionalState NewState)
+              {
+                if(NewState != DISABLE)
+                {
+                  SSCON0 |= 0X80;
+                }
+                else
+                {
+                  SSCON0 &= (~0X80);
+                }
+              }
+              
+              /**
+               * @brief  SPI·¢ËÍÊý¾Ý
+               * @param  Data[in]:·¢ËÍµÄÊý¾Ý
+               * @retval None
+               */ 
+              void SSI_SPI_SendData(uint8_t Data)
+              {
+                SSDAT = Data;
+              }
+              
+              /**
+               * @brief  »ñµÃSSDATÖÐµÄÖµ
+               * @param  None
+               * @retval SPI½ÓÊÕµ½µÄ8Î»Êý¾Ý
+               */
+              uint8_t SSI_SPI_ReceiveData(void)
+              {
+                return SSDAT;
+              }
+              
+              /**
+               * @brief  SPI0 ÖÐ¶Ï´¦Àí
+               * @param  SSI_HANDLE[in]:Ö¸Ïò°üº¬ SPI0 ÐÅÏ¢µÄ SSI_HandleInfoDef ½á¹¹ÌåµÄÖ¸Õë
+               * @retval None
+               */
+              StatusTypeDef SSI_SPI_IRQHandler(SSI_HandleInfoDef* SSI_HANDLE)
+              {
+                StatusTypeDef TempStatus = Status_ERROR;
+              
+                if(SSI_HANDLE->RxState == SSI_STATE_BUSY)
+                {
+                  /* µ±Êý¾ÝÃ»ÓÐ½ÓÊÕÍê³É */
+                  if(SSI_HANDLE->RxXferCount < SSI_HANDLE->RxXferSize)
+                  {
+                    /* SPI´¦ÓÚ8Î»Í¨ÐÅÄ£Ê½ */
+                    *(SSI_HANDLE->pRxBuffPtr.Size_u8 + SSI_HANDLE->RxXferCount) = SSI_SPI_ReceiveData();      //¶ÁÈ¡16Î»Êý¾
+             -Ý
+              
+                    SSI_HANDLE->RxXferCount++;      //½ÓÊÕµ½Êý¾Ý£¬¼ÆÊýÖµ¼Ó1
+              
+                    /* Êý¾Ý½ÓÊÕÍê³É£¬×´Ì¬Î»½øÐÐÐÞ¸Ä */
+                    if(SSI_HANDLE->RxXferCount == SSI_HANDLE->RxXferSize)
+                    {
+                      SSI_HANDLE->RxState = SSI_STATE_READY;
+                      TempStatus =  Status_OK;
+                    }
+                  }
+                 TempStatus = Status_BUSY;
+                }
+              
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 5   
+
+                if(SSI_HANDLE->TxState == SSI_STATE_BUSY)
+                {
+                  SSI_HANDLE->TxXferCount++;      //Êý¾Ý·¢ËÍÍê³É£¬¼ÆÊýÖµ¼Ó1
+                  /* µ±Êý¾ÝÃ»ÓÐ·¢ËÍÍê³É */
+                  if(SSI_HANDLE->TxXferCount < SSI_HANDLE->TxXferSize)
+                  {
+                    /* SPI´¦ÓÚ8Î»Í¨ÐÅÄ£Ê½ */
+                    SSI_SPI_SendData(*(SSI_HANDLE->pTxBuffPtr.Size_u8 + SSI_HANDLE->TxXferCount));      //·¢ËÍ16Î»Êý¾Ý
+              
+                  }
+                  /* Êý¾Ý·¢ËÍÍê³É£¬×´Ì¬Î»½øÐÐÐÞ¸Ä */
+                  else if(SSI_HANDLE->TxXferCount == SSI_HANDLE->TxXferSize)
+                  {
+                    SSI_HANDLE->TxState = SSI_STATE_READY;
+                    TempStatus = Status_OK;
+                  }
+                 TempStatus = Status_BUSY;
+                }
+                /* µ±SPI´¦ÓÚÖ÷»úÊ±£¬SPIÐèÒª·¢ËÍÊý¾Ý£¬²ÅÄÜÍ¬²½½ÓÊÕµ½Êý¾Ý */
+                else if(SSI_HANDLE->RxXferCount < SSI_HANDLE->RxXferSize)
+                {
+                  SSI_SPI_SendData(0x00);
+                }
+              
+                return TempStatus;
+              }
+              
+              /**
+               * @brief  SPIÔÚÂÖÑ¯Ä£Ê½ÏÂ½ÓÊÕ´óÁ¿Êý¾Ý
+               * @param  SSI_HANDLE[out]:Ö¸Ïò°üº¬Ö¸¶¨SPIÄ£¿éµÄÅäÖÃÐÅÏ¢½á¹¹ÌåµÄÖ¸Õë
+               * @param  pData[out]:½ÓÊÕÊý¾ÝµÄ´æ·ÅÇø
+               * @param  Size[in]:´ý½ÓÊÕµÄÊý¾ÝÁ¿
+               * @param  Timeout[in]:³¬Ê±Ê±¼ä
+               * @retval SSI ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+              StatusTypeDef SSI_SPI_Receive(SSI_HandleInfoDef* SSI_HANDLE, uint8_t* pData, uint8_t Size, uint32_t Timeou
+             -t)
+              {
+                uint32_t TimeoutCnt = 0;
+              
+                if(SSI_HANDLE->RxState == SSI_STATE_READY)
+                {
+                  /* ´ý½ÓÊÕÊý¾Ý³¤¶È±ØÐë´óÓÚ0£¬·ñÔò·µ»Ø´íÎó×´Ì¬ */
+                  if(((IE1 & 0x01) != 0) || (Size == 0U))
+                  {
+                    return SSI_STATE_ERROR;
+                  }
+              
+                  /* SPI×÷ÎªÖ÷»úÊ±£¬½ÓÊÕÊý¾Ý±Ø¶¨¸úËæ·¢ËÍÊý¾Ý */
+                  if((SSCON0 & SPI_MODE_MASTER) != 0)
+                  {
+                    return SSI_SPI_TransmitReceive(SSI_HANDLE, pData, pData, Size, Timeout);      //Ìø×ªµ½×èÈûÄ£Ê½Êý¾ÝÊÕ·¢º
+             -¯Êý
+                  }
+              
+                  SSI_HANDLE->RxState = SSI_STATE_BUSY;     //½ÓÊÕ½ø³ÌÃ¦ÂµÖÐ
+                  SSI_ClearFlag(SPI_FLAG_SPIF);      //½ÓÊÕÇ°Çå³ý½ÓÊÕÖÐ¶Ï±êÖ¾
+                  SSI_HANDLE->pRxBuffPtr.Size_u8 = pData;     //Ö¸Ïò´ý½ÓÊÕÊý¾ÝµÄµØÖ·
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 6   
+
+                  SSI_HANDLE->RxXferSize = Size;      //¸üÐÂ´ý½ÓÊÕµÄÊý¾ÝÁ¿
+                  SSI_HANDLE->RxXferCount = 0;      //½ÓÊÕ¼ÆÊýÆ÷ÇåÁã
+              
+                  while(SSI_HANDLE->RxXferCount < SSI_HANDLE->RxXferSize)
+                  {
+                    /* µÈ´ýSPIÖÐ¶Ï±êÖ¾Î»ÖÃÆð */
+                    if(SSI_GetFlagStatus(SPI_FLAG_SPIF))
+                    {
+                        *(SSI_HANDLE->pRxBuffPtr.Size_u8 + SSI_HANDLE->RxXferCount) = SSI_SPI_ReceiveData();      //¶ÁÈ¡16Î
+             -»Êý¾Ý,²¢ÇÒµØÖ·×ÔÔö
+                      SSI_ClearFlag(SPI_FLAG_SPIF);       //Çå³ý±êÖ¾Î»
+                      SSI_HANDLE->RxXferCount++;  //½ÓÊÕÊý¾ÝÁ¿¼ÆÊý¼Ó1
+                      TimeoutCnt = 0;     //³¬Ê±¼ÆÊýÖµÇåÁã
+                    }
+                    else
+                    {
+                      /* ³¬Ê±¼ÆÊýÆ÷²»¶ÏÀÛ¼Ó£¬Ö±µ½³¬³öÉè¶¨µÄ³¬Ê±Ê±¼ä */
+                      if((TimeoutCnt++) > Timeout)
+                      {
+                        if(Timeout == 0)
+                          return SSI_STATE_TIMEOUT;       //·µ»Ø³¬Ê±´íÎó
+                      }
+                      WDTCON |= 0x10;          //Î¹¹·º¯Êý£¬·ÀÖ¹¿´ÃÅ¹·¸´Î»
+                    }
+                  }
+              
+                  if(SSI_HANDLE->RxXferCount == SSI_HANDLE->RxXferSize)
+                  {
+                    SSI_HANDLE->RxState = SSI_STATE_READY;  //½ÓÊÕÍê³É
+                    return Status_OK;
+                  }
+                  else
+                  {
+                    SSI_HANDLE->RxState = SSI_STATE_ERROR;//½ÓÊÕ´íÎó
+                    return Status_ERROR;
+                  }
+                }
+                else
+                {
+                  return Status_BUSY;//·µ»ØÃ¦Âµ×´Ì¬
+                }
+              }
+              
+              /**
+               * @brief  ÖÐ¶ÏÄ£Ê½½ÓÊÕÒ»¶¨Á¿Êý¾Ý
+               * @param  SSI_HANDLE[out]:Ö¸Ïò°üº¬Ö¸¶¨SPIÄ£¿éµÄÅäÖÃÐÅÏ¢½á¹¹ÌåµÄÖ¸Õë
+               * @param  pData[out]:½ÓÊÕÊý¾ÝµÄ´æ·ÅÇø
+               * @param  Size[in]:´ý½ÓÊÕµÄÊý¾ÝÁ¿
+               * @retval SSI ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+              StatusTypeDef SSI_SPI_Receive_IT(SSI_HandleInfoDef* SSI_HANDLE, uint8_t* pData, uint8_t Size)
+              {
+                /* ¼ì²éÒ»¸ö½ÓÊÕ½ø³ÌÊÇ·ñÕýÔÚ½øÐÐ */
+                if(SSI_HANDLE->RxState == SSI_STATE_READY)
+                {
+                  /* ´ý½ÓÊÕÊý¾Ý³¤¶È±ØÐë´óÓÚ0£¬·ñÔò·µ»Ø´íÎó×´Ì¬ */
+                  if(((IE1 & 0x01) == 0) || (Size == 0U))
+                  {
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 7   
+
+                    return SSI_STATE_ERROR;
+                  }
+              
+                  /* SPI×÷ÎªÖ÷»úÊ±£¬½ÓÊÕÊý¾Ý±Ø¶¨¸úËæ·¢ËÍÊý¾Ý */
+                  if((SSCON0 & SPI_MODE_MASTER) != 0)
+                  {
+                    return SSI_SPI_TransmitReceive_IT(SSI_HANDLE, pData, pData, Size);      //Ìø×ªµ½ÖÐ¶ÏÄ£Ê½Êý¾ÝÊÕ·¢º¯Êý
+                  }
+              
+                  SSI_HANDLE->RxState = SSI_STATE_BUSY;     //×´Ì¬¸üÐÂÎª½ÓÊÕÃ¦ÂµÖÐ
+                  SSI_ClearFlag(SPI_FLAG_SPIF);     //Çå³ýÖÐ¶Ï±êÖ¾Î»
+                  SSI_HANDLE->pRxBuffPtr.Size_u8 = pData;     //Ö¸Ïò´ý½ÓÊÕÊý¾ÝµÄµØÖ·
+                  SSI_HANDLE->RxXferSize = Size;      //¸üÐÂ´ý½ÓÊÕµÄÊý¾ÝÁ¿
+                  SSI_HANDLE->RxXferCount = 0;      //½ÓÊÕ¼ÆÊýÆ÷ÇåÁã
+              
+                  return Status_OK;
+                }
+                else
+                {
+                  return Status_BUSY;//·µ»Ø±êÖ¾Î»
+                }
+              }
+              
+              /**
+               * @brief  SPIÔÚÂÖÑ¯Ä£Ê½ÏÂ·¢ËÍ´óÁ¿Êý¾Ý
+               * @param  SSI_HANDLE[out]:Ö¸Ïò°üº¬Ö¸¶¨SPIÄ£¿éµÄÅäÖÃÐÅÏ¢½á¹¹ÌåµÄÖ¸Õë
+               * @param  pData[out]:Ö¸ÏòÊý¾Ý»º´æµÄÖ¸Õë
+               * @param  Size[in]:·¢ËÍÊý¾ÝµÄ´óÐ¡
+               * @param  Timeout[in]:³¬Ê±Ê±¼ä
+               * @retval SSI ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+              StatusTypeDef SSI_SPI_Transmit(SSI_HandleInfoDef* SSI_HANDLE, uint8_t* pData, uint8_t Size, uint32_t Timeo
+             -ut)
+              {
+                uint32_t TimeoutCnt = 0;
+                
+                /* ¼ì²éÒ»¸ö·¢ËÍ½ø³ÌÊÇ·ñÕýÔÚ½øÐÐ */
+                if(SSI_HANDLE->TxState == SSI_STATE_READY)
+                { 
+                  /* ´ý·¢ËÍÊý¾Ý³¤¶È±ØÐë´óÓÚ0£¬·ñÔò·µ»Ø´íÎó×´Ì¬ */
+                  if(((IE1 & 0x01) != 0) || (Size == 0U))
+                  {
+                    return Status_ERROR;
+                  }
+              
+                  SSI_HANDLE->TxState = SSI_STATE_BUSY;     //·¢ËÍ½ø³ÌÃ¦ÂµÖÐ
+                  SSI_ClearFlag(SPI_FLAG_SPIF);      //·¢ËÍÇ°Çå³ý±êÖ¾Î»
+                  SSI_HANDLE->pTxBuffPtr.Size_u8 = pData;     //Ö¸Ïò´ý·¢ËÍÊý¾ÝµÄµØÖ·
+                  SSI_HANDLE->TxXferSize = Size;      //¸üÐÂ´ý·¢ËÍµÄÊý¾ÝÁ¿
+                  SSI_HANDLE->TxXferCount = 0;      //·¢ËÍ¼ÆÊýÆ÷ÇåÁã
+              
+                  while(SSI_HANDLE->TxXferCount < SSI_HANDLE->TxXferSize)//ÅÐ¶ÏÊÇ·ñ½ÓÊÕËùÓÐÊý¾Ý
+                  {
+              
+                      SSI_SPI_SendData(*(SSI_HANDLE->pTxBuffPtr.Size_u8 + SSI_HANDLE->TxXferCount));      //·¢ËÍ8Î»Êý¾Ý²¢ÇÒ
+             -Êý¾ÝµØÖ·Ôö¼Ó
+                    while(!SSI_GetFlagStatus(SPI_FLAG_SPIF))      //µÈ´ý·¢ËÍÍê³É
+                    {
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 8   
+
+                      /* ³¬Ê±¼ÆÊýÆ÷²»¶ÏÀÛ¼Ó£¬Ö±µ½³¬³öÉè¶¨µÄ³¬Ê±Ê±¼ä */
+                      if(TimeoutCnt++ > Timeout)
+                      {
+                        SSI_HANDLE->TxState = SSI_STATE_TIMEOUT;//·¢ËÍ³¬Ê±
+                        return Status_TIMEOUT;
+                      }
+                      WDTCON |= 0x10;     //Î¹¹·£¬·ÀÖ¹µÈ´ýÊ±¼ä¹ý³¤£¬µ¼ÖÂWDT¸´Î»
+                    }
+              
+                    SSI_ClearFlag(SPI_FLAG_SPIF);       //·¢ËÍÇ°ÏÈÇå³ý±êÖ¾Î»
+                    TimeoutCnt = 0;     //³¬Ê±¼ÆÊýÆ÷ÇåÁã
+                    SSI_HANDLE->TxXferCount ++; //·¢ËÍÊý¾ÝÁ¿¼ÆÊý
+                  }
+                  if(SSI_HANDLE->TxXferCount == SSI_HANDLE->TxXferSize)
+                  {
+                    SSI_HANDLE->TxState = SSI_STATE_READY;  //·¢ËÍÍê³É
+                    return Status_OK;
+                  }
+                  else
+                  {
+                    SSI_HANDLE->TxState = SSI_STATE_ERROR;//·¢Éú·¢ËÍ´íÎó
+                    return Status_ERROR;
+                  }
+                }
+                else
+                {
+                  return Status_BUSY;//·µ»ØÃ¦Âµ×´Ì¬
+                }
+              }
+              
+              /**
+               * @brief  ÖÐ¶ÏÄ£Ê½·¢ËÍÒ»¶¨Á¿Êý¾Ý
+               * @param  SSI_HANDLE[out]:Ö¸Ïò°üº¬Ö¸¶¨SPIÄ£¿éµÄÅäÖÃÐÅÏ¢½á¹¹ÌåµÄÖ¸Õë
+               * @param  pData[out]:Ö¸ÏòÊý¾Ý»º´æµÄÖ¸Õë
+               * @param  Size[in]:·¢ËÍÊý¾ÝµÄ´óÐ¡
+               * @retval SSI ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+              StatusTypeDef SSI_SPI_Transmit_IT(SSI_HandleInfoDef* SSI_HANDLE, uint8_t* pData, uint8_t Size)
+              {
+                /* ¼ì²éÒ»¸ö·¢ËÍ½ø³ÌÊÇ·ñÕýÔÚ½øÐÐ */
+                if(SSI_HANDLE->TxState == SSI_STATE_READY)
+                {
+                  /* Ã»ÓÐ¿ªÆôSSIÖÐ¶Ï»ò·¢ËÍÊý¾ÝÁ¿´óÐ¡Îª0£¬·µ»Ø´íÎó */
+                  if(((IE1 & 0x01) == 0) || (Size == 0U))
+                  {
+                    return Status_ERROR;
+                  }
+              
+                  SSI_HANDLE->TxState = SSI_STATE_BUSY;     //·¢ËÍ½ø³ÌÃ¦ÂµÖÐ
+                  SSI_ClearFlag(SPI_FLAG_SPIF);     //Çå³ýÖÐ¶Ï±êÖ¾Î»
+                  SSI_HANDLE->pTxBuffPtr.Size_u8 = pData;     //Ö¸Ïò´ý·¢ËÍÊý¾ÝµÄµØÖ·
+                  SSI_HANDLE->TxXferSize = Size;      //¸üÐÂ´ý·¢ËÍµÄÊý¾ÝÁ¿
+                  SSI_HANDLE->TxXferCount = 0;      //·¢ËÍ¼ÆÊýÆ÷ÖÃ0
+              
+                  /* ·¢ËÍµÚ1byteÊý¾Ý */
+                    SSI_SPI_SendData(*(SSI_HANDLE->pTxBuffPtr.Size_u8));
+              
+                  return Status_OK;
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 9   
+
+                }
+                else
+                {
+                  return  Status_BUSY;      //×´Ì¬Î»ÐÞ¸ÄÎªÃ¦Âµ×´Ì¬
+                }
+              }
+              
+              /**
+               * @brief  ×èÈûÄ£Ê½ÊÕ·¢Ò»¶¨Á¿Êý¾Ý
+               * @param  SSI_HANDLE[out]:Ö¸Ïò°üº¬Ö¸¶¨SPIÄ£¿éµÄÅäÖÃÐÅÏ¢½á¹¹ÌåµÄÖ¸Õë
+               * @param  pTxData[out]:Ö¸Ïò·¢ËÍÊý¾Ý»º´æµÄÖ¸Õë
+               * @param  pRxData[out]:Ö¸Ïò½ÓÊÕÊý¾Ý»º´æµÄÖ¸Õë
+               * @param  Size[in]:·¢ËÍÊý¾ÝµÄ´óÐ¡
+               * @param  Timeout[in]:³¬Ê±Ê±¼ä
+               * @retval SSI ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+              StatusTypeDef SSI_SPI_TransmitReceive(SSI_HandleInfoDef* SSI_HANDLE, uint8_t* pTxData, uint8_t* pRxData, u
+             -int8_t Size, uint32_t Timeout)
+              {
+                uint32_t TimeoutCnt = 0;
+                /* ¼ì²éÒ»¸ö·¢ËÍÓë½ÓÊÕ½ø³ÌÊÇ·ñÕýÔÚ½øÐÐ */
+                if((SSI_HANDLE->TxState == SSI_STATE_READY) && (SSI_HANDLE->RxState == SSI_STATE_READY))
+                {
+              
+                  /* ´ý·¢ËÍºÍ½ÓÊÕÊý¾Ý³¤¶È±ØÐë´óÓÚ0£¬·ñÔò·µ»Ø´íÎó×´Ì¬ */
+                  if(((IE1 & 0x01) != 0) || (Size == 0U))
+                  {
+                    return  Status_ERROR;
+                  }
+              
+                  SSI_HANDLE->TxState = SSI_HANDLE->RxState = SSI_STATE_BUSY;     //·¢ËÍÓë½ÓÊÕ½ø³ÌÃ¦ÂµÖÐ
+                  SSI_ClearFlag(SPI_FLAG_SPIF);     //Çå³ýÖÐ¶Ï±êÖ¾Î»
+                  SSI_HANDLE->pTxBuffPtr.Size_u8 = pTxData;       //Ö¸Ïò´ý·¢ËÍÊý¾ÝµÄµØÖ·
+                  SSI_HANDLE->pRxBuffPtr.Size_u8 = pRxData;       //Ö¸Ïò´ý½ÓÊÕÊý¾ÝµÄµØÖ·
+                  SSI_HANDLE->TxXferSize = SSI_HANDLE->RxXferSize = Size;     //¸üÐÂ´ý·¢ËÍÓë½ÓÊÕµÄÊý¾ÝÁ¿
+                  SSI_HANDLE->TxXferCount = SSI_HANDLE->RxXferCount = 0;      //·¢ËÍÓë½ÓÊÕ¼ÆÊýÆ÷ÇåÁã
+              
+                  while(SSI_HANDLE->TxXferCount < SSI_HANDLE->TxXferSize);
+                  {
+              
+              
+                    SSI_SPI_SendData(*(SSI_HANDLE->pTxBuffPtr.Size_u8 + SSI_HANDLE->TxXferCount));      //·¢ËÍ16Î»Êý¾Ý²¢ÇÒµ
+             -ØÖ·Ôö¼Ó
+                    while(!SSI_GetFlagStatus(SPI_FLAG_SPIF))      //µÈ´ý·¢ËÍÍê³É
+                    {
+                      /* µÈ´ýÊ±¼äÊÇ·ñ·¢ÉúÁË³¬Ê± */
+                      if(TimeoutCnt++ > Timeout)
+                      {
+                        return SSI_STATE_TIMEOUT;       //·µ»Ø³¬Ê±´íÎó
+                      }
+                      WDTCON |= 0x10;     //Î¹¹·£¬·ÀÖ¹µÈ´ýÊ±¼ä¹ý³¤£¬µ¼ÖÂWDT¸´Î»
+                    }
+                    SSI_ClearFlag(SPI_FLAG_SPIF);       //·¢ËÍÇ°ÏÈÇå³ý±êÖ¾Î»
+                    *(SSI_HANDLE->pTxBuffPtr.Size_u8 + SSI_HANDLE->TxXferCount) = SSI_SPI_ReceiveData();
+              
+                    TimeoutCnt = 0;     //³¬Ê±¼ÆÊýÖµÇåÁã
+                    SSI_HANDLE->TxXferCount++;      //Êý¾ÝÁ¿¼ÆÊýÖµ¼Ó1
+                    SSI_HANDLE->TxXferCount++;      //Êý¾ÝÁ¿¼ÆÊýÖµ¼Ó1
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 10  
+
+                  }
+                  if(SSI_HANDLE->TxXferCount == SSI_HANDLE->TxXferSize)
+                  {
+                    SSI_HANDLE->TxState = SSI_HANDLE->RxState = SSI_STATE_READY;  //·¢ËÍÍê³É
+                    return Status_OK;
+                  }
+                  else
+                  {
+                    SSI_HANDLE->TxState = SSI_STATE_ERROR;//·¢Éú·¢ËÍ´íÎó
+                    return Status_ERROR;
+                  }
+                }
+                else
+                {
+                  return Status_ERROR;
+                }
+              
+              }
+              
+              /**
+               * @brief  SPIÔÚÖÐ¶ÏÄ£Ê½ÏÂ·¢ËÍºÍ½ÓÊÕ´óÁ¿Êý¾ÝÊ±£¬ÏÈÔÚmainº¯ÊýÖÐµ÷ÓÃ´Ëº¯Êý
+               * @param  SSI_HANDLE[out]:Ö¸Ïò°üº¬Ö¸¶¨SPIÄ£¿éµÄÅäÖÃÐÅÏ¢½á¹¹ÌåµÄÖ¸Õë
+               * @param  pTxData[out]:Ö¸Ïò·¢ËÍÊý¾Ý»º´æµÄÖ¸Õë
+               * @param  pRxData[out]:Ö¸Ïò½ÓÊÕÊý¾Ý»º´æµÄÖ¸Õë
+               * @param  Size[in]:·¢ËÍÊý¾ÝµÄ´óÐ¡
+               * @retval SSI ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+              StatusTypeDef SSI_SPI_TransmitReceive_IT(SSI_HandleInfoDef* SSI_HANDLE, uint8_t* pTxData, uint8_t* pRxData
+             -, uint8_t Size)
+              {
+                /* ´ý·¢ËÍÓë½ÓÊÕÊý¾Ý³¤¶È±ØÐë´óÓÚ0£¬·ñÔò·µ»Ø´íÎó×´Ì¬ */
+                if((SSI_HANDLE->TxState == SSI_STATE_READY) && (SSI_HANDLE->RxState == SSI_STATE_READY))
+                {
+              
+                  /* ´ý·¢ËÍºÍ½ÓÊÕÊý¾Ý³¤¶È±ØÐë´óÓÚ0£¬·ñÔò·µ»Ø´íÎó×´Ì¬ */
+                  if(((IE1 & 0x01) == 0) || (Size == 0U))
+                  {
+                    return  Status_ERROR;
+                  }
+                  SSI_SPI_Cmd(DISABLE);
+                  SSI_HANDLE->TxState = SSI_HANDLE->RxState = SSI_STATE_BUSY;     //·¢ËÍÓë½ÓÊÕ½ø³ÌÃ¦ÂµÖÐ
+                  SSI_ClearFlag(SPI_FLAG_SPIF);     //Çå³ýÖÐ¶Ï±êÖ¾Î»
+                  SSI_HANDLE->pTxBuffPtr.Size_u8 = pTxData;     //Ö¸Ïò´ý·¢ËÍÊý¾ÝµÄµØÖ·
+                  SSI_HANDLE->pRxBuffPtr.Size_u8 = pRxData;     //Ö¸Ïò´ý½ÓÊÕÊý¾ÝµÄµØÖ·
+                  SSI_HANDLE->TxXferSize = SSI_HANDLE->RxXferSize = Size;     //¸üÐÂ´ý·¢ËÍÓë½ÓÊÕµÄÊý¾ÝÁ¿
+                  SSI_HANDLE->TxXferCount = SSI_HANDLE->RxXferCount = 0;      //·¢ËÍÓë½ÓÊÕ¼ÆÊýÆ÷ÇåÁã
+                  SSI_SPI_Cmd(ENABLE);
+              
+                  /* ·¢ËÍµÚ1byteÊý¾Ý */
+                  /* SPI´¦ÓÚ8Î»Í¨ÐÅÄ£Ê½ */
+                  SSI_SPI_SendData(*(SSI_HANDLE->pTxBuffPtr.Size_u8));      //·¢ËÍ8Î»Êý¾Ý
+              
+                  return  Status_OK;
+                }
+                else
+                {
+                  return Status_ERROR;
+                }
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 11  
+
+              }
+              
+              /**
+               * @brief  TWI³õÊ¼»¯ÅäÖÃº¯Êý
+               * @param  TWI_Address[in]:TWI×÷Îª´Ó»úÊ±7Î»´Ó»úµØÖ·ÅäÖÃ
+               * @retval None
+               */
+              void SSI_TWI_Init(uint8_t TWI_Address)
+              {
+                OTCON = OTCON & 0X3F | 0X80;
+                SSCON1 = TWI_Address << 1;
+              }
+              
+              /**
+               * @brief  TWI½ÓÊÕÓ¦´ðÊ¹ÄÜº¯Êý
+               * @param  NewState[in]: ½ÓÊÕÓ¦´ðÊ¹ÄÜ/Ê§ÄÜÑ¡Ôñ
+               *              - DISABLE:¹Ø±Õ
+               *              - ENABLE:Ê¹ÄÜ
+               * @retval None
+               */
+              void SSI_TWI_AcknowledgeConfig(FunctionalState
+                                             NewState)
+              {
+                if(NewState != DISABLE)
+                {
+                  SSCON0 |= 0X08;
+                }
+                else
+                {
+                  SSCON0 &= 0XF7;
+                }
+              }
+              
+              /**
+               * @brief  TWIÍ¨ÓÃµØÖ·ÏìÓ¦Ê¹ÄÜº¯Êý
+               * @param  NewState[in]: Í¨ÓÃµØÖ·ÏìÓ¦Ê¹ÄÜ/Ê§ÄÜÑ¡Ôñ
+               *              - DISABLE:¹Ø±Õ
+               *              - ENABLE:Ê¹ÄÜ
+               * @retval None
+               */
+              void SSI_TWI_GeneralCallCmd(FunctionalState
+                                          NewState)
+              {
+                if(NewState != DISABLE)
+                {
+                  SSCON1 |= 0X01;
+                }
+                else
+                {
+                  SSCON1 &= 0XFE;
+                }
+              }
+              
+              /**
+               * @brief  »ñÈ¡TWI×´Ì¬»ú
+               * @param  SSI_TWIState[in]: TWI×´Ì¬»ú×´Ì¬
+               *              - TWI_SlaveIdle:´Ó»ú¿ÕÏÐÄ£Ê½
+               *              - TWI_SlaveReceivedaAddress:´Ó»ú½ÓÊÕµØÖ·
+               *              - TWI_SlaveReceivedaData:´Ó»ú½ÓÊÕÊý¾Ý
+               *              - TWI_SlaveSendData:´Ó»ú·¢ËÍÊý¾Ý
+               *              - TWI_SlaveReceivedaUACK:´Ó»ú½ÓÊÕUACK
+               *              - TWI_SlaveDisableACK:´Ó»ú¹Ø±ÕACK
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 12  
+
+               *              - TWI_SlaveAddressError:´Ó»ú½ÓÊÕµØÖ·´íÎó
+               * @retval ·µ»Ø²Ù×÷×´Ì¬
+               *              - RESET:²Ù×÷²»³É¹¦
+               *              - SET:²Ù×÷³É¹¦
+               */
+              FlagStatus SSI_GetTWIStatus(SSI_TWIState_TypeDef SSI_TWIState)
+              {
+                if((SSCON0 & 0x07) == SSI_TWIState)
+                  return SET;
+                else
+                  return RESET;
+              }
+              
+              /**
+               * @brief  TWI¹¦ÄÜ¿ª¹Øº¯Êý
+               * @param  NewState[in]: ¹¦ÄÜÆô¶¯/¹Ø±ÕÑ¡Ôñ
+               *              - DISABLE:¹Ø±Õ
+               *              - ENABLE:Ê¹ÄÜ
+               * @retval None
+               */
+              void SSI_TWI_Cmd(FunctionalState NewState)
+              {
+                if(NewState != DISABLE)
+                {
+                  SSCON0 |= 0X80;
+                }
+                else
+                {
+                  SSCON0 &= (~0X80);
+                }
+              }
+              
+              /**
+               * @brief  TWI·¢ËÍÊý¾Ý
+               * @param  Data[in]:·¢ËÍµÄÊý¾Ý
+               * @retval None
+               */ 
+              void SSI_TWI_SendData(uint8_t Data)
+              {
+                SSDAT = Data;
+              }
+              
+              /**
+               * @brief  »ñµÃSSDATÖÐµÄÖµ
+               * @param  None
+               * @retval TWI½ÓÊÕµ½µÄ8Î»Êý¾Ý
+               */
+              uint8_t SSI_TWI_ReceiveData(void)
+              {
+                return SSDAT;
+              }
+              
+              /**
+               * @brief  µÈ´ýTWIFÖÃÆð
+               * @param  SSI_HANDLE[in]:Ö¸ÕëÖ¸ÏòSSIÊý¾ÝÐÅÏ¢´æ·ÅÇø
+               * @param  Timeout[in]:³¬Ê±Ê±¼äÉèÖÃ
+               * @retval º¯ÊýÖ´ÐÐ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 13  
+
+              StatusTypeDef SSI_TWI_Wait_TWIF(SSI_HandleInfoDef* SSI_HANDLE, uint32_t Timeout)
+              {
+                uint32_t TimeoutCnt = 0;
+                while(!(SSI_GetFlagStatus(TWI_FLAG_TWIF)))      //µÈ´ýÆô¶¯ÐÅºÅ·¢ËÍÍê±Ï
+                {
+                  TimeoutCnt++;
+                  if(TimeoutCnt > Timeout)
+                  {
+                    /* ³¬Ê±¸üÐÂ×´Ì¬ */
+                    if(SSI_HANDLE->TxState == SSI_STATE_BUSY)
+                      SSI_HANDLE->TxState = SSI_STATE_TIMEOUT;
+                    if(SSI_HANDLE->RxState == SSI_STATE_BUSY)
+                      SSI_HANDLE->RxState = SSI_STATE_TIMEOUT;
+                    return Status_TIMEOUT;
+                  }
+                }
+                SSI_ClearFlag(TWI_FLAG_TWIF);     //Çå³ý±êÖ¾Î»
+                return Status_OK;
+              }
+              
+              /**
+               * @brief  ·¢ËÍ8Î»Êý¾ÝÊ±£¬´Ó»úÂÖÑ¯Ä£Ê½ÏÂ·¢ËÍ´óÁ¿Êý¾Ý ×¢£ºÄ¬ÈÏ¿ªÆôÊ±ÖÓÑÓ³¤Ä£Ê½
+               * @param  SSI_HANDLE[out]:Ö¸Ïò°üº¬Ö¸¶¨SPIÄ£¿éµÄÅäÖÃÐÅÏ¢½á¹¹ÌåµÄÖ¸Õë
+               * @param  Timeout[in]:³¬Ê±Ê±¼ä
+               * @retval SSI ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+              StatusTypeDef SSI_TWI_Slave_Transmit(SSI_HandleInfoDef* SSI_HANDLE, uint8_t* pData, uint8_t Size, uint32_t
+             - Timeout)
+              {
+                /* ¼ì²éÒ»¸ö·¢ËÍ½ø³ÌÊÇ·ñÕýÔÚ½øÐÐ */
+                if(SSI_HANDLE->TxState == SSI_STATE_READY)
+                {
+                  /* ´ý·¢ËÍÊý¾Ý³¤¶È±ØÐë´óÓÚ0£¬·ñÔò·µ»Ø´íÎó×´Ì¬ */
+                  if((IE1 & 0x01 != 0) || (Size == 0U))
+                  {
+                    return Status_ERROR;
+                  }
+                  else
+                  {
+                    SSI_HANDLE->TxState = SSI_STATE_BUSY;     //·¢ËÍ½ø³ÌÃ¦ÂµÖÐ
+                    SSI_ClearFlag(TWI_FLAG_TWIF);      //·¢ËÍÇ°Çå³ý±êÖ¾Î»
+                    SSI_HANDLE->pTxBuffPtr.Size_u8 = pData;     //Ö¸Ïò´ý·¢ËÍÊý¾ÝµÄµØÖ·
+                    SSI_HANDLE->TxXferSize = Size;      //¸üÐÂ´ý·¢ËÍµÄÊý¾ÝÁ¿
+                    SSI_HANDLE->TxXferCount = 0;      //·¢ËÍ¼ÆÊýÆ÷ÇåÁã
+              
+                    
+                    SSI_TWI_AcknowledgeConfig(ENABLE);         //¿ªÆôAAÊ¹ÄÜÎ»
+                    if(SSI_TWI_Wait_TWIF(SSI_HANDLE, Timeout) == Status_TIMEOUT)            //µÈ´ýµØÖ·Æ¥Åä
+                    {
+                      SSI_TWI_AcknowledgeConfig(DISABLE);            //¹Ø±ÕAAÊ¹ÄÜ
+                      return Status_TIMEOUT;
+                    }
+              
+                    do
+                    {
+                      if(SSI_GetTWIStatus(TWI_SlaveSendData) == SET)           //¼ì²â×´Ì¬»ú×´Ì¬
+                      {
+              
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 14  
+
+                        SSCON2 = *(SSI_HANDLE->pTxBuffPtr.Size_u8 + SSI_HANDLE->TxXferCount);             //TWI·¢ËÍÊý¾Ý
+              
+                        if(SSI_TWI_Wait_TWIF(SSI_HANDLE, Timeout) == Status_TIMEOUT)             //µÈ´ýÆô¶¯ÐÅºÅ·¢ËÍÍê±Ï
+                        {
+                          SSI_TWI_AcknowledgeConfig(DISABLE);            //¹Ø±ÕAAÊ¹ÄÜ
+                          return Status_TIMEOUT;
+                        }
+                        SSI_HANDLE->TxXferCount++;
+              
+                        if(SSI_HANDLE->TxXferCount == SSI_HANDLE->TxXferSize - 1)
+              
+                          SSI_TWI_AcknowledgeConfig(DISABLE);            //¹Ø±ÕAAÊ¹ÄÜ
+              
+                      }
+                      else if(SSI_GetTWIStatus(TWI_SlaveDisableACK) == SET)
+                      {
+              
+                        SSI_HANDLE->TxXferCount++;
+                      }
+                      else
+                      {
+                        SSI_HANDLE->TxState = SSI_STATE_ERROR;
+                        return Status_ERROR;
+                      }
+                    }
+                    while(SSI_HANDLE->TxXferCount < SSI_HANDLE->TxXferSize);
+              
+                    if(SSI_GetTWIStatus(TWI_SlaveDisableACK) == RESET)           //¼ì²â×´Ì¬»ú×´Ì¬
+                    {
+                      SSI_HANDLE->TxState = SSI_STATE_ERROR;
+                      return Status_ERROR;
+                    }
+              
+                    if(SSI_HANDLE->TxXferCount == SSI_HANDLE->TxXferSize)
+                    {
+                      SSI_HANDLE->TxState = SSI_STATE_READY;  //·¢ËÍÍê³É
+                      return Status_OK;
+                    }
+                    else
+                    {
+                      SSI_HANDLE->TxState = SSI_STATE_ERROR;//·¢Éú·¢ËÍ´íÎó
+                      return Status_ERROR;
+                    }
+                  }
+                }
+                else
+                {
+                  return Status_BUSY;
+                }
+              }
+              
+              /**
+               * @brief  ´Ó»úÊ¹ÓÃÖÐ¶ÏÄ£Ê½ÏÂ·¢ËÍ´óÁ¿Êý¾ÝÊ±£¬ÏÈÔÚmainº¯ÊýÖÐµ÷ÓÃ´Ëº¯Êý
+               * @param  SSI_HANDLE[out]:Ö¸Ïò°üº¬Ö¸¶¨SPIÄ£¿éµÄÅäÖÃÐÅÏ¢½á¹¹ÌåµÄÖ¸Õë
+               * @param  pData[out]:Ö¸ÕëÖ¸Ïò´æ´¢Çø
+               * @param  Size[in]:´æ´¢Êý¾Ý³¤¶È
+               * @retval SSI ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 15  
+
+              StatusTypeDef SSI_TWI_Slave_Transmit_IT(SSI_HandleInfoDef* SSI_HANDLE, uint8_t* pData, uint8_t Size)
+              {
+                /* ¼ì²éÒ»¸ö·¢ËÍ½ø³ÌÊÇ·ñÕýÔÚ½øÐÐ */
+                if(SSI_HANDLE->TxState == SSI_STATE_READY)
+                {
+                  /* ´ý·¢ËÍÊý¾Ý³¤¶È±ØÐë´óÓÚ0£¬·ñÔò·µ»Ø´íÎó×´Ì¬ */
+                  if(((IE1 & 0x01) == 0) || (Size == 0U))
+                  {
+                    return Status_ERROR;
+                  }
+                  else
+                  {
+                    
+                    SSI_TWI_AcknowledgeConfig(DISABLE);         //¿ªÆôAA
+                    SSI_ClearFlag(TWI_FLAG_TWIF);      //·¢ËÍÇ°Çå³ý±êÖ¾Î»
+                    
+                    SSI_HANDLE->TxState = SSI_STATE_WAIT;     //·¢ËÍ½ø³ÌÃ¦ÂµÖÐ
+                    SSI_HANDLE->pTxBuffPtr.Size_u8 = pData;     //Ö¸Ïò´ý·¢ËÍÊý¾ÝµÄµØÖ·
+                    SSI_HANDLE->TxXferSize = Size;      //¸üÐÂ´ý·¢ËÍµÄÊý¾ÝÁ¿
+                    SSI_HANDLE->TxXferCount = 0;      //·¢ËÍ¼ÆÊýÆ÷ÇåÁã
+              
+                    SSI_TWI_AcknowledgeConfig(ENABLE);         //¿ªÆôAA
+              
+                    return Status_OK;;
+                  }
+                }
+                else
+                {
+                  return Status_ERROR;
+                }
+              }
+              
+              /**
+               * @brief  ·¢ËÍ8Î»Êý¾ÝÊ±£¬´Ó»úÖÐ¶ÏÄ£Ê½ÏÂ·¢ËÍ´óÁ¿Êý¾Ý
+               * @param  SSI_HANDLE[out]:Ö¸ÕëÖ¸ÏòSSIÊý¾ÝÐÅÏ¢´æ·ÅÇø
+               * @retval SSI ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+              StatusTypeDef SSI_TWI_Slave_Transmit_IRQHandler(SSI_HandleInfoDef* SSI_HANDLE)
+              {
+                if(SSI_HANDLE->TxState == SSI_STATE_BUSY)
+                {
+              
+                  if(SSI_GetTWIStatus(TWI_SlaveSendData) == SET)
+                  {
+                    if(SSI_HANDLE->TxXferCount < SSI_HANDLE->TxXferSize)
+                    {
+                      SSI_HANDLE->TxXferCount++;      //µÚÒ»´ÎÖÐ¶ÏÊÇ½ÓÊÜµ½µØÖ·ÁË
+                      SSCON2 = *(SSI_HANDLE->pTxBuffPtr.Size_u8 + SSI_HANDLE->TxXferCount);
+                      if(SSI_HANDLE->TxXferCount == SSI_HANDLE->TxXferSize - 1)
+                      {
+                        SSI_TWI_AcknowledgeConfig(DISABLE);         //¹Ø±ÕAAÊ¹ÄÜÎ»
+                      }
+                      return Status_BUSY;
+                    }
+                    else
+                    {
+                      SSI_TWI_AcknowledgeConfig(DISABLE);         //¹Ø±ÕAAÊ¹ÄÜÎ»
+                      SSI_HANDLE->TxState = SSI_STATE_ERROR;
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 16  
+
+                      return Status_ERROR;
+                    }
+                  }
+                  /*
+                  1.µ«Êý¾Ý´«Êä¹ý³ÌÖÐ£¬ÆäËû³ÌÐòÐÞ¸ÄÁËAA¿ØÖÆÎ»
+                  2.½ÓÊÕµ½Ö÷»ú»ØÀ´µÄUACK */
+                  else if((SSI_GetTWIStatus(TWI_SlaveDisableACK) == SET) || (SSI_GetTWIStatus(TWI_SlaveReceivedaUACK) ==
+             - SET))
+                  {
+                    SSI_TWI_AcknowledgeConfig(DISABLE);         //¹Ø±ÕAAÊ¹ÄÜÎ»
+                   SSI_HANDLE->TxXferCount++;
+                    if(SSI_HANDLE->TxXferCount == SSI_HANDLE->TxXferSize)     //ËùÓÐÊý¾ÝÒÑ·¢ËÍ
+                    {
+                      SSI_HANDLE->TxState = SSI_STATE_READY;
+                      return Status_OK;
+                    }
+                    else
+                    {
+                      SSI_HANDLE->TxState = SSI_STATE_ERROR;
+                      return Status_ERROR;
+                    }
+                  }
+                  else
+                  {
+                    SSI_TWI_AcknowledgeConfig(DISABLE);         //¹Ø±ÕAAÊ¹ÄÜÎ»
+                    /* ÒÔÏÂÇé¿öÎ´·¢ËÍ¹ý³Ì³ö´í
+                    1.Êý¾Ý·¢ËÍºó½ÓÊÜµ½UACK
+                    2.TWI²»ÊÇ¹¤×÷ÔÚ´Ó»ú·¢ËÍ×´Ì¬ */
+                    SSI_HANDLE->TxState = SSI_STATE_ERROR;
+                    return Status_ERROR;
+                  }
+                }
+                else if(SSI_HANDLE->TxState == SSI_STATE_WAIT)
+                {
+                  if(SSI_GetTWIStatus(TWI_SlaveSendData) == SET)
+                  {
+                    SSCON2 = *(SSI_HANDLE->pTxBuffPtr.Size_u8 + SSI_HANDLE->TxXferCount);
+                    SSI_HANDLE->TxState = SSI_STATE_BUSY;
+                  }
+                  return Status_BUSY;
+                }
+                else
+                {
+                  return Status_ERROR;//·µ»Ø±êÖ¾Î»
+                }
+              }
+              
+              /**
+               * @brief  ½ÓÊÕ8Î»Êý¾ÝÊ±£¬´Ó»úÂÖÑ¯Ä£Ê½ÏÂ½ÓÊÕ´óÁ¿Êý¾Ý
+               * @param  SSI_HANDLE[out]:Ö¸Ïò°üº¬Ö¸¶¨SPIÄ£¿éµÄÅäÖÃÐÅÏ¢½á¹¹ÌåµÄÖ¸Õë
+               * @param  pData[out]:½ÓÊÕÊý¾ÝµÄ´æ·ÅÇø
+               * @param  Size[in]:´ý½ÓÊÕµÄÊý¾ÝÁ¿
+               * @param  Timeout[in]:³¬Ê±Ê±¼ä
+               * @retval SSI ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+              StatusTypeDef SSI_TWI_Slave_Receive(SSI_HandleInfoDef* SSI_HANDLE, uint8_t* pData, uint8_t Size, uint32_t 
+             -Timeout)
+              {
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 17  
+
+                if(SSI_HANDLE->RxState == SSI_STATE_READY)
+                {
+                  /* ´ý½ÓÊÕÊý¾Ý³¤¶È±ØÐë´óÓÚ0£¬·ñÔò·µ»Ø´íÎó×´Ì¬ */
+                  if((IE1 & 0x01 != 0) || (Size == 0U))
+                  {
+                    return Status_ERROR;
+                  }
+              
+                  SSI_HANDLE->RxState = SSI_STATE_BUSY;     //½ÓÊÕ½ø³ÌÃ¦ÂµÖÐ
+                  SSI_ClearFlag(TWI_FLAG_TWIF);      //½ÓÊÕÇ°Çå³ý±êÖ¾Î»
+                  SSI_TWI_AcknowledgeConfig(ENABLE);         //¿ªÆôAAÊ¹ÄÜÎ»
+                  SSI_HANDLE->pRxBuffPtr.Size_u8 = pData;     //Ö¸Ïò´ý½ÓÊÕÊý¾ÝµÄµØÖ·
+                  SSI_HANDLE->RxXferSize = Size;      //¸üÐÂ´ý½ÓÊÕµÄÊý¾ÝÁ¿
+                  SSI_HANDLE->RxXferCount = 0;      //½ÓÊÕ¼ÆÊýÆ÷ÇåÁã
+              
+                  /* ½ÓÊÕµØÖ·¹¤³Ì */
+                  if(SSI_TWI_Wait_TWIF(SSI_HANDLE, Timeout) == Status_TIMEOUT)            //µÈ´ýÐÅºÅ½ÓÊÕÍê±Ï
+                  {
+                    /* ÎÞÂÛÊÇ·ñ½ÓÊÕÍê³É£¬¶¼ÐèÒª½ÓÊÕ½áÊøÐÅºÅ£¬·ÀÖ¹Ö÷»úÕ¼ÓÃ×ÜÏß */
+                   SSI_TWI_AcknowledgeConfig(DISABLE);         //¹Ø±ÕAAÊ¹ÄÜÎ»
+                    return Status_TIMEOUT;
+                  }
+              
+                  if(SSI_GetTWIStatus(TWI_SlaveReceivedaData) == RESET)           //¼ì²â×´Ì¬»ú×´Ì¬
+                  {
+                    SSI_HANDLE->RxState = SSI_STATE_ERROR;
+                    /* ÎÞÂÛÊÇ·ñ½ÓÊÕÍê³É£¬¶¼ÐèÒª½ÓÊÕ½áÊøÐÅºÅ£¬·ÀÖ¹Ö÷»úÕ¼ÓÃ×ÜÏß */
+                   SSI_TWI_AcknowledgeConfig(DISABLE);         //¹Ø±ÕAAÊ¹ÄÜÎ»
+                    return Status_ERROR;
+                  }
+              
+                  /* ½ÓÊÕÊý¾Ý¹ý³Ì */
+                  do
+                  {
+                    if(SSI_TWI_Wait_TWIF(SSI_HANDLE, Timeout) == Status_TIMEOUT)            //µÈ´ýÆô¶¯ÐÅºÅ·¢ËÍÍê±Ï
+                    {
+                      return Status_TIMEOUT;
+                    }
+              
+                    if(SSI_GetTWIStatus(TWI_SlaveReceivedaData) == SET)           //¼ì²â×´Ì¬»ú×´Ì¬
+                    {
+                      *(SSI_HANDLE->pRxBuffPtr.Size_u8 + SSI_HANDLE->RxXferCount) = SSCON2;             //TWI½ÓÊÕÊý¾Ý
+                      SSI_HANDLE->RxXferCount++;
+                      if(SSI_HANDLE->RxXferCount == SSI_HANDLE->RxXferSize - 1)
+                        SSI_TWI_AcknowledgeConfig(DISABLE);         //¹Ø±ÕAAÊ¹ÄÜÎ»,»ØÖ÷»úUAC
+                    }
+                    else if(SSI_GetTWIStatus(TWI_SlaveIdle) == SET)
+                    {
+                      if(SSI_HANDLE->RxXferCount == SSI_HANDLE->RxXferSize - 1)
+                      {
+                        *(SSI_HANDLE->pRxBuffPtr.Size_u8 + SSI_HANDLE->RxXferCount) = SSCON2;
+                        SSI_HANDLE->RxXferCount++;
+                      }
+                      else
+                      {
+                        SSI_HANDLE->RxState = SSI_STATE_ERROR;
+                        SSI_TWI_AcknowledgeConfig(DISABLE);         //¹Ø±ÕAAÊ¹ÄÜÎ»
+                        return Status_ERROR;
+                      }
+                    }
+                    else
+                    {
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 18  
+
+                      SSI_HANDLE->RxState = SSI_STATE_ERROR;
+                      SSI_TWI_AcknowledgeConfig(DISABLE);         //¹Ø±ÕAAÊ¹ÄÜÎ»
+                      return Status_ERROR;
+                    }
+              
+                  }
+                  while(SSI_HANDLE->RxXferCount < SSI_HANDLE->RxXferSize);
+              
+                  if(SSI_HANDLE->RxXferCount == SSI_HANDLE->RxXferSize)
+                  {
+                    SSI_HANDLE->RxState = SSI_STATE_READY;  //½ÓÊÕÍê³É
+                    return Status_OK;
+                  }
+                  else
+                  {
+                    SSI_HANDLE->RxState = SSI_STATE_ERROR;//·¢Éú½ÓÊÕ´íÎó
+                    return Status_ERROR;
+                  }
+                }
+                else
+                {
+                  return Status_BUSY;
+                }
+              }
+              
+              /**
+               * @brief  ´Ó»úÊ¹ÓÃÖÐ¶ÏÄ£Ê½ÏÂ½ÓÊÕ´óÁ¿Êý¾ÝÊ±£¬ÏÈÔÚmainº¯ÊýÖÐµ÷ÓÃ´Ëº¯Êý
+               * @param  SSI_HANDLE[out]:Ö¸ÕëÖ¸ÏòSSIÊý¾ÝÐÅÏ¢´æ·ÅÇø
+               * @param  pData[out]:½ÓÊÕÊý¾ÝµÄ´æ·ÅÇø
+               * @param  Size[in]:´ý½ÓÊÕµÄÊý¾ÝÁ¿
+               * @retval SSI ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+              StatusTypeDef SSI_TWI_Slave_Receive_IT(SSI_HandleInfoDef* SSI_HANDLE, uint8_t* pData, uint8_t Size)
+              {
+                if(SSI_HANDLE->RxState == SSI_STATE_READY)
+                {
+                  /* ´ý½ÓÊÕÊý¾Ý³¤¶È±ØÐë´óÓÚ0£¬·ñÔò·µ»Ø´íÎó×´Ì¬ */
+                  if(((IE1 & 0x01) == 0) || (Size == 0U))
+                  {
+                    return Status_ERROR;
+                  }
+                  
+                  SSI_TWI_AcknowledgeConfig(DISABLE);         //¹Ø±ÕAAÊ¹ÄÜÎ»
+                  SSI_ClearFlag(TWI_FLAG_TWIF);      //½ÓÊÕÇ°Çå³ý±êÖ¾Î»
+                  SSI_HANDLE->RxState = SSI_STATE_WAIT;     //½ÓÊÕ½ø³ÌÃ¦ÂµÖÐ
+                  SSI_HANDLE->pRxBuffPtr.Size_u8 = pData;     //Ö¸Ïò´ý½ÓÊÕÊý¾ÝµÄµØÖ·
+                  SSI_HANDLE->RxXferSize = Size;      //¸üÐÂ´ý½ÓÊÕµÄÊý¾ÝÁ¿
+                  SSI_HANDLE->RxXferCount = 0;      //½ÓÊÕ¼ÆÊýÆ÷ÇåÁã
+                  SSI_TWI_AcknowledgeConfig(ENABLE);         //¿ªÆôAAÊ¹ÄÜÎ»
+              
+                  return Status_OK;
+                }
+                else
+                {
+                  return Status_BUSY;
+                }
+              }
+              
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 19  
+
+              /**
+               * @brief  ½ÓÊÕ8Î»Êý¾ÝÊ±£¬´Ó»úÖÐ¶ÏÄ£Ê½ÏÂ½ÓÊÕ´óÁ¿Êý¾Ý
+               * @param  SSI_HANDLE[out]:Ö¸ÕëÖ¸ÏòSSIÊý¾ÝÐÅÏ¢´æ·ÅÇø
+               * @retval SSI ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+              StatusTypeDef SSI_TWI_Slave_Receive_IRQHandler(SSI_HandleInfoDef* SSI_HANDLE)
+              {
+                if(SSI_HANDLE->RxState == SSI_STATE_BUSY)
+                {
+                  if(SSI_GetTWIStatus(TWI_SlaveReceivedaData) == SET)           //¼ì²â×´Ì¬»ú×´Ì¬
+                  {
+                    if(SSI_HANDLE->RxXferCount < SSI_HANDLE->RxXferSize)
+                    {
+                      *(SSI_HANDLE->pRxBuffPtr.Size_u8 + SSI_HANDLE->RxXferCount) = SSCON2;             //TWI·¢ËÍÊý¾Ý
+                      SSI_HANDLE->RxXferCount++;
+                      if(SSI_HANDLE->RxXferCount == SSI_HANDLE->RxXferSize - 1)
+                      {
+                        SSI_TWI_AcknowledgeConfig(DISABLE);         //¹Ø±ÕAAÊ¹ÄÜÎ»,»ØÖ÷»úUACK
+                      }
+                    }
+                    else
+                    {
+                      SSI_TWI_AcknowledgeConfig(DISABLE);
+                      return Status_ERROR;
+                    }
+                    return Status_BUSY;
+                  }
+                  else if(SSI_GetTWIStatus(TWI_SlaveIdle) == SET)
+                  {
+                    if(SSI_HANDLE->RxXferCount == SSI_HANDLE->RxXferSize - 1)
+                    {
+                      *(SSI_HANDLE->pRxBuffPtr.Size_u8 + SSI_HANDLE->RxXferCount) = SSCON2;
+                      SSI_HANDLE->RxXferCount++;
+                      SSI_TWI_AcknowledgeConfig(DISABLE);         //¹Ø±ÕAAÊ¹ÄÜÎ»,»ØÖ÷»úUACK
+                      SSI_HANDLE->RxState = SSI_STATE_READY;
+                      return Status_OK;
+                    }
+                    else
+                    {
+                      SSI_TWI_AcknowledgeConfig(DISABLE);         //¹Ø±ÕAAÊ¹ÄÜÎ»
+                      SSI_HANDLE->RxState = SSI_STATE_ERROR;
+                      return Status_ERROR;
+                    }
+                  }
+                  else
+                  {
+                    SSI_HANDLE->RxState = SSI_STATE_ERROR;
+                    SSI_TWI_AcknowledgeConfig(DISABLE);         //¹Ø±ÕAAÊ¹ÄÜÎ»
+                    return Status_ERROR;
+                  }
+                }
+                else if(SSI_HANDLE->RxState == SSI_STATE_WAIT)
+                {
+                  SSI_HANDLE->RxState = SSI_STATE_BUSY;
+                  return Status_BUSY;
+                }
+                else
+                {
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 20  
+
+                  return Status_ERROR;
+                }
+              }
+              
+              /**
+               * @brief  UART1³õÊ¼»¯ÅäÖÃº¯Êý
+               * @param  UART1Fsys[in]:ÏµÍ³Ê±ÖÓÆµÂÊ
+               * @param  BaudRate[in]:²¨ÌØÂÊ
+               * @param  Mode[in]:UART1¹¤×÷Ä£Ê½
+               *          - UART1_Mode_10B:UART1ÉèÖÃÎª10Î»Ä£Ê½
+               *          - UART1_Mode_11B:UART1ÉèÖÃÎª11Î»Ä£Ê½
+               * @param  RxMode[in]:½ÓÊÕÔÊÐíÑ¡Ôñ
+               *          - UART1_RX_ENABLE:UART1ÔÊÐí½ÓÊÕ
+               *          - UART1_RX_DISABLE:UART1½ûÖ¹½ÓÊÕ
+               * @retval None
+               */
+              void SSI_UART1_Init(uint32_t UART1Fsys,
+                                  uint32_t BaudRate, UART1_Mode_TypeDef Mode,
+                                  UART1_RX_TypeDef RxMode)
+              {
+              
+              #if  defined (SC93F833x) || defined (SC93F843x) || defined (SC93F743x)
+                OTCON |= 0xC0;
+                SSCON0 = SSCON0 & 0X0F | Mode | RxMode;
+                SSCON2 = UART1Fsys / 16 / BaudRate / 256;
+                SSCON1 = UART1Fsys / 16 / BaudRate % 256;
+              
+              #else
+                OTCON |= 0xC0;
+                SSCON0 = SSCON0 & 0X0F | Mode | RxMode;
+                SSCON2 = UART1Fsys / BaudRate / 256;
+                SSCON1 = UART1Fsys / BaudRate % 256;
+              
+              #endif
+              
+              
+              }
+              
+              /**
+               * @brief  UART1·¢ËÍ8Î»Êý¾Ý
+               * @param  Data[in]:·¢ËÍµÄÊý¾Ý
+               * @retval None
+               */
+              void SSI_UART1_SendData8(uint8_t Data)
+              {
+                SSDAT = Data;
+              }
+              
+              /**
+               * @brief  »ñµÃSSDATÖÐµÄÖµ
+               * @param  None
+               * @retval UART½ÓÊÕµ½µÄ8Î»Êý¾Ý
+               */
+              uint8_t SSI_UART1_ReceiveData8(void)
+              {
+                return SSDAT;
+              }
+              
+              /**
+               * @brief  UART1·¢ËÍ9Î»Êý¾Ý
+               * @param  Data[in]:·¢ËÍµÄÊý¾Ý
+               * @retval None
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 21  
+
+               */
+              void SSI_UART1_SendData9(uint16_t Data)
+              {
+                uint8_t Data_9Bit;
+                Data_9Bit = (Data >> 8);
+              
+                if(Data_9Bit)
+                {
+                  SSCON0  |= 0x08;
+                }
+                else
+                {
+                  SSCON0  &= 0xf7;
+                }
+              
+                SSDAT = (uint8_t)Data;
+              }
+              
+              /**
+               * @brief  »ñµÃSSDATÖÐµÄÖµ¼°µÚ¾ÅÎ»µÄÖµ
+               * @param  None
+               * @retval ½ÓÊÕµ½µÄÊý¾Ý
+               */
+              uint16_t SSI_UART1_ReceiveData9(void)
+              {
+                uint16_t Data9;
+                Data9 =  SSDAT + (((uint16_t)(SSCON0 & 0X04) & 0x00FF) << 6);
+                SSCON0 &= 0XFB;
+                return Data9;
+              }
+              
+              /**
+               * @brief  UARTÔÚÂÖÑ¯Ä£Ê½ÏÂ·¢ËÍ´óÁ¿Êý¾Ý
+               * @param  SSI_HANDLE[out]:Ö¸ÕëÖ¸ÏòSSIÊý¾ÝÐÅÏ¢´æ·ÅÇø
+               * @param  pData[out]:½ÓÊÕÊý¾ÝµÄ´æ·ÅÇø
+               * @param  Size[in]:´ý½ÓÊÕµÄÊý¾ÝÁ¿
+               * @param  timeout[in]:³¬Ê±Ê±¼äÉèÖÃ
+               * @retval SSI ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+              StatusTypeDef SSI_UART_Transmit(SSI_HandleInfoDef* SSI_HANDLE, uint8_t* pData, uint8_t Size, uint32_t Time
+             -out)
+              {
+                uint32_t delaytime = 0;
+                /* ¼ì²éÒ»¸ö·¢ËÍ½ø³ÌÊÇ·ñÕýÔÚ½øÐÐ */
+                if(SSI_HANDLE->TxState == SSI_STATE_READY)
+                {
+                  /* ¼ì²é·¢ËÍÊý¾ÝÁ¿ÊÇ·ñÎª0 */
+                  if((IE1 & 0x01 != 0) || (Size == 0U))
+                  {
+                    return  Status_ERROR;
+                  }
+              
+                  SSI_HANDLE->TxState = SSI_STATE_BUSY;     //·¢ËÍ½ø³ÌÃ¦ÂµÖÐ
+                  SSI_ClearFlag(UART1_FLAG_TI); //·¢ËÍÇ°Çå³ý·¢ËÍÖÐ¶Ï±êÖ¾£¬Ð´1/Ð´0ÇåÁã
+                  SSI_HANDLE->pTxBuffPtr.Size_u8 = pData;     //Ö¸Ïò´ý·¢ËÍÊý¾ÝµÄµØÖ·
+                  SSI_HANDLE->TxXferSize = Size;      //¸üÐÂ´ý·¢ËÍµÄÊý¾ÝÁ¿
+                  SSI_HANDLE->TxXferCount = 0;      //·¢ËÍ¼ÆÊýÆ÷ÇåÁã
+              
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 22  
+
+                  while(SSI_HANDLE->TxXferCount < SSI_HANDLE->TxXferSize)//ÅÐ¶ÏÊÇ·ñ½ÓÊÕËùÓÐÊý¾Ý
+                  {
+                    if((SSCON0 & 0x80) == UART1_Mode_11B)
+                    {
+                      /* ·¢ËÍ9Î»Êý¾Ý */
+                      SSI_UART1_SendData9(*(SSI_HANDLE->pTxBuffPtr.Size_u16 + SSI_HANDLE->TxXferCount));
+                    }
+                    else
+                    {
+                      /* ·¢ËÍ8Î»Êý¾Ý */
+                      SSI_UART1_SendData8(*(SSI_HANDLE->pTxBuffPtr.Size_u8 + SSI_HANDLE->TxXferCount));
+                    }
+              
+                    /* µÈ´ý·¢ËÍÍê³É */
+                    delaytime = 0;
+                    while(!(SSCON0 & 0x02))
+                    {
+                      if(delaytime++ > Timeout)
+                      {
+                        SSI_HANDLE->TxState = SSI_STATE_TIMEOUT;//·¢ËÍ³¬Ê±
+                        return Status_TIMEOUT;
+                      }
+                    }
+              
+                    SSI_ClearFlag(UART1_FLAG_TI); //·¢ËÍÖÐ¶Ï±êÖ¾Çå³ý£¬Ð´1/Ð´0ÇåÁã
+                    SSI_HANDLE->TxXferCount ++; //·¢ËÍÊý¾ÝÁ¿¼ÆÊý
+                  }
+              
+                  if(SSI_HANDLE->TxXferCount == SSI_HANDLE->TxXferSize)
+                  {
+                    SSI_HANDLE->TxState = SSI_STATE_READY;  //·¢ËÍÍê³É
+                    return Status_OK;
+                  }
+                  else
+                  {
+                    SSI_HANDLE->TxState = SSI_STATE_ERROR;//·¢Éú·¢ËÍ´íÎó
+                    return Status_ERROR;
+                  }
+                }
+                else
+                {
+                  return Status_BUSY;//·µ»Ø±êÖ¾Î»
+                }
+              }
+              
+              /**
+               * @brief  UARTÔÚÖÐ¶ÏÄ£Ê½ÏÂ·¢ËÍ´óÁ¿Êý¾ÝÊ±£¬ÏÈÔÚmainº¯ÊýÖÐµ÷ÓÃ´Ëº¯Êý
+               * @param  SSI_HANDLE[out]:Ö¸ÕëÖ¸ÏòUARTÊý¾ÝÐÅÏ¢´æ·ÅÇø
+               * @param  pData[out]:½ÓÊÕÊý¾ÝµÄ´æ·ÅÇø
+               * @param  Size[in]:´ý½ÓÊÕµÄÊý¾ÝÁ¿
+               * @param  timeout[in]:³¬Ê±Ê±¼äÉèÖÃ
+               * @retval º¯ÊýÖ´ÐÐ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+              StatusTypeDef SSI_UART_Transmit_IT(SSI_HandleInfoDef* SSI_HANDLE, uint8_t* pData, uint8_t Size)
+              {
+                /* ¼ì²éÒ»¸ö·¢ËÍ½ø³ÌÊÇ·ñÕýÔÚ½øÐÐ */
+                if(SSI_HANDLE->TxState == SSI_STATE_READY)
+                {
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 23  
+
+                  /* Ã»ÓÐ¿ªÆôSSIÖÐ¶Ï»ò·¢ËÍÊý¾ÝÁ¿´óÐ¡Îª0£¬·µ»Ø´íÎó */
+                  if(((IE1 & 0x01) == 0) || (Size == 0U))
+                  {
+                    return Status_ERROR;
+                  }
+              
+                  SSI_HANDLE->TxState = SSI_STATE_BUSY;
+                  SSI_HANDLE->pTxBuffPtr.Size_u8 = pData;     //Ö¸Ïò´ý·¢ËÍÊý¾ÝµÄµØÖ·
+                  SSI_HANDLE->TxXferSize = Size;      //¸üÐÂ´ý·¢ËÍµÄÊý¾ÝÁ¿
+                  SSI_HANDLE->TxXferCount = 0;      //·¢ËÍ¼ÆÊýÆ÷ÇåÁã
+              
+                  /* ·¢ËÍµÚ1Ö¡Êý¾Ý */
+                  if((SSCON0 & 0x80) == UART1_Mode_11B)
+                  {
+                    /* ·¢ËÍ9Î»Êý¾Ý */
+                    SSI_UART1_SendData9(*(SSI_HANDLE->pTxBuffPtr.Size_u16 + SSI_HANDLE->TxXferCount));
+                  }
+                  else
+                  {
+                    /* ·¢ËÍ8Î»Êý¾Ý */
+                    SSI_UART1_SendData8(*(SSI_HANDLE->pTxBuffPtr.Size_u8 + SSI_HANDLE->TxXferCount));
+                  }
+                  return Status_OK;
+                }
+                else
+                {
+                  return Status_BUSY;//·µ»Ø±êÖ¾Î»
+                }
+              }
+              
+              /**
+               * @brief  UARTÔÚÖÐ¶ÏÄ£Ê½ÏÂ·¢ËÍ´óÁ¿Êý¾ÝÊ±£¬ÔÚÖÐ¶Ï·þÎñº¯ÊýÖÐµ÷ÓÃ ×¢£º¸Ãº¯Êýµ÷ÓÃÐèÒªÅÐ¶ÏÖÐ¶Ï±êÖ¾Î»ÊÇ·ñÖÃÆð
+               * @param  SSI_HANDLE[out]:Ö¸ÕëÖ¸ÏòUARTÊý¾ÝÐÅÏ¢´æ·ÅÇø
+               * @retval º¯ÊýÖ´ÐÐ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+              StatusTypeDef SSI_UART_Transmit_IRQHandler(SSI_HandleInfoDef* SSI_HANDLE)
+              {
+                /* ´¦ÓÚ·¢ËÍÏß³Ì */
+                if(SSI_HANDLE->TxState == SSI_STATE_BUSY)
+                {
+                  SSI_HANDLE->TxXferCount++;
+                  /* ÅÐ¶ÏÉÏÒ»´Î·¢ËÍÊÇ·ñÊÇ×îºóÒ»´Î */
+                  if(SSI_HANDLE->TxXferCount < SSI_HANDLE->TxXferSize)
+                  {
+                    /* ´ý·¢ËÍÊý¾ÝÁ¿Î´Îª0£¬¼ÌÐø·¢ËÍ */
+                    if((SSCON0 & 0x80) == UART1_Mode_11B)
+                    {
+                      /* ·¢ËÍ9Î»Êý¾Ý */
+                      SSI_UART1_SendData9(*(SSI_HANDLE->pTxBuffPtr.Size_u16 + SSI_HANDLE->TxXferCount));
+                    }
+                    else
+                    {
+                      /* ·¢ËÍ8Î»Êý¾Ý */
+                      SSI_UART1_SendData8(*(SSI_HANDLE->pTxBuffPtr.Size_u8 + SSI_HANDLE->TxXferCount));
+                    }
+                    return Status_BUSY;
+                  }
+                  else if(SSI_HANDLE->TxXferCount == SSI_HANDLE->TxXferSize)
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 24  
+
+                  {
+                    /* ·¢ËÍÍê³É */
+                    SSI_HANDLE->TxState = SSI_STATE_READY;
+                    return Status_OK;
+                  }
+                  else
+                  {
+                    /* ·¢ËÍÊý¾ÝÁ¿Îª0Ê±»¹·¢ËÍÊý¾Ý£¬·µ»Ø´íÎó */
+                    SSI_HANDLE->TxState = SSI_STATE_ERROR;
+                    return Status_ERROR;
+                  }
+                }
+                else
+                {
+                  return Status_BUSY;
+                }
+              }
+              
+              /**
+               * @brief  UARTÔÚÂÖÑ¯Ä£Ê½ÏÂ½ÓÊÕ´óÁ¿Êý¾Ý
+               * @param  SSI_HANDLE[out]:Ö¸ÕëÖ¸ÏòUARTÊý¾ÝÐÅÏ¢´æ·ÅÇø
+               * @param  pData[out]:½ÓÊÕÊý¾ÝµÄ´æ·ÅÇø
+               * @param  Size[in]:´ý½ÓÊÕµÄÊý¾ÝÁ¿
+               * @param  timeout[in]:³¬Ê±Ê±¼äÉèÖÃ
+               * @retval º¯ÊýÖ´ÐÐ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+              StatusTypeDef SSI_UART_Receive(SSI_HandleInfoDef* SSI_HANDLE, uint8_t* pData, uint8_t Size, uint32_t Timeo
+             -ut)
+              {
+                uint32_t delaytime = 0;
+                /* ¼ì²é½ÓÊÕ½ø³ÌÕýÔÚÔËÐÐ */
+                if(SSI_HANDLE->RxState == SSI_STATE_READY)
+                {
+                  /* ¼ì²é½ÓÊÕÊý¾ÝÁ¿´óÐ¡ºÍÊÇ·ñ¿ªÆô½ÓÊÕÊ¹ÄÜ */
+                  if((IE1 & 0x01 != 0) || (Size == 0U) || ((SSCON0 & 0x10) != UART1_RX_ENABLE))
+                  {
+                    return  Status_ERROR;
+                  }
+              
+                  SSI_HANDLE->RxState = SSI_STATE_BUSY;     //½ÓÊÕ½ø³ÌÃ¦ÂµÖÐ
+                  SSI_ClearFlag(UART1_FLAG_RI);      //½ÓÊÕÇ°Çå³ý½ÓÊÕÖÐ¶Ï±êÖ¾
+                  SSI_HANDLE->pRxBuffPtr.Size_u8 = pData;     //Ö¸Ïò´ý½ÓÊÕÊý¾ÝµÄµØÖ·
+                  SSI_HANDLE->RxXferSize = Size;      //¸üÐÂ´ý½ÓÊÕµÄÊý¾ÝÁ¿
+                  SSI_HANDLE->RxXferCount = 0;      //½ÓÊÕ¼ÆÊýÆ÷ÇåÁã
+              
+                  while(SSI_HANDLE->RxXferCount < SSI_HANDLE->RxXferSize) //ÅÐ¶ÏÊÇ·ñ½ÓÊÕËùÓÐÊý¾Ý
+                  {
+                    if(SSI_GetFlagStatus(UART1_FLAG_RI)) //ÅÐ¶Ï½ÓÊÕ±êÖ¾Î»
+                    {
+                      SSI_ClearFlag(UART1_FLAG_RI);     //½ÓÊÕ±êÖ¾Î»ÇåÁã
+              
+                      /* ´ý½ÓÊÕÊý¾ÝÁ¿Î´Îª0£¬¼ÌÐø·¢ËÍ */
+                      if((SSCON0 & 0x80) == UART1_Mode_11B)
+                      {
+                        /* ½ÓÊÕ9Î»Êý¾Ý */
+                        *(SSI_HANDLE->pRxBuffPtr.Size_u16 + SSI_HANDLE->RxXferCount) = SSI_UART1_ReceiveData9();
+                      }
+                      else
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 25  
+
+                      {
+                        /* ½ÓÊÕ8Î»Êý¾Ý */
+                        *(SSI_HANDLE->pRxBuffPtr.Size_u8 + SSI_HANDLE->RxXferCount) = SSI_UART1_ReceiveData8();
+                      }
+              
+                      SSI_HANDLE->RxXferCount++;  //½ÓÊÕÊý¾ÝÁ¿¼ÆÊý
+                      delaytime = 0;//ÊÕµ½Êý¾Ý£¬³¬Ê±¼ÆÊýÇåÁã
+                    }
+                    if(delaytime++ > Timeout)//¼ÆÊ±Òç³ö
+                    {
+                      SSI_HANDLE->RxState = SSI_STATE_TIMEOUT;//½ÓÊÕ³¬Ê±
+                      return Status_TIMEOUT;
+                    }
+                  }
+              
+                  if(SSI_HANDLE->RxXferCount == SSI_HANDLE->RxXferSize)
+                  {
+                    SSI_HANDLE->RxState = SSI_STATE_READY;  //½ÓÊÕÍê³É
+                    return Status_OK;
+                  }
+                  else
+                  {
+                    SSI_HANDLE->RxState = SSI_STATE_ERROR;//·¢Éú½ÓÊÕ´íÎó
+                    return Status_ERROR;
+                  }
+                }
+                else
+                {
+                  return Status_BUSY;//·µ»Ø±êÖ¾Î»
+                }
+              }
+              
+              /**
+               * @brief  UARTÔÚÖÐ¶ÏÄ£Ê½ÏÂ½ÓÊÕ´óÁ¿Êý¾ÝÊ±£¬ÏÈÔÚmainº¯ÊýÖÐµ÷ÓÃ´Ëº¯Êý
+               * @param  SSI_HANDLE[out]:Ö¸ÕëÖ¸ÏòUARTÊý¾ÝÐÅÏ¢´æ·ÅÇø
+               * @param  pData[out]:½ÓÊÕÊý¾ÝµÄ´æ·ÅÇø
+               * @param  Size[in]:´ý½ÓÊÕµÄÊý¾ÝÁ¿
+               * @retval º¯ÊýÖ´ÐÐ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+              StatusTypeDef SSI_UART_Receive_IT(SSI_HandleInfoDef* SSI_HANDLE, uint8_t* pData, uint8_t Size)
+              {
+                /* ¼ì²éÒ»¸ö½ÓÊÕ½ø³ÌÊÇ·ñÕýÔÚ½øÐÐ */
+                if(SSI_HANDLE->RxState == SSI_STATE_READY)
+                {
+                  /* ¼ì²éÊÇ·ñ¿ªÆôSSI_UARTÖÐ¶Ï»ò·¢ËÍÊý¾ÝÁ¿´óÐ¡Îª0»òÊÇ·ñ¿ªÆô½ÓÊÕÊ¹ÄÜ£¬·µ»Ø´íÎó */
+                  if(((IE1 & 0x01) == 0) || (Size == 0U) || ((SSCON0 & 0x10) != UART1_RX_ENABLE))
+                  {
+                    return Status_ERROR;
+                  }
+              
+                  SSI_HANDLE->RxState = SSI_STATE_BUSY;
+                  SSI_HANDLE->pRxBuffPtr.Size_u8 = pData;     //Ö¸Ïò½ÓÊÕÊý¾ÝµÄ´æ·ÅµØÖ·
+                  SSI_HANDLE->RxXferSize = Size;      //¸üÐÂ´ý½ÓÊÕµÄÊý¾ÝÁ¿
+                  SSI_HANDLE->RxXferCount = 0;      //½ÓÊÕ¼ÆÊýÆ÷ÇåÁã
+              
+                  return Status_OK;
+                }
+                else
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 26  
+
+                {
+                  return Status_BUSY;//·µ»Ø±êÖ¾Î»
+                }
+              }
+              
+              /**
+               * @brief  UARTÔÚÖÐ¶ÏÄ£Ê½ÏÂ½ÓÊÕ´óÁ¿Êý¾ÝÊ±£¬ÔÚÖÐ¶Ï·þÎñº¯ÊýÖÐµ÷ÓÃ ×¢£º¸Ãº¯Êýµ÷ÓÃÐèÒªÅÐ¶ÏÖÐ¶Ï±êÖ¾Î»ÊÇ·ñÖÃÆð
+               * @param  SSI_HANDLE[out]:Ö¸ÕëÖ¸ÏòSSIÊý¾ÝÐÅÏ¢´æ·ÅÇø
+               * @retval º¯ÊýÖ´ÐÐ×´Ì¬
+               *          - Status_ERROR:´íÎó
+               *          - Status_OK:Õý³£
+               *          - Status_BUSY:ÕýÃ¦
+               *          - Status_TIMEOUT:³¬Ê±
+               */
+              StatusTypeDef SSI_UART1_Receive_IRQHandler(SSI_HandleInfoDef* SSI_HANDLE)
+              {
+                /* ¼ì²éÒ»¸ö½ÓÊÕ½ø³ÌÊÇ·ñÕýÔÚ½øÐÐ */
+                if(SSI_HANDLE->RxState == SSI_STATE_BUSY)
+                {
+                  /* ´¦ÓÚ½ÓÊÕÏß³Ì£¬¼ì²é´ý½ÓÊÕÊý¾ÝÁ¿ÊÇ·ñÎª0 */
+                  if(SSI_HANDLE->RxXferCount < SSI_HANDLE->RxXferSize)
+                  {
+                    /* ´ý½ÓÊÕÊý¾ÝÁ¿Î´Îª0£¬¼ÌÐø½ÓÊÕ */
+                    if((SSCON0 & 0x80) == UART1_Mode_11B)
+                    {
+                      /* ½ÓÊÕ9Î»Êý¾Ý */
+                      *(SSI_HANDLE->pRxBuffPtr.Size_u16 + SSI_HANDLE->RxXferCount) = SSI_UART1_ReceiveData9();
+                    }
+                    else
+                    {
+                      /* ½ÓÊÕ8Î»Êý¾Ý */
+                      *(SSI_HANDLE->pRxBuffPtr.Size_u8 + SSI_HANDLE->RxXferCount) = SSI_UART1_ReceiveData8();
+                    }
+                    SSI_HANDLE->RxXferCount ++;
+                    /* ÅÐ¶ÏÉÏÒ»´Î·¢ËÍÊÇ·ñÊÇ×îºóÒ»´Î */
+                    if(SSI_HANDLE->RxXferCount == SSI_HANDLE->RxXferSize)
+                    {
+                      /* ½ÓÊÕÍê³É */
+                      SSI_HANDLE->RxState = SSI_STATE_READY;
+                      return Status_OK;
+                    }
+                      return Status_BUSY;
+                  }
+                  else
+                  {
+                    /* ½ÓÊÕÊý¾ÝÁ¿Îª0Ê±»¹½ÓÊÕÊý¾Ý£¬·µ»Ø´íÎó */
+                    SSI_HANDLE->RxState = SSI_STATE_ERROR;
+                    return Status_ERROR;
+                  }
+                }
+                else
+                {
+                  return Status_BUSY;
+                }
+              }
+              
+              /**
+               * @brief  SSIÖÐ¶Ï³õÊ¼»¯
+               * @param  NewState[in]: ¶ÏÊ¹ÄÜ/¹Ø±ÕÑ¡Ôñ
+               *              - DISABLE:¹Ø±Õ
+               *              - ENABLE:Ê¹ÄÜ
+               * @param  Priority[in]: ÖÐ¶ÏÓÅÏÈ¼¶Ñ¡Ôñ
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 27  
+
+               *              - LOW:µÍ
+               *              - HIGH:¸ß
+               * @retval None
+               */ 
+              void SSI_ITConfig(FunctionalState NewState,
+                                PriorityStatus Priority)
+              {
+                if(NewState != DISABLE)
+                {
+                  IE1 |= 0x01;
+                }
+                else
+                {
+                  IE1 &= 0xFE;
+                }
+              
+                /************************************************************/
+                if(Priority != LOW)
+                {
+                  IP1 |= 0x01;
+                }
+                else
+                {
+                  IP1 &= 0xFE;
+                }
+              }
+              
+              /**
+               * @brief  »ñµÃSSI±êÖ¾×´Ì¬
+               * @param  SSI_FLAG[in]:ËùÐè»ñÈ¡µÄ±êÖ¾Î»
+               *              - SPI_FLAG_SPIF:SPIÊý¾Ý´«ËÍ±êÖ¾Î»SPIF
+               *              - SPI_FLAG_WCOL:SPIÐ´Èë³åÍ»±êÖ¾Î»WCOL
+               *              - SPI_FLAG_TXE:SPI·¢ËÍ»º´æÆ÷¿Õ±êÖ¾TXE
+               *              - TWI_FLAG_TWIF:TWIÖÐ¶Ï±êÖ¾Î»TWIF
+               *              - TWI_FLAG_GCA:TWIÍ¨ÓÃµØÖ·ÏìÓ¦±êÖ¾Î»GCA
+               *              - UART1_FLAG_TI:UART1·¢ËÍÖÐ¶Ï±êÖ¾Î»TI
+               *              - UART1_FLAG_RI:UART1½ÓÊÕÖÐ¶Ï±êÖ¾Î»RI
+               * @retval SSI±êÖ¾Î»ÖÃÆð×´Ì¬
+               *              - RESET:ÖÃÁã
+               *              - SET:ÖÃÆð
+               */
+              FlagStatus SSI_GetFlagStatus(SSI_Flag_TypeDef
+                                           SSI_FLAG)
+              {
+                FlagStatus bitstatus = RESET;
+              
+                if((SSI_FLAG == SPI_FLAG_SPIF) ||
+                    (SSI_FLAG == SPI_FLAG_WCOL) ||
+                    (SSI_FLAG == SPI_FLAG_TXE))
+                {
+                  if((SSI_FLAG & SSCON1) != (uint8_t)RESET)
+                  {
+                    bitstatus = SET;
+                  }
+                  else
+                  {
+                    bitstatus = RESET;
+                  }
+                }
+                else
+                {
+                  if((SSI_FLAG & SSCON0) != (uint8_t)RESET)
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 28  
+
+                  {
+                    bitstatus = SET;
+                  }
+                  else
+                  {
+                    bitstatus = RESET;
+                  }
+                }
+              
+                return bitstatus;
+              }
+              
+              /**
+               * @brief  Çå³ýSSI±êÖ¾×´Ì¬
+               * @param  SSI_FLAG[in]:ËùÐèÇå³ýµÄ±êÖ¾Î»
+               *              - SPI_FLAG_SPIF:SPIÊý¾Ý´«ËÍ±êÖ¾Î»SPIF
+               *              - SPI_FLAG_WCOL:SPIÐ´Èë³åÍ»±êÖ¾Î»WCOL
+               *              - SPI_FLAG_TXE:SPI·¢ËÍ»º´æÆ÷¿Õ±êÖ¾TXE
+               *              - TWI_FLAG_TWIF:TWIÖÐ¶Ï±êÖ¾Î»TWIF
+               *              - TWI_FLAG_GCA:TWIÍ¨ÓÃµØÖ·ÏìÓ¦±êÖ¾Î»GCA
+               *              - UART1_FLAG_TI:UART1·¢ËÍÖÐ¶Ï±êÖ¾Î»TI
+               *              - UART1_FLAG_RI:UART1½ÓÊÕÖÐ¶Ï±êÖ¾Î»RI
+               * @retval None
+               */
+              void SSI_ClearFlag(SSI_Flag_TypeDef SSI_FLAG)
+              {
+                if((SSI_FLAG == SPI_FLAG_SPIF) ||
+                    (SSI_FLAG == SPI_FLAG_WCOL) ||
+                    (SSI_FLAG == SPI_FLAG_TXE))
+                {
+                  SSCON1 &= (~SSI_FLAG);
+                }
+                else if(SSI_FLAG == TWI_FLAG_TWIF)
+                {
+                  SSCON0 &= (~SSI_FLAG);
+                }
+                else
+                {
+                  #if defined (SC92F84Hx) || defined(SC92F83Hx) || defined (SC92F6x1x) || defined (SC92F5x1x) || defined (
+             -SC92R436) || defined (SC92R438)|| defined (SC92R439)\
+                      || defined(SC92R422A)|| defined(SC92F652x)|| defined(SC92R51x_R52x) || defined (SC92F552x)|| defined
+             -(SC92F5x5x)|| defined(SC92F531x)
+                  if(SSI_FLAG == UART1_FLAG_TI)
+                  {
+                    SSCON0 &= (~UART1_FLAG_RI);
+                  }
+                  else
+                  {
+                    SSCON0 &= (~UART1_FLAG_TI);
+                  }
+                  #else
+                  SSCON0 &= (~SSI_FLAG);
+                  #endif
+                }
+                
+              }
+              
+              #if defined (SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x)|| defined (SC92F5x5x) || defined 
+             -(SC92F531x) || defined (SC92F637x)
+              #if defined (SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x)
+              uint8_t xdata SPOS_SSICK _at_ 0x102D;
+              uint8_t xdata SPOS_SSITX _at_ 0x102E;
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 29  
+
+              uint8_t xdata SPOS_SSIRX _at_ 0x102F;
+              #elif defined (SC92F5x5x) || defined (SC92F531x)
+              uint8_t xdata SPOS_SSICK _at_ 0x11D;
+              uint8_t xdata SPOS_SSITX _at_ 0x11E;
+              uint8_t xdata SPOS_SSIRX _at_ 0x11F;
+              #elif defined (SC92F637x)
+              uint8_t xdata SPOS_SSITX _at_ 0x108;
+              uint8_t xdata SPOS_SSIRX _at_ 0x109;
+              uint8_t xdata SPOS_SSICK _at_ 0x10A;
+              #endif
+              /**
+               * @brief  SSI¶Ë¿ÚÓ³Éäº¯Êý
+               * @param  SSIxx_MappingPin[in]: SSI¶Ë¿ÚÓ³Éä¹Ü½ÅÑ¡Ôñ
+               *          - SSIMapped_to_P50:SSI¶Ë¿ÚÓ³Éäµ½P50
+               *          - SSIMapped_to_P51:SSI¶Ë¿ÚÓ³Éäµ½P51
+               *          - SSIMapped_to_P52:SSI¶Ë¿ÚÓ³Éäµ½P52
+               *          - SSIMapped_to_P53:SSI¶Ë¿ÚÓ³Éäµ½P53
+               *          - SSIMapped_to_P54:SSI¶Ë¿ÚÓ³Éäµ½P54
+               *          - SSIMapped_to_P56:SSI¶Ë¿ÚÓ³Éäµ½P50
+               *          - SSIMapped_to_P57:SSI¶Ë¿ÚÓ³Éäµ½P51
+               *          - SSIMapped_to_P10:SSI¶Ë¿ÚÓ³Éäµ½P10
+               *          - SSIMapped_to_P11:SSI¶Ë¿ÚÓ³Éäµ½P11
+               *          - SSIMapped_to_P12:SSI¶Ë¿ÚÓ³Éäµ½P12
+               *          - SSIMapped_to_P13:SSI¶Ë¿ÚÓ³Éäµ½P13
+               *          - SSIMapped_to_P14:SSI¶Ë¿ÚÓ³Éäµ½P14
+               *          - SSIMapped_to_P15:SSI¶Ë¿ÚÓ³Éäµ½P15
+               *          - SSIMapped_to_P16:SSI¶Ë¿ÚÓ³Éäµ½P16
+               *          - SSIMapped_to_P17:SSI¶Ë¿ÚÓ³Éäµ½P17
+               *          - SSIMapped_to_P27:SSI¶Ë¿ÚÓ³Éäµ½P27
+               *          - SSIMapped_to_P26:SSI¶Ë¿ÚÓ³Éäµ½P26
+               *          - SSIMapped_to_P25:SSI¶Ë¿ÚÓ³Éäµ½P25
+               *          - SSIMapped_to_P24:SSI¶Ë¿ÚÓ³Éäµ½P24
+               *          - SSIMapped_to_P23:SSI¶Ë¿ÚÓ³Éäµ½P23
+               *          - SSIMapped_to_P22:SSI¶Ë¿ÚÓ³Éäµ½P22
+               *          - SSIMapped_to_P07:SSI¶Ë¿ÚÓ³Éäµ½P07
+               *          - SSIMapped_to_P06:SSI¶Ë¿ÚÓ³Éäµ½P06
+               *          - SSIMapped_to_P04:SSI¶Ë¿ÚÓ³Éäµ½P04
+               *          - SSIMapped_to_P03:SSI¶Ë¿ÚÓ³Éäµ½P03
+               *          - SSIMapped_to_P02:SSI¶Ë¿ÚÓ³Éäµ½P02
+               *          - SSIMapped_to_P01:SSI¶Ë¿ÚÓ³Éäµ½P01
+               *          - SSIMapped_to_P00:SSI¶Ë¿ÚÓ³Éäµ½P00
+               * @retval None
+               */ 
+              void SSI_PortMapping(SSI_PortMappingPin_TypeDef SSICK_MappingPin,
+                                   SSI_PortMappingPin_TypeDef SSITX_MappingPin,
+                                   SSI_PortMappingPin_TypeDef SSIRX_MappingPin)
+              {
+                SPOS_SSICK = SPOS_SSICK & 0xE0 | SSICK_MappingPin;
+                SPOS_SSITX = SPOS_SSITX & 0xE0 | SSITX_MappingPin;
+                SPOS_SSIRX = SPOS_SSIRX & 0xE0 | SSIRX_MappingPin;
+              }
+              #endif
+              /**
+               * @}
+               */
+              /* End of SSI_Group2. */
+              #endif
+1760          /**
+1761           * @}
+1762           */
+1763          
+1764          /**
+C51 COMPILER V9.60.7.0   SC92F_SSI                                                         10/13/2026 10:46:33 PAGE 30  
+
+1765           * @}
+1766           */
+1767          
+1768          /**
+1769           * @}
+1770           */
+1771          /********* (C) COPYRIGHT 2025 SinOne Microelectronics *****END OF FILE****/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

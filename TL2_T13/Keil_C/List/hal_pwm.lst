@@ -1,0 +1,105 @@
+C51 COMPILER V9.60.7.0   HAL_PWM                                                           10/13/2026 10:46:37 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE HAL_PWM
+OBJECT MODULE PLACED IN ..\Output\hal_pwm.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\Hardware\hal_pwm.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE INCDIR(..\FWLib
+                    -\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753x) DEBUG PRINT
+                    -(..\List\hal_pwm.lst) TABS(2) OBJECT(..\Output\hal_pwm.obj)
+
+line level    source
+
+   1          #include "hal_pwm.h"
+   2          
+   3          // ==========================================
+   4          // 调试开关：强制水泵长转 (投产时务必改为 0 ！)
+   5          // ==========================================
+   6          #define DEBUG_PUMP_ALWAYS_ON  0  // 1: 开启水泵强制常转无视逻辑, 0: 正常业务控制
+   7          
+   8          // 硬件引脚映射 (仅作示意，实际 PWM 波形由内部模块自动输出到引脚)
+   9          #define HEATING_PIN         P10 // Pin 14 加热控制 IO
+  10          
+  11          // 内部状态标志位 (用于判断水泵是否被业务层要求开启)
+  12          static uint8_t pump_is_running = 0;
+  13          
+  14          // ==========================================
+  15          // 水泵驱动区域 (Pin 18 / PWM2)
+  16          // ==========================================
+  17          
+  18          void HAL_PWM_Pump_Start(void) {
+  19   1          pump_is_running = 1;
+  20   1          // 启动时不直接赋全速，依赖稳压函数在下一个 100ms 周期自动计算
+  21   1      }
+  22          
+  23          void HAL_PWM_Pump_Stop(void) {
+  24   1      #if DEBUG_PUMP_ALWAYS_ON
+                  pump_is_running = 1; // 调试模式：拦截一切停泵意图，强行维持运行标志
+                  P02 = 1;             // 强行保持硬件开启
+              #else
+  28   1          pump_is_running = 0;
+  29   1          P02 = 0; // 占空比直接写 0，硬件瞬间停止输出
+  30   1      #endif
+  31   1      }
+  32          
+  33          /**
+  34           * @brief  水泵动态稳压算法引擎
+  35           * @param  current_sys_mv: 当前系统供电电压(毫伏)，由 ADC 模块采集提供
+  36           * @note   无浮点运算，全整数安全计算
+  37              //现采用任何供电均全速PWM输出
+  38           */
+  39          void HAL_PWM_Pump_Constant_Voltage(uint16_t current_sys_mv) {
+  40   1          uint32_t duty_calc = 0;
+  41   1      
+  42   1      #if DEBUG_PUMP_ALWAYS_ON
+                  pump_is_running = 1; // 强制校正被意外清空的标志位
+                  P02 = 1;             // 暴力拉高引脚输出
+                  return;              // 提前退出，完全无视下方业务逻辑
+              #endif
+  47   1      
+  48   1          // 如果状态机没有要求水泵运行，直接退出
+  49   1          if (!pump_is_running) {
+  50   2              P02 = 0;
+  51   2              return;
+  52   2          }
+  53   1          P02 = 1; // 最大占空比不能超过 PWMPRD
+C51 COMPILER V9.60.7.0   HAL_PWM                                                           10/13/2026 10:46:37 PAGE 2   
+
+  54   1      }
+*** WARNING C280 IN LINE 39 OF ..\Hardware\hal_pwm.c: 'current_sys_mv': unreferenced local variable
+  55          
+  56          // ==========================================
+  57          // 加热片驱动区域 (Pin 14 / P2.0)
+  58          // ==========================================
+  59          
+  60          void HAL_PWM_Heating_Start(void) {
+  61   1          // 你的配置中加热是普通的推挽 IO (如果你没配成 PWM 的话)
+  62   1          HEATING_PIN = 1; // 打开 MOS 管开始加热
+  63   1      }
+  64          
+  65          void HAL_PWM_Heating_Stop(void) {
+  66   1          HEATING_PIN = 0; // 关闭 MOS 管
+  67   1      }
+  68          
+  69          /* 查询业务层是否要求水泵运行 */
+  70          uint8_t HAL_PWM_Pump_IsRunning(void)
+  71          {
+  72   1          return pump_is_running;
+  73   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     55    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      1       6
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

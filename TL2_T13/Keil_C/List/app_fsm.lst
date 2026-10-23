@@ -1,0 +1,1236 @@
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE APP_FSM
+OBJECT MODULE PLACED IN ..\Output\app_fsm.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\User\src\app_fsm.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE INCDIR(..\FWLib
+                    -\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753x) DEBUG PRINT
+                    -(..\List\app_fsm.lst) TABS(2) OBJECT(..\Output\app_fsm.obj)
+
+line level    source
+
+   1          #include "app_fsm.h"
+   2          #include "hal_adc.h"
+   3          #include "hal_pwm.h"
+   4          #include "hal_tm1650.h"
+   5          #include "hal_buzzer.h"
+   6          #include "hal_touch.h"
+   7          #include "hal_ir.h"
+   8          #include "wifi.h"
+   9          #include "hal_eeprom.h"
+  10          #include "app_wifi.h"
+  11          #include "hal_power.h"
+  12          #include "sc89601.h"
+  13          
+  14          // ÊµÀý»¯È«¾ÖÊý¾Ý×ÜÏßÓëÓ°×Ó¼Ä´æÆ÷
+  15          volatile DeviceStatus_t g_Device;
+  16          volatile DeviceStatus_t g_Device_Shadow; 
+  17          volatile uint8_t g_cloud_data_synced = 0; // 0:Î´Í¬²½ÔÆ¶ËÀúÊ·Öµ, 1:ÒÑÍ¬²½
+  18          
+  19          // ¡¾ÐÂÔö¡¿£ºÈ±Ë®µÆ¼«ËÙÏìÓ¦±êÖ¾ (ÍÑÀë2Ãë·ÀÎóÉ±Êø¸¿£¬ÓëÓ²¼þ¶ÏµçÍ¬Æµ)
+  20          uint8_t g_ui_water_empty = 0;
+  21          uint8_t typec_present;
+  22          // ==========================================
+  23          // Íâ²¿±äÁ¿Óëºê¶¨Òå
+  24          // ==========================================
+  25          #define BAT_PIN  P03    // ÏÖÓÃÓÚ¼ì²â³äµç IC µÄ×´Ì¬ (³äµçÖÐ/³äÂú)
+  26          
+  27          extern int8_t    cached_temperature_c;    // ADC¼ÆËãµÃ³öµÄµ±Ç°Ë®ÎÂ
+  28          extern uint16_t  cached_sys_voltage_mv;   // ADC¼ÆËãµÃ³öµÄÏµÍ³µçÑ¹
+  29          
+  30          extern void HAL_Buzzer_Beep_3s(void);
+  31          // ¡¾×¢Òâ¡¿£ºÇëÈ·±£ hal_ir.h/c ÖÐÌá¹©ÁËÖØÖÃÏû¶¶»º´æµÄº¯Êý£¬ÈôÎÞÇë×Ô¼º²¹³äÒ»¸öÇåÁã¼ÆÊýµÄ¼òµ¥º¯Êý
+  32          extern void HAL_IR_Reset(void); 
+  33          
+  34          extern void App_Cloud_Sync_Reset(void);
+  35          // ==========================================
+  36          // 1Ãë¼¶×ÓÈÎÎñÇ°ÖÃÉùÃ÷ (½öÏÞ±¾ÎÄ¼þÄÚ²¿µ÷ÓÃ)
+  37          // ==========================================
+  38          static void Task_Basic_Countdown(void);
+  39          static void Task_Consumable_Life(void);
+  40          static void Task_Wifi_Pairing_Check(void);
+  41          
+  42          
+  43          #define APP_BAT_PUMP_STOP_MV       3500U
+  44          #define APP_BAT_PUMP_CONFIRM_TICKS 30U
+  45          #define APP_BAT_PUMP_UNKNOWN       0U
+  46          #define APP_BAT_PUMP_ALLOWED       1U
+  47          #define APP_BAT_PUMP_LOCKED        2U
+  48          
+  49          #define APP_BAT_SHUTDOWN_MV       3350U
+  50          #define APP_BAT_SHUTDOWN_TICKS    25U
+  51          #define APP_BAT_SHUTDOWN_DELAY_S  300U
+  52          #define APP_BAT_PUMP_SHUTDOWN     3U
+  53          
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 2   
+
+  54          extern volatile sc_u8 g_sc89601_init_result;
+  55          extern volatile sc_u8 g_sc89601_poll_result;
+  56          extern volatile sc89601_snapshot_t g_sc89601_snapshot;
+  57          
+  58          #define APP_CHARGE_TOP_OFF_ACTIVE  0x08U
+  59          #define APP_CHARGE_FAULT_MASK      0xFCU
+  60          
+  61          static uint8_t s_charge_state = APP_CHARGE_UNKNOWN;
+  62          
+  63          /* 300Ãë³¬¹ý8Î»·¶Î§£»Èí¼þ¹Ø»ú²»Çå³ý´Ë¼ÆÊ±¡£ */
+  64          static uint16_t s_bat_shutdown_left_s = 0;
+  65          /* ¶ÀÁ¢ÓÚApp_FSM_Init£¬Èí¼þ¹Ø»ú²»»á½â³ýµÍÑ¹Ëø´æ¡£ */
+  66          static uint8_t s_bat_pump_state = APP_BAT_PUMP_UNKNOWN;
+  67          static uint8_t s_bat_pump_low_ticks = 0;
+  68          
+  69          /* Ã¿100ms¸üÐÂÍ£±Ã±£»¤£»Ëø´æÓë±£»¤¹Ø»ú¾ùÓÉÈ·ÈÏ²åµç½â³ý¡£ */
+  70          static void Task_Battery_PumpProtect(uint8_t typec_present)
+  71          {
+  72   1          uint16_t voltage_mv;
+  73   1      
+  74   1          if (typec_present && g_Device.power_mode == POWER_AC) {
+  75   2              s_bat_pump_state = APP_BAT_PUMP_ALLOWED;
+  76   2              s_bat_pump_low_ticks = 0;
+  77   2              s_bat_shutdown_left_s = 0; /* ²åµç½â³ý±£»¤£¬Í¬Ê±È¡Ïû¹Ø»ú¼ÆÊ±¡£ */
+  78   2              return;
+  79   2          }
+  80   1      
+  81   1          if (s_bat_pump_state >= APP_BAT_PUMP_LOCKED) {
+  82   2              return; /* µçÑ¹»Øµ¯²»ÄÜ½â³ýËø´æ»ò±£»¤¹Ø»ú¡£ */
+  83   2          }
+  84   1      
+  85   1          voltage_mv = g_Device.sys_voltage_mv;
+  86   1          if (voltage_mv == 0U) {
+  87   2              s_bat_pump_low_ticks = 0;
+  88   2              return;
+  89   2          }
+  90   1      
+  91   1          if (s_bat_pump_state == APP_BAT_PUMP_UNKNOWN) {
+  92   2              s_bat_pump_state =
+  93   2                  (voltage_mv < APP_BAT_PUMP_STOP_MV) ?
+  94   2                  APP_BAT_PUMP_LOCKED : APP_BAT_PUMP_ALLOWED;
+  95   2      
+  96   2              if (s_bat_pump_state == APP_BAT_PUMP_LOCKED) {
+  97   3                  s_bat_shutdown_left_s = APP_BAT_SHUTDOWN_DELAY_S;
+  98   3                  /* µÍÑ¹Æô¶¯Ö±½ÓËø±Ã£¬²¢¿ªÊ¼¹Ø»ú¼ÆÊ±¡£ */
+  99   3              }
+ 100   2              return;
+ 101   2          }
+ 102   1      
+ 103   1          if (voltage_mv >= APP_BAT_PUMP_STOP_MV) {
+ 104   2              s_bat_pump_low_ticks = 0;
+ 105   2              return;
+ 106   2          }
+ 107   1      
+ 108   1          if (s_bat_pump_low_ticks < APP_BAT_PUMP_CONFIRM_TICKS) {
+ 109   2              s_bat_pump_low_ticks++;
+ 110   2          }
+ 111   1      
+ 112   1          if (s_bat_pump_low_ticks >= APP_BAT_PUMP_CONFIRM_TICKS) {
+ 113   2              s_bat_pump_state = APP_BAT_PUMP_LOCKED;
+ 114   2              s_bat_shutdown_left_s = APP_BAT_SHUTDOWN_DELAY_S;
+ 115   2              /* ½öÔÚÊ×´Î½øÈëËø´æÊ±¿ªÊ¼¼ÆÊ±£¬ºóÐø²»ÖØ¸´×°ÔØ¡£ */
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 3   
+
+ 116   2          }
+ 117   1      }
+ 118          
+ 119          /* µÍµç±£»¤²àµÄ¹©±ÃÐí¿É£¬Êµ¼ÊÔËÐÐÈÔÊÜÆäËûÒµÎñÌõ¼þÏÞÖÆ¡£ */
+ 120          uint8_t App_FSM_BatteryPumpAllowed(void)
+ 121          {
+ 122   1          return (s_bat_pump_state == APP_BAT_PUMP_ALLOWED) ? 1U : 0U;
+ 123   1      }
+ 124          
+ 125          /* ²éÑ¯ÊÇ·ñÒÑ½øÈë±£»¤¹Ø»ú£¬¹©¹©µç¡¢UIºÍÐÝÃßÂß¼­Ê¹ÓÃ¡£ */
+ 126          uint8_t App_FSM_BatteryShutdownActive(void)
+ 127          {
+ 128   1          return (s_bat_pump_state == APP_BAT_PUMP_SHUTDOWN) ? 1U : 0U;
+ 129   1      }
+ 130          
+ 131          /* Ö÷Ñ­»·°´BTMÃë½ÚÅÄµ÷ÓÃ£¬Èí¼þ¹Ø»úºÍÐÝÃßÆÚ¼äÈÔ¼ÌÐø¼ÆÊ±¡£ */
+ 132          void App_FSM_BatteryTick_1s(void)
+ 133          {
+ 134   1          if ((s_bat_pump_state == APP_BAT_PUMP_LOCKED) &&
+ 135   1              (s_bat_shutdown_left_s > 0U)) {
+ 136   2              s_bat_shutdown_left_s--;
+ 137   2      
+ 138   2              if (s_bat_shutdown_left_s == 0U) {
+ 139   3                  s_bat_pump_state = APP_BAT_PUMP_SHUTDOWN;
+ 140   3                  /* µ½ÆÚËø¶¨¹Ø»ú£¬ÓÉ100msÒµÎñÈÎÎñÍê³ÉÊä³ö¹Ø±Õ¡£ */
+ 141   3              }
+ 142   2          }
+ 143   1      }
+ 144          
+ 145          // ==========================================
+ 146          // ×´Ì¬»ú³õÊ¼»¯ (¿ª»ú¾ø¶Ô°²È«Ì¬)
+ 147          // ==========================================
+ 148          void App_FSM_Init(void) {
+ 149   1          g_Device.state = STATE_OFF; 
+ 150   1          
+ 151   1          g_Device.ir_triggered = 0;
+ 152   1          
+ 153   1          g_Device.req_power_toggle = 0;
+ 154   1          g_Device.req_mode_toggle = 0;
+ 155   1          g_Device.req_heating = 0;
+ 156   1          g_Device.req_uvc = 0;
+ 157   1          
+ 158   1          g_Device.timer_pump_s = 0;
+ 159   1          g_Device.timer_uvc_s = 0;
+ 160   1          g_Device.display_timer_s = 0; 
+ 161   1          
+ 162   1          g_Device.heating_enabled = 0; 
+ 163   1          g_Device.uvc_armed = 0;       
+ 164   1          
+ 165   1          // 2. ¡¾ºËÐÄÐÞ¸´¡¿£ºÔÚ¼ÓÔØ EEPROM Ö®ºó£¬Ç¿ÖÆÇåÁãÄÇÐ©¾ø²»ÔÊÐí±» EEPROM ÎÛÈ¾µÄÔËÐÐ×´Ì¬£¡
+ 166   1          // ·ÀÖ¹½á¹¹Ìå±ä¸üµ¼ÖÂµÄÔàÊý¾Ý²ÐÁô
+ 167   1          g_Device.wifi_pairing_timer_s = 0; 
+ 168   1          g_Device.req_wifi_reset = 0;
+ 169   1          g_Device.req_cancel_pairing = 0;//WIFIÖØÖÃÃüÁî
+ 170   1          
+ 171   1          
+ 172   1          //ÂËÐ¾±¨¾¯¹¦ÄÜ
+ 173   1          HAL_EEPROM_Load_AllData(); // ¡¾Í³Ò»¶ÁÈ¡¡¿
+ 174   1          
+ 175   1          /* ±£ÁôºÏ·¨µÄ 0 Ìì£¬½ö¶ÔÎ´³õÊ¼»¯ÖµÊ¹ÓÃÄ¬ÈÏÖÜÆÚ¡£ */
+ 176   1          if (g_Device.target_clean_days == 0xFFFFU) {
+ 177   2              g_Device.target_clean_days = DEFAULT_CLEAN_DAYS;
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 4   
+
+ 178   2          }
+ 179   1      
+ 180   1          if (g_Device.target_filter_days == 0xFFFFU) {
+ 181   2              g_Device.target_filter_days = DEFAULT_FILTER_DAYS;
+ 182   2          }
+ 183   1          // ==========================================
+ 184   1          // ¡¾ºËÐÄÐÞ¸´¡¿£º·ÀÖ¹ÐÂ»úÆ÷/Î´ÅäÍø»úÆ÷ EEPROM ¶Á³ö 0xFF£¬µ¼ÖÂÄ¬ÈÏ¾²Òô
+ 185   1          // Ö»ÓÐÔÚ APP Ã÷È·ÏÂ·¢ 1 µÄÊ±ºò²ÅÊÇ¾²Òô£¬ÆäËûÂÒÂë(0xFF)È«Ç¿ÖÆÖØÖÃÎª 0(·¢Éù)
+ 186   1          // ==========================================
+ 187   1          if (g_Device.mute_enabled != 1) {
+ 188   2              g_Device.mute_enabled = 0; 
+ 189   2          }
+ 190   1      }
+ 191          
+ 192          // ==========================================
+ 193          // Ãë¼¶Ê±¼äÆ¬ÒýÇæ (ÓÉ main.c Ã¿ 1000ms µ÷ÓÃ)
+ 194          // ==========================================
+ 195          void App_FSM_Tick_1s(void) {
+ 196   1          // 1. »ù´¡µ¹¼ÆÊ±ÓëÊ±¼ä´ÁÍÆ½ø
+ 197   1          Task_Basic_Countdown();
+ 198   1          
+ 199   1          // 3. ÂËÐ¾ÓëÇåÏ´ÊÙÃüÍÆÑÝ
+ 200   1          Task_Consumable_Life();
+ 201   1          
+ 202   1          // 4. ÅäÍø³¬Ê±Óë×´Ì¬¼à²â
+ 203   1          Task_Wifi_Pairing_Check();
+ 204   1      }
+ 205          
+ 206          /* ³öË®ÇëÇóÓÉµ÷ÓÃ´¦ÅÐ¶Ï£¬´Ë´¦¼ì²éµç³Ø±£»¤Ðí¿É¡£ */
+ 207          static void App_FSM_PumpStartIfReady(void)
+ 208          {
+ 209   1          if (App_FSM_BatteryPumpAllowed()) { /* ÎÞÐèµÈ´ýOTG£¬±£ÁôµÍÑ¹Í£±Ã±£»¤¡£ */
+ 210   2              HAL_PWM_Pump_Start();
+ 211   2          } else {
+ 212   2              HAL_PWM_Pump_Stop();
+ 213   2          }
+ 214   1      }
+ 215          
+ 216          // ------------------------------------------
+ 217          // ×ÓÈÎÎñ 1£º»ù´¡Ó²¼þ×´Ì¬»úµ¹¼ÆÊ±
+ 218          // ------------------------------------------
+ 219          static void Task_Basic_Countdown(void) {
+ 220   1      
+ 221   1          // 1. ÎïÀíÍâÉèµÄ¹¤×÷µ¹¼ÆÊ±ÍÆ½ø
+ 222   1          if (g_Device.timer_pump_s > 0) { /* ²»ÔÙµÈ´ýÉýÑ¹×´Ì¬£¬°´ÃëÍÆ½ø³öË®µ¹¼ÆÊ±¡£ */
+ 223   2              g_Device.timer_pump_s--;
+ 224   2          }
+ 225   1          /* µÈ´ýÉýÑ¹Ê±±£Áô³öË®Ê±¼ä£»¹ÊÕÏËø¶¨ºóÔÊÐíÇëÇóµ¹¼ÆÊ±½áÊø¡£ */
+ 226   1          if (g_Device.timer_uvc_s > 0)     g_Device.timer_uvc_s--;     // µ¹ÊýÍê±Ïºó£¬UVCÉ±¾úµÆ×Ô¶¯¹Ø±Õ
+ 227   1          if (g_Device.display_timer_s > 0) g_Device.display_timer_s--; // µ¹ÊýÍê±Ïºó£¬UIÖ¸Ê¾µÆ×Ô¶¯Ï¢ÆÁ£¨Ê¡µç£©
+ 228   1          
+ 229   1          // 2. ±¾µØ RTC Ê±¼äÒýÇæ×ÔÔö (³äµ±ÏµÍ³µÄÊ±ÖÓÌø¶¯)
+ 230   1          // Ö»ÓÐÔÚ³É¹¦»ñÈ¡¹ýÔÆ¶ËÊ±¼äºó (current_unix_time > 0)£¬±¾µØ²Å»á¿ªÊ¼ÍÆ½øÊ±¼ä
+ 231   1          if (g_Device.current_unix_time > 0) {
+ 232   2              g_Device.current_unix_time++; 
+ 233   2          }
+ 234   1      }
+ 235          
+ 236          // ------------------------------------------
+ 237          // ×ÓÈÎÎñ 3£ººÄ²Ä±¨¾¯Ê±³¤µÝ¼õÍÆÑÝ
+ 238          // ------------------------------------------
+ 239          /* ·µ»ØÓÐÐ§ÕûÌìÊý£»0±íÊ¾²»×ãÒ»Ìì»òÊ±¼ä¿ç¶ÈÎÞÐ§¡£ */
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 5   
+
+ 240          static uint16_t App_Consumable_DaysPassed(
+ 241              unsigned long now, unsigned long last)
+ 242          {
+ 243   1          unsigned long days;
+ 244   1      
+ 245   1          /* Ð£Ê±¿ÉÄÜÊ¹Ê±¼äµ¹ÍË£¬ÏÈÀ¹½Ø£¬·ÀÖ¹ÎÞ·ûºÅ¼õ·¨»ØÈÆ¡£ */
+ 246   1          if (now < last) {
+ 247   2              return 0;
+ 248   2          }
+ 249   1      
+ 250   1          /* ËÄ´¦ºÄ²Ä¼ÆËã¹²ÓÃ´ËÊµÏÖ£¬¼õÉÙÖØ¸´´úÂë£»ÕûÊý³ý·¨±£ÁôÕûÌìÊý¡£ */
+ 251   1          days = (now - last) / 86400UL;
+ 252   1      
+ 253   1          /* ±£ÁôÔ­À´µÄ365ÌìÌø±ä¹ýÂË¹æÔò£¬Òì³£¿ç¶È²»²ÎÓë¿Û¼õ¡£ */
+ 254   1          if (days >= 365UL) {
+ 255   2              return 0;
+ 256   2          }
+ 257   1      
+ 258   1          /* ÓÐÐ§½á¹ûÎª0¡«364£¬·µ»Ø16Î»Öµ¼´¿É¹©¿Û¼õºÍµ½ÆÚÅÐ¶ÏÊ¹ÓÃ¡£ */
+ 259   1          return (uint16_t)days;
+ 260   1      }
+ 261          
+ 262          /* ·Ö±ð½áËãÇåÏ´ºÍÂËÐ¾£¬±£Áô²»×ãÒ»ÌìµÄÓàÁ¿¡£ */
+ 263          static void Task_Consumable_Life(void)
+ 264          {
+ 265   1          /* ¹²ÓÃ¼ÆËãÒÑÏÞÖÆÓÐÐ§·¶Î§£¬ÁÙÊ±ÌìÊýÓÉ32Î»¸ÄÎª16Î»¡£ */
+ 266   1          uint16_t days_passed;
+ 267   1      
+ 268   1          if (g_Device.target_clean_days > 0 &&
+ 269   1              g_Device.current_unix_time > 0UL &&
+ 270   1              g_Device.last_clean_timestamp > 0UL) {
+ 271   2      
+ 272   2              /* ÇåÏ´Ê¹ÓÃ×ÔÉíÊ±¼ä»ù×¼£¬¸´ÓÃÕûÌìÊý¼ÆËãºÍÌø±ä¹ýÂË¡£ */
+ 273   2              days_passed = App_Consumable_DaysPassed(
+ 274   2                  g_Device.current_unix_time,
+ 275   2                  g_Device.last_clean_timestamp);
+ 276   2      
+ 277   2              /* ½á¹ûÎª0Ê±Í³Ò»Ìø¹ý½áËã£¬´úÌæÔ­À´µÄÌìÊý·¶Î§ÅÐ¶Ï¡£ */
+ 278   2              if (days_passed != 0U) {
+ 279   3                  if (days_passed >= g_Device.target_clean_days) {
+ 280   4                      g_Device.target_clean_days = 0;
+ 281   4                      g_Device.req_clean_alarm = 1;
+ 282   4                  } else {
+ 283   4                      g_Device.target_clean_days -= days_passed;
+ 284   4                  }
+ 285   3      
+ 286   3                  /*
+ 287   3                   * ÌìÊý¸ÄÎª16Î»ºó£¬ÈÔ°´32Î»ÃëÊýÍÆ½ø»ù×¼£»
+ 288   3                   * Ö»ÍÆ½øÒÑ¾­¿Û³ýµÄÕûÌì£¬±£Áô²»×ãÒ»ÌìµÄÓàÁ¿¡£
+ 289   3                   */
+ 290   3                  g_Device.last_clean_timestamp +=
+ 291   3                      (unsigned long)days_passed * 86400UL;
+ 292   3      
+ 293   3                  HAL_EEPROM_Save_AllData();
+ 294   3                  App_Wifi_CleanDaysSubmit();
+ 295   3              }
+ 296   2          }
+ 297   1      
+ 298   1          if (g_Device.target_filter_days > 0 &&
+ 299   1              g_Device.current_unix_time > 0UL &&
+ 300   1              g_Device.last_filter_timestamp > 0UL) {
+ 301   2      
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 6   
+
+ 302   2              /* ÂËÐ¾¶ÀÁ¢¼ÆËã£¬Ê¹ÓÃ×ÔÉí»ù×¼£¬±ÜÃâÑØÓÃÇåÏ´½á¹ûÎó¿ÛÌìÊý¡£ */
+ 303   2              days_passed = App_Consumable_DaysPassed(
+ 304   2                  g_Device.current_unix_time,
+ 305   2                  g_Device.last_filter_timestamp);
+ 306   2      
+ 307   2              /* ¹²ÓÃº¯ÊýÒÑÍê³É·¶Î§¹ýÂË£¬·Ç0½á¹û²ÅÖ´ÐÐÔ­¿Û¼õÁ÷³Ì¡£ */
+ 308   2              if (days_passed != 0U) {
+ 309   3                  if (days_passed >= g_Device.target_filter_days) {
+ 310   4                      g_Device.target_filter_days = 0;
+ 311   4                      g_Device.req_filter_alarm = 1;
+ 312   4                  } else {
+ 313   4                      g_Device.target_filter_days -= days_passed;
+ 314   4                  }
+ 315   3      
+ 316   3                  /* °´32Î»ÃëÊýÀÛ¼ÆÂËÐ¾ÒÑ½áËãÊ±¼ä£¬±£Áô²»×ãÒ»ÌìµÄÓàÁ¿¡£ */
+ 317   3                  g_Device.last_filter_timestamp +=
+ 318   3                      (unsigned long)days_passed * 86400UL;
+ 319   3      
+ 320   3                  HAL_EEPROM_Save_AllData();
+ 321   3                  App_Wifi_FilterDaysSubmit();
+ 322   3              }
+ 323   2          }
+ 324   1      }
+ 325          
+ 326          /* STOPÑ²¼ìÖ»ÅÐ¶ÏÊÇ·ñÐèÒª½áËã£¬Êµ¼Ê¿Û¼õÈÔÓÉÔ­ÃëÈÎÎñÖ´ÐÐ¡£ */
+ 327          uint8_t App_FSM_ConsumableUpdateDue(void)
+ 328          {
+ 329   1          unsigned long now;
+ 330   1      
+ 331   1          now = g_Device.current_unix_time;
+ 332   1          if (now == 0UL) {
+ 333   2              return 0;
+ 334   2          }
+ 335   1      
+ 336   1          /*
+ 337   1           * ¸´ÓÃÓë¿Û¼õÈÎÎñÏàÍ¬µÄ¼ÆËãºÍ¹ýÂË¹æÔò£¬¼õÉÙÖØ¸´ÊµÏÖ£»
+ 338   1           * ·µ»Ø1ÈÃÖ÷³ÌÐòÍË³öSTOP£¬ÔÙÓÉÔ­ÃëÈÎÎñ¿Û¼õ¡¢±£´æºÍÉÏ±¨¡£
+ 339   1           */
+ 340   1          if (g_Device.target_clean_days > 0 &&
+ 341   1              g_Device.last_clean_timestamp > 0UL &&
+ 342   1              App_Consumable_DaysPassed(
+ 343   1                  now, g_Device.last_clean_timestamp) != 0U) {
+ 344   2              return 1;
+ 345   2          }
+ 346   1      
+ 347   1          /* ÂËÐ¾Ê¹ÓÃ¶ÀÁ¢»ù×¼¸´ÓÃÍ¬Ò»¹æÔò£¬ÂúÒ»¸öÓÐÐ§ÕûÌìºóÇëÇó»½ÐÑ¡£ */
+ 348   1          if (g_Device.target_filter_days > 0 &&
+ 349   1              g_Device.last_filter_timestamp > 0UL &&
+ 350   1              App_Consumable_DaysPassed(
+ 351   1                  now, g_Device.last_filter_timestamp) != 0U) {
+ 352   2              return 1;
+ 353   2          }
+ 354   1      
+ 355   1          return 0;
+ 356   1      }
+ 357          
+ 358          void App_FSM_Consumable_Tick_1s(void)
+ 359          {
+ 360   1          Task_Consumable_Life();
+ 361   1      }
+ 362          
+ 363          // ==========================================
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 7   
+
+ 364          // ×ÓÈÎÎñ 4£ºWiFi ÅäÍø³¬Ê±¼à²âÓë×´Ì¬¶µµ×
+ 365          // ==========================================
+ 366          static void Task_Wifi_Pairing_Check(void) {
+ 367   1          uint8_t current_wifi_state = mcu_get_wifi_work_state();
+ 368   1          
+ 369   1          // ¡¾ºËÐÄÐÞ¸´¡¿£ºÐÂÔö¶Ï¿ªÁ¬½ÓµÈ´ý±êÖ¾£¬³¹µ×¸æ±ðÓ²ÑÓÊ±Ã¤µÈ
+ 370   1          static uint8_t wait_for_disconnect = 0; 
+ 371   1      
+ 372   1          // 2. À¹½ØË«»÷È¡ÏûÅäÍø
+ 373   1          if (g_Device.user_cancelled_pairing) {
+ 374   2              if (current_wifi_state > 1 && current_wifi_state != 6) {
+ 375   3                  g_Device.user_cancelled_pairing = 0;
+ 376   3              }
+ 377   2          } 
+ 378   1      
+ 379   1          // ¡¾¹Ø¼ü·À´ô¡¿£ºÖ»Òª´¥·¢ÁËÈ«ÐÂÅäÍø£¨±»¸³ÖµÎª180£©£¬Ç¿ÖÆÀ¹½ØºóÐøµÄ 3/4 ×´Ì¬ÅÐ¾ö
+ 380   1          if (g_Device.wifi_pairing_timer_s == 180) {
+ 381   2              wait_for_disconnect = 1;
+ 382   2          }
+ 383   1      
+ 384   1          // 3. µ¹¼ÆÊ±Ö´ÐÐÓëÅÐ¶¨
+ 385   1          if (g_Device.wifi_pairing_timer_s > 0) {
+ 386   2              g_Device.wifi_pairing_timer_s--; 
+ 387   2      
+ 388   2              // ¡¾×´Ì¬»úÍÆ½ø¡¿£ºÖ»ÒªÄ£×é×´Ì¬±ä³ÉÁË·ÇÁ¬½ÓÌ¬£¨ÅäÍøÖÐ0/1/6£¬»ò¶Ï¿ª2/5£©£¬
+ 389   2              // ËµÃ÷Ä£×éÖØÆôÒÑÍê³ÉÇÒµ×²ã»º´æ×´Ì¬ÒÑ±»×îÐÂ´®¿Ú°üË¢ÐÂ£¬½â³ýÀ¹½Ø¡£
+ 390   2              if (current_wifi_state <= 2 || current_wifi_state == 5 || current_wifi_state == 6) {
+ 391   3                  wait_for_disconnect = 0;
+ 392   3              }
+ 393   2      
+ 394   2              // ×´Ì¬ 3£ºÒÑÁ¬ÉÏÂ·ÓÉÆ÷£» ×´Ì¬ 4£ºÒÑÁ¬ÉÏÂ·ÓÉÆ÷ÇÒÁ¬½Óµ½ÔÆ¶Ë
+ 395   2              if (current_wifi_state == 3 || current_wifi_state == 4) {
+ 396   3                  // ¡¾ÖÂÃüÐÞ¸´¡¿£º±ØÐëÃ÷È·¿´µ½Ä£×éÏÈ¶Ï¿ª¾ÉÁ¬½Ó£¨wait_for_disconnect == 0£©ºó£¬
+ 397   3                  // ÔÙ´ÎÁ¬ÉÏÍø£¬²ÅËãÊÇÕâÒ»´ÎµÄÅäÍøÕæÕý³É¹¦£¡
+ 398   3                  if (wait_for_disconnect == 0) {
+ 399   4                      g_Device.wifi_pairing_timer_s = 0;  
+ 400   4                      HAL_Buzzer_Beep(1); // Á¬ÔÆ³É¹¦ÌáÊ¾Òô
+ 401   4                  }
+ 402   3              }
+ 403   2              // Èç¹ûµ¹¼ÆÊ±×ÔÈ»Á÷ÊÅ¹é 0£¬ËµÃ÷ÅäÍø³¬Ê±»ò±»ÓÃ»§Ö÷¶¯È¡Ïû
+ 404   2              else if (g_Device.wifi_pairing_timer_s == 0) {
+ 405   3                  HAL_Buzzer_Beep(2); // Ê§°Ü/³¬Ê±ÌáÊ¾Òô
+ 406   3              }
+ 407   2          } else {
+ 408   2              // µ¹¼ÆÊ±·Ç¹¤×÷ÆÚ¼ä£¬±£Ö¤±êÖ¾Î»¸´Î»ÇåÁã
+ 409   2              wait_for_disconnect = 0;
+ 410   2          }
+ 411   1      }
+ 412          
+ 413          
+ 414          void App_FSM_Pairing_Tick_1s(void)
+ 415          {
+ 416   1          Task_Wifi_Pairing_Check();
+ 417   1      }
+ 418          
+ 419          
+ 420          // ¶¨ÒåÃ¿¸öÔÂµÄÌìÊý£¨Æ½Äê£©
+ 421          const unsigned char code month_days[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+ 422          
+ 423          /**
+ 424           * @brief ½«YY-MM-DD HH:MM:SS×ª»»ÎªÏà¶Ô2000ÄêµÄ×ÜÃëÊý
+ 425           * ×¢Òâ£º51µ¥Æ¬»ú³£ÊýÔËËã±ØÐë¼Ó 'ul' ºó×º·ÀÖ¹16Î»Òç³ö£¡
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 8   
+
+ 426           */
+ 427          /* ½«ÈÕÆÚ×ª»»ÎªÏà¶Ô2000ÄêµÄÃëÊý£¬ÑØÓÃÔ­½Ó¿ÚºÍÊ±¼ä»ù×¼¡£ */
+ 428          unsigned long Convert_To_Relative_Sec(
+ 429              unsigned char year_since_2000,
+ 430              unsigned char month, unsigned char day,
+ 431              unsigned char hour, unsigned char minute, unsigned char second)
+ 432          {
+ 433   1          unsigned long days;
+ 434   1          unsigned char leap_years;
+ 435   1          unsigned char i;
+ 436   1      
+ 437   1          /* Ö±½Ó¼ÆËã´ËÇ°ÕûÄêµÄÈòÄêÊý£¬´úÌæÔ­À´µÄÖðÄêÀÛ¼ÆÑ­»·¡£ */
+ 438   1          leap_years =
+ 439   1              (unsigned char)((year_since_2000 + 3U) / 4U);
+ 440   1      
+ 441   1          /*
+ 442   1           * 8Î»Äê·Ý¸²¸Ç2000¡«2255£¬2100¡¢2200ÎªÆ½Äê¡£
+ 443   1           * ÑÏ¸ñ´óÓÚ100/200Ê±£¬²Å¿Û³ýÒÑ¾­½áÊøµÄ¶ÔÓ¦ÊÀ¼ÍÄê¡£
+ 444   1           */
+ 445   1          if (year_since_2000 > 100U) {
+ 446   2              leap_years--;
+ 447   2          }
+ 448   1          if (year_since_2000 > 200U) {
+ 449   2              leap_years--;
+ 450   2          }
+ 451   1      
+ 452   1          /* °´32Î»¼ÆËãÕûÄêÌìÊý£¬±ÜÃâÄê·Ý³Ë365³¬³ö16Î»·¶Î§¡£ */
+ 453   1          days =
+ 454   1              (unsigned long)year_since_2000 * 365UL + leap_years;
+ 455   1      
+ 456   1          for (i = 0; i < month - 1; i++) {
+ 457   2              days += month_days[i];
+ 458   2          }
+ 459   1      
+ 460   1          /*
+ 461   1           * µ±Ç°Äê·ÝµÄ2ÔÂ²¹³¥¶ÀÁ¢´¦Àí£º
+ 462   1           * ÔÚÏÖÓÐÄê·Ý·¶Î§ÄÚ£¬Ö±½ÓÅÅ³ý2100¡¢2200£¬Ìæ´úÊÀ¼ÍÈ¡Ä£ÅÐ¶Ï¡£
+ 463   1           */
+ 464   1          if (month > 2U &&
+ 465   1              (year_since_2000 & 3U) == 0U &&
+ 466   1              year_since_2000 != 100U &&
+ 467   1              year_since_2000 != 200U) {
+ 468   2              days++;
+ 469   2          }
+ 470   1      
+ 471   1          days += (day - 1);
+ 472   1      
+ 473   1          return (days * 86400UL) +
+ 474   1                 ((unsigned long)hour * 3600UL) +
+ 475   1                 ((unsigned long)minute * 60UL) + second;
+ 476   1      }
+ 477          
+ 478          /* Ã¿100ms¹éÄÉ³äµç×´Ì¬£¬±¾µØÏÔÊ¾ÓëºóÐøAPPÉÏ±¨¹²ÓÃ¡£ */
+ 479          static void Task_ChargeState(uint8_t typec_present)
+ 480          {
+ 481   1          if (!typec_present) {
+ 482   2              s_charge_state = APP_CHARGE_NONE;
+ 483   2              return; /* °ÎµçÇå³ý±¾´Î³äµçÍê³É×´Ì¬¡£ */
+ 484   2          }
+ 485   1      
+ 486   1          s_charge_state = APP_CHARGE_UNKNOWN;
+ 487   1      
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 9   
+
+ 488   1          if ((g_Device.power_mode != POWER_AC) ||
+ 489   1              (g_sc89601_init_result != SC89601_OK) ||
+ 490   1              (g_sc89601_poll_result != SC89601_OK) ||
+ 491   1              ((g_sc89601_snapshot.fault_current &
+ 492   1                APP_CHARGE_FAULT_MASK) != 0U)) {
+ 493   2              return; /* ¹©µç´ýÈ·ÈÏ¡¢¿ìÕÕÎÞÐ§»òÖ÷Òª¹ÊÕÏÊ±²»±¨¸æÍê³É¡£ */
+ 494   2          }
+ 495   1      
+ 496   1          switch (g_sc89601_snapshot.charge_status) {
+ 497   2              case 0U:
+ 498   2                  s_charge_state = APP_CHARGE_NONE;
+ 499   2                  break;
+ 500   2      
+ 501   2              case 1U:
+ 502   2              case 2U:
+ 503   2                  s_charge_state = APP_CHARGE_ACTIVE;
+ 504   2                  break;
+ 505   2      
+ 506   2              case 3U:
+ 507   2                  s_charge_state =
+ 508   2                      (g_sc89601_snapshot.reg[SC89601_REG_STAT2] &
+ 509   2                       APP_CHARGE_TOP_OFF_ACTIVE) ?
+ 510   2                      APP_CHARGE_ACTIVE : APP_CHARGE_DONE;
+ 511   2                  break; /* ²¹³ä³äµç½øÐÐÆÚ¼äÈÔ¹éÎª³äµçÖÐ¡£ */
+ 512   2      
+ 513   2              default:
+ 514   2                  break; /* ±£³ÖÎ´È·ÈÏ¡£ */
+ 515   2          }
+ 516   1      }
+ 517          
+ 518          /* ¶ÁÈ¡Í³Ò»×´Ì¬£¬²»´¥·¢¶îÍâI2C·ÃÎÊ¡£ */
+ 519          uint8_t App_FSM_GetChargeState(void)
+ 520          {
+ 521   1          return s_charge_state;
+ 522   1      }
+ 523          
+ 524          // ==========================================
+ 525          // ºËÐÄÒµÎñ´óÄÔ (°þÀëÁËËùÓÐµÄ UI äÖÈ¾£¬Ö»×öÂß¼­ÓëÍâÉèÖ´ÐÐ)
+ 526          // ==========================================
+ 527          void App_FSM_Run(void) {
+ 528   1          static uint8_t uvc_cooling_flag = 0; 
+ 529   1          static uint8_t bat_debounce = 0;    
+ 530   1         
+ 531   1          // ¡¾ÐÂÔö¡¿£ºÓÃÓÚÒºÎ»»Ö¸´µÄÂýËÙÊÍ·Å¼ÆÊýÆ÷
+ 532   1          static uint8_t empty_stable_cnt = 0; // È±Ë®´¥·¢¼ÆÊ±Æ÷
+ 533   1          static uint8_t full_stable_cnt = 0;  // ÂúË®»Ö¸´¼ÆÊ±Æ÷
+ 534   1            static uint8_t water_stable_full = 0; // ¡¾ÐÂÔö¡¿£ºÍâÉè¿ªÆôµÄÎïÀíÔÊÐí±êÖ¾ (0:½ûÖ¹¿ªÆô, 1:ÔÊÐí¿ªÆô)
+ 535   1          uint8_t hardware_empty;
+ 536   1        
+ 537   1          // ==========================================
+ 538   1          // ¡¾ÐÂÔö¡¿£ºP02ÓëTM1650µÄÂË²¨Óë×´Ì¬¿ØÖÆ±äÁ¿
+ 539   1          // ==========================================
+ 540   1          static uint8_t p02_low_cnt = 0;
+ 541   1          static uint8_t p02_high_cnt = 0;
+ 542   1          
+ 543   1          static uint8_t tm1650_init_done = 0; // TM1650 µ¥´Î³õÊ¼»¯Ëø (0:Î´³õÊ¼»¯, 1:ÒÑÍê³É)
+ 544   1          static uint8_t tm1650_delay_cnt = 0; // TM1650 1ÃëÑÓÊ±¼ÆÊýÆ÷
+ 545   1        
+ 546   1          // ==========================================
+ 547   1          // 1. ´«¸ÐÆ÷¸ÐÖª²ã (¸üÐÂÊý¾Ý×ÜÏß)
+ 548   1          // ==========================================
+ 549   1          g_Device.sys_voltage_mv = HAL_ADC_Get_SystemVoltage_mV();
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 10  
+
+ 550   1          g_Device.water_quality  = HAL_ADC_Get_WaterQuality();
+ 551   1          /* ±¾ÂÖ¹©µçÓëÏÔÊ¾³õÊ¼»¯¹²ÓÃÍ¬Ò»¸ö²åµç×´Ì¬¡£ */
+ 552   1          typec_present = HAL_Power_TypeCIsPresent();
+ 553   1          // ==========================================
+ 554   1          // ¡¾ÐÂÔö¡¿£ºP02 ¹©µç¿ØÖÆÓëË«ÏòÂË²¨ (Ã¿ 100ms ½øÀ´Ò»´Î)½â¾öµÍµçÁ¿ÎÞ·¨³äµçÎÊÌâ
+ 555   1          // ==========================================
+ 556   1            if (typec_present) {
+ 557   2                p02_low_cnt = 0;
+ 558   2                p02_high_cnt = 0;
+ 559   2      
+ 560   2                if (P00 == 0) {
+ 561   3                    P00 = 1; /* ²åµçºó»Ö¸´ÍâÉè¹©µç£¬²»µÈ´ýµç³ØµçÑ¹»ØÉý¡£ */
+ 562   3                    tm1650_init_done = 0; /* ÖØÐÂÉÏµçºóÖØÐÂ³õÊ¼»¯ÏÔÊ¾¡£ */
+ 563   3                    tm1650_delay_cnt = 0;
+ 564   3      
+ 565   3                    App_Cloud_Sync_Reset(); /* ±£ÁôÔ­ÓÐP00ÉÏµçºóµÄÍ¬²½´¦Àí¡£ */
+ 566   3                }
+ 567   2            }
+ 568   1            else if (App_FSM_BatteryShutdownActive()) {
+ 569   2                p02_low_cnt = 0;
+ 570   2                p02_high_cnt = 0;
+ 571   2      
+ 572   2                if (P00 != 0) {
+ 573   3                    HAL_TM1650_PowerOff();
+ 574   3                    P00 = 0; /* ±£»¤¹Ø»úºó³ÖÐø¶Ï¹©£¬½ûÖ¹»Øµ¯ÖØÐÂ´ò¿ª¡£ */
+ 575   3                }
+ 576   2            }
+ 577   1            else if ((g_Device.sys_voltage_mv != 0U) &&
+ 578   1                     (g_Device.sys_voltage_mv < APP_BAT_SHUTDOWN_MV)) {
+ 579   2                p02_high_cnt = 0;
+ 580   2      
+ 581   2                if (p02_low_cnt < APP_BAT_SHUTDOWN_TICKS) {
+ 582   3                    p02_low_cnt++;
+ 583   3                }
+ 584   2      
+ 585   2                if (p02_low_cnt >= APP_BAT_SHUTDOWN_TICKS) {
+ 586   3                    s_bat_pump_state = APP_BAT_PUMP_SHUTDOWN;
+ 587   3                    s_bat_shutdown_left_s = 0; /* ÑÏÖØµÍÑ¹ÓÅÏÈ£¬ÌáÇ°½áÊøÌáÊ¾ÆÚ¡£ */
+ 588   3      
+ 589   3                    if (P00 != 0) {
+ 590   4                        HAL_TM1650_PowerOff();
+ 591   4                        P00 = 0;
+ 592   4                    }
+ 593   3                }
+ 594   2            } 
+ 595   1          else if (g_Device.sys_voltage_mv > 3400) {
+ 596   2              p02_low_cnt = 0; // Ö»ÒªµçÑ¹»ØÉý£¬Á¢¿Ì´ò¶ÏµÍÑ¹¶Ïµç¼ÆÊ±
+ 597   2              if (p02_high_cnt < 25) {
+ 598   3                  p02_high_cnt++;
+ 599   3              } else {
+ 600   3                  if (P00 == 0) { // Ôö¼Ó±ßÑØËø´æ£¬È·±£Ö»ÔÚ»Ö¸´¹©µçµÄË²¼äÖ´ÐÐÒ»´Î
+ 601   4                      P00 = 1; 
+ 602   4                      App_Cloud_Sync_Reset();// WIFIÄ£×é¸Õ¸Õ±»ÖØÐÂÉÏµç£¬Ç¿ÖÆ MCU Çå³ýËùÓÐÔÆ¶ËÍ¬²½µÄ¾É¼ÇÒä
+ 603   4                    
+ 604   4      //              // ¡¾ÐÂÔö¡¿£ºÍâÉè»Ö¸´¹©µçÌáÊ¾Òô (Êµ¼Ê·¢Éù 800ms)
+ 605   4      //                HAL_Buzzer_Beep_3s(); 
+ 606   4                  }
+ 607   3              }
+ 608   2          } 
+ 609   1          else {
+ 610   2              // [³ÙÖÍËÀÇø]£ºµçÑ¹ÂäÔÚ 3350 ~ 3400 Ö®¼ä¡£
+ 611   2              // ÇåÁãËùÓÐ¼ÆÊ±Æ÷£¬Ê²Ã´¶¼²»×ö£¬ËÀËÀÎ¬³Ö P02 µ±Ç°µÄ×´Ì¬¡£          
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 11  
+
+ 612   2      
+ 613   2              p02_low_cnt = 0;
+ 614   2              p02_high_cnt = 0;
+ 615   2          }
+ 616   1          
+ 617   1          // --- 2. TM1650 ÑÓÊ±µ¥´Î³õÊ¼»¯ (¾ø¶ÔÒÀÀµ P02 ÎïÀí¹©µç) ---
+ 618   1            if (P00 == 0) {
+ 619   2                tm1650_init_done = 0;
+ 620   2                tm1650_delay_cnt = 0;
+ 621   2            }
+ 622   1            else if (typec_present ||
+ 623   1                     g_Device.sys_voltage_mv > 3400U) {
+ 624   2                /* ²åµçÊ±ÔÊÐíµÍµç³Ø×´Ì¬³õÊ¼»¯ÏÔÊ¾¡£ */
+ 625   2                if (tm1650_init_done == 0) {
+ 626   3                    if (tm1650_delay_cnt <
+ 627   3                        (typec_present ? 2U : 10U)) {
+ 628   4                        /* ÍâµçµÈ´ýÔ¼200ms£»µç³Ø»Ö¸´ÑØÓÃÔ¼1Ãë¡£ */
+ 629   4                        tm1650_delay_cnt++;
+ 630   4                    } else {
+ 631   4                        HAL_TM1650_Init();
+ 632   4                        tm1650_init_done = 1;
+ 633   4                    }
+ 634   3                }
+ 635   2            }
+ 636   1            else {
+ 637   2                tm1650_delay_cnt = 0;
+ 638   2            }
+ 639   1          
+ 640   1        // ¡¾ºËÐÄÖØ¹¹¡¿£º²»¶Ô³ÆÏû¶¶´¦ÀíÒºÎ»Ìø¶¯
+ 641   1          hardware_empty = HAL_ADC_Get_IsEmpty();
+ 642   1          
+ 643   1          // ¡¾ºËÐÄÖØ¹¹£ºË«ÏòÏû¶¶¡¿
+ 644   1          if (hardware_empty) {
+ 645   2              // --- ÎïÀí²ãÕýÔÚÈ±Ë®»ò»Î¶¯ ---
+ 646   2                    water_stable_full = 0; // ¡¾ºËÐÄÐÞ¸Ä¡¿£ºÖ»Òª¼ì²âµ½È±Ë®(ÄÄÅÂÒ»Ë²¼ä)£¬Á¢¿Ì°þ¶áÍâÉè¿ªÆôÈ¨ÏÞ£¡
+ 647   2              full_stable_cnt = 0; // Ö»Òª»ÎÒ»ÏÂ£¬Á¢¿Ì´ò¶Ï¡°ÂúË®»Ö¸´¡±£¬ËÀËÀÎ¬³ÖÈ±Ë®Ì¬£¡£¨ÊµÏÖÄãµÄÏë·¨£©
+ 648   2              
+ 649   2              if (empty_stable_cnt < 10) {
+ 650   3                  empty_stable_cnt++;
+ 651   3              } else {
+ 652   3                  g_Device.is_empty = 1; // Á¬Ðø 2 ÃëÕæÈ±Ë®£¨²»ÊÇÐ¡²¨ÎÆ£©£¬²ÅÕýÊ½Í¨ÖªÈ«ÏµÍ³
+ 653   3              }
+ 654   2          } else {
+ 655   2              // --- ÎïÀí²ãÕýÔÚÂúË® ---
+ 656   2              empty_stable_cnt = 0; // Ö»ÒªÓÐË®£¬Á¢¿Ì´ò¶Ï¡°È±Ë®´¥·¢¡±£¬±£»¤±êÖ¾Î»²»±»ÎóÉ±£¡
+ 657   2              
+ 658   2              if (full_stable_cnt < 10) {
+ 659   3                  full_stable_cnt++;
+ 660   3              } else {
+ 661   3                            water_stable_full = 1; // ¡¾ºËÐÄÐÞ¸Ä¡¿£ºÁ¬Ðø2ÃëºÁÎÞ²¨ÎÆ£¬²ÅÕæÕýÔÊÐíÍâÉèÆô¶¯
+ 662   3                  g_Device.is_empty = 0; // Á¬Ðø 2 ÃëºÁÎÞ²¨ÎÆ£¬²ÅÔÊÐíË®±Ã»Ö¸´
+ 663   3              }
+ 664   2          }
+ 665   1          
+ 666   1              // ==========================================
+ 667   1          // ¡¾ÐÂÔö¡¿£ºÈ±Ë®µÆ¼«ËÙÏìÓ¦ÓëËø´æÂß¼­
+ 668   1          // ==========================================
+ 669   1          // 1. Ö»ÒªÎïÀí²ã¼ì²âµ½È±Ë®£¨»òË®Ãæ»Î¶¯£©£¬Á¢¿ÌµãÁÁÈ±Ë®µÆ£¨ÎÞÑÓ³Ù£©
+ 670   1          if (hardware_empty) {
+ 671   2              g_ui_water_empty = 1; 
+ 672   2          } 
+ 673   1          // 2. Ö»ÓÐµ±Ë®ÃæÁ¬ÐøÎÈ¶¨¸ßË®Î»£¨Á¬Ðø2ÃëºÁÎÞ²¨ÎÆ£©Ê±£¬²ÅÏ¨ÃðÈ±Ë®µÆ
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 12  
+
+ 674   1          else if (water_stable_full) {
+ 675   2              g_ui_water_empty = 0;
+ 676   2          }
+ 677   1          
+ 678   1          // ¹©µçÅÐ¶¨ÓÉ TYPC_ADC Êµ¼ÊÊäÈëµçÑ¹¾ö¶¨
+ 679   1          if (!HAL_Power_TypeCIsPresent()) {
+ 680   2              if (bat_debounce < 5) bat_debounce++;
+ 681   2          } else {
+ 682   2              if (bat_debounce > 0) bat_debounce--;
+ 683   2          }
+ 684   1      
+ 685   1          if (bat_debounce >= 3) {
+ 686   2              g_Device.power_mode = POWER_BATTERY;
+ 687   2              // µç³ØÄ£Ê½ÏÂÇ¿ÖÆ°þ¶á´ó¹¦ÂÊÍâÉèÈ¨ÏÞ
+ 688   2              g_Device.heating_enabled = 0;
+ 689   2              g_Device.uvc_armed = 0;
+ 690   2              g_Device.timer_uvc_s = 0; 
+ 691   2            
+ 692   2            // ¡¾ºËÐÄÐÞ¸´¡¿£ºÇ¿ÖÆÍ¬²½Ä¿±êÄ£Ê½£¬ÐÞÕý UI äÖÈ¾£¬²¢»½ÐÑÆÁÄ»ÏÔÊ¾
+ 693   2              if (g_Device.target_work_mode != 0) {
+ 694   3                  g_Device.target_work_mode = 0; 
+ 695   3                  g_Device.display_timer_s = 10; // »½ÐÑÆÁÄ»10Ãë£¬Ö±¹ÛÌáÊ¾ÓÃ»§ÒÑ½µ¼¶µ½¸ÐÓ¦Ä£Ê½
+ 696   3              }
+ 697   2              
+ 698   2              if (g_Device.state == STATE_CONTINUOUS) {
+ 699   3                  // ¡¾Ë¿»¬ÐÞ¸´¡¿£º¶Ïµç½µ¼¶Ê±£¬Í¬Ñù×¢ÈëÑÓÊ±Æ½»¬¹ý¶É
+ 700   3                  g_Device.state = STATE_SENSING;
+ 701   3                  g_Device.timer_pump_s = 8; 
+ 702   3              }
+ 703   2          } else {
+ 704   2              g_Device.power_mode = POWER_AC;
+ 705   2          }
+ 706   1          /* Ê¹ÓÃÒÑ¾­È·ÈÏµÄ¹©µçÄ£Ê½¸üÐÂÍ£±Ã±£»¤¡£ */
+ 707   1          Task_Battery_PumpProtect(typec_present);
+ 708   1          Task_ChargeState(typec_present); /* ¹©µçÄ£Ê½¸üÐÂºó¹éÄÉ³äµç×´Ì¬¡£ */
+ 709   1          
+ 710   1          if (App_FSM_BatteryShutdownActive()) {
+ 711   2          g_Device.state = STATE_OFF;
+ 712   2          g_Device.target_work_mode = 0;
+ 713   2          g_Device.ir_triggered = 0;
+ 714   2      
+ 715   2          /* ¶ªÆú²Ù×÷ÇëÇó£¬±ÜÃâ±£»¤¹Ø»úºóÖØÐÂ¿ªÆô¡£ */
+ 716   2          g_Device.req_power_toggle = 0;
+ 717   2          g_Device.req_mode_toggle = 0;
+ 718   2          g_Device.req_heating = 0;
+ 719   2          g_Device.req_uvc = 0;
+ 720   2          g_Device.req_wifi_reset = 0;
+ 721   2          g_Device.req_cancel_pairing = 0;
+ 722   2      
+ 723   2          g_Device.timer_pump_s = 0;
+ 724   2          g_Device.timer_uvc_s = 0;
+ 725   2          g_Device.display_timer_s = 0;
+ 726   2          g_Device.wifi_pairing_timer_s = 0;
+ 727   2          g_Device.heating_enabled = 0;
+ 728   2          g_Device.uvc_armed = 0;
+ 729   2      
+ 730   2          HAL_PWM_Pump_Stop();
+ 731   2          HAL_PWM_Heating_Stop();
+ 732   2          HAL_UVCING_Stop();
+ 733   2          return; /* ±¾ÂÖ²»ÔÙÖ´ÐÐºóÐøÒµÎñ¡£ */
+ 734   2          }
+ 735   1          // ==========================================
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 13  
+
+ 736   1          // À¹½ØË«»÷È¡ÏûÅäÍø
+ 737   1          // ==========================================
+ 738   1          if (g_Device.req_cancel_pairing) {
+ 739   2              g_Device.req_cancel_pairing = 0;
+ 740   2              
+ 741   2              // ¡¾ºËÐÄÐÞ¸´¡¿£º±ê¼ÇÎªÓÃ»§Ö÷¶¯È¡Ïû£¬·ÀÖ¹±»1ÃëÈÎÎñ¶µµ×¸´»î
+ 742   2              g_Device.user_cancelled_pairing = 1; 
+ 743   2              
+ 744   2            // 2. ¡¾ºËÐÄÐÞ¸´¡¿£º±ØÐëÁ¢¿ÌÇåÁãÅäÍøµ¹¼ÆÊ±£¬³¹µ×ÊÍ·Å¶Ô UI µÆ¹âµÄ°ÔÕ¼£¡
+ 745   2              g_Device.wifi_pairing_timer_s = 0;
+ 746   2            
+ 747   2              // ¡¾±ØÐëÉ¾³ý¡¿£ºmcu_reset_wifi(); 
+ 748   2              // Ô­Òò£ºÍ¿Ñ»SDKÃ»ÓÐÍË³öÅäÍøÖ¸Áî£¬·¢Õâ¸ö»áÈÃÄ£×éÖØÐÂ½øÈëÅäÍø£¬µ¼ÖÂAPPÒ»Ö±ÏÔÊ¾¿ÉÅäÍø¡£
+ 749   2              // ÈÃÄ£×é×Ô¼ºÅÜÍêÄÚ²¿µÄ3·ÖÖÓ³¬Ê±¼´¿É¡£
+ 750   2          }
+ 751   1          
+ 752   1          // ==========================================
+ 753   1          // 2. ×î¸ßÖ¸Áî (´¦Àí³¤°´¿ª¹Ø»ú)
+ 754   1          // ==========================================
+ 755   1          if (g_Device.req_power_toggle) {
+ 756   2              g_Device.req_power_toggle = 0;
+ 757   2              HAL_Buzzer_Beep_3s(); 
+ 758   2              
+ 759   2              if (g_Device.state == STATE_OFF) {
+ 760   3                  g_Device.state = STATE_IDLE; 
+ 761   3                  g_Device.display_timer_s = 10; 
+ 762   3                  g_Device.target_work_mode = 0; // ¿ª»úÄ¬ÈÏ»Øµ½¸ÐÓ¦Ä£Ê½
+ 763   3              } else {
+ 764   3                  App_FSM_Init(); // ¹Ø»úÖØÖÃÄÚ²¿×´Ì¬
+ 765   3              }
+ 766   2          }
+ 767   1      
+ 768   1          // ==========================================
+ 769   1          // ÉúËÀØü¹Ø (È±Ë®Ç¿ÖÆ±£»¤À¹½Ø)
+ 770   1          // ==========================================
+ 771   1          if (g_Device.state != STATE_OFF) {
+ 772   2              if (g_Device.is_empty) {
+ 773   3                  if (g_Device.state != STATE_ERROR) {
+ 774   4                      g_Device.state = STATE_ERROR;
+ 775   4                      
+ 776   4                      // ¡¾Âú×ãÄãµÄËßÇóB¡¿£º·¢ÉúÁËÁ¬Ðø 2 ÃëµÄÕæÈ±Ë®£¬¹û¶ÏÇå¿ÕËùÓÐ´ó¹¦ÂÊÒâÍ¼£¡
+ 777   4                      g_Device.heating_enabled = 0;
+ 778   4                      g_Device.uvc_armed = 0;
+ 779   4                      g_Device.timer_uvc_s = 0;
+ 780   4                      g_Device.timer_pump_s = 0;
+ 781   4                  }
+ 782   3              } else if (g_Device.state == STATE_ERROR) {
+ 783   3                  // ÍË³öÈ±Ë®Ì¬£ºË®ÒÑ¾­¼ÓÂú£¬²¢ÇÒË®ÃæÁ¬Ðø 2 ÃëºÁÎÞ²¨ÎÆ¡£
+ 784   3                  // ´ËÊ±¼ÓÈÈºÍÉ±¾ú´¦ÓÚ 0 ×´Ì¬£¬²»»á·¢Éú¼ÓË®Ë²¼äÃÍÈ»¼ÓÈÈµÄÌÌÉË·çÏÕ£¬±ØÐëµÈÓÃ»§È¥APP»ò°´¼üÖ÷¶¯¿ªÆ
+             -ô¡£
+ 785   3                  
+ 786   3                  // ¸ù¾Ý¼ÇÒäµÄÄ¿±êÄ£Ê½ºÍµ±Ç°µÄ¹©µç»·¾³£¬°²È«µØ»Ö¸´Ë®±ÃÔËÐÐ£º
+ 787   3                  if (g_Device.target_work_mode == 1 && g_Device.power_mode == POWER_AC) {
+ 788   4                      // Èç¹ûÖ®Ç°ÊÇ³ÖÐø³öË®£¬ÇÒ²å×ÅµçÔ´£¬Ö±½Ó»Ö¸´³¤Á÷Ë®
+ 789   4                      g_Device.state = STATE_CONTINUOUS;
+ 790   4                      App_FSM_PumpStartIfReady(); 
+ 791   4                  } else {
+ 792   4                      // ·ñÔò£¨°üÀ¨µç³ØÄ£Ê½Ç¿ÖÆ½µ¼¶£¬»òÕß±¾À´¾ÍÊÇ¸ÐÓ¦Ä£Ê½£©£¬ÍË»Øµ½´ý»ú¸ÐÓ¦Ì¬
+ 793   4                      g_Device.state = STATE_IDLE;
+ 794   4                      g_Device.target_work_mode = 0; 
+ 795   4                  }
+ 796   3              }
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 14  
+
+ 797   2          }
+ 798   1          // ==========================================
+ 799   1          // 4. ´«¸ÐÆ÷Áª¶¯Âß¼­ (ºìÍâ»½ÐÑ)
+ 800   1          // ==========================================
+ 801   1          if (g_Device.state != STATE_OFF && g_Device.state != STATE_ERROR) {
+ 802   2              if (g_Device.ir_triggered) {
+ 803   3                  g_Device.timer_pump_s = 12; //1. Î¬³ÖÔ­±¾µÄË®±Ã¸ÐÓ¦¹¤×÷ 15s ÒòÎªºìÍâ5sËø¶¨´¥·¢ËùÒÔÕâÀï²ÎÊý+7s/
+             -/Ò»Ìå°åºìÍâ3s£¬g_Device.timer_pump_sËø¶¨¸ÄÎª12s
+ 804   3                  if (g_Device.uvc_armed) {
+ 805   4                      g_Device.timer_uvc_s = 590; // 2. ¡¾ºËÐÄÐÞ¸Ä¡¿£ºÈç¹ûÔÚÉ±¾ú¿ªÆô×´Ì¬ÏÂ¸ÐÓ¦µ½ÎïÌå£¬µãÁÁ/ÖØÖÃÉ
+             -±¾úµÆ 10 ·ÖÖÓ£¬ÐÞ¸ÄÎª590sÊµ²â£¬ÒòÎª×´Ì¬»úµÄµ÷¶ÈÑÓ³ÙÊ±¼ä»áÓÐÑÓ³¤Îó²î
+ 806   4                  }
+ 807   3              }
+ 808   2          }
+ 809   1      /* µç³ØµÍµçÁ¿Ê±È¡Ïû³öË®¼ÆÊ±£¬±ÜÃâºìÍâ´¥·¢»ò¾Éµ¹¼ÆÊ±¼ÌÐøÇý¶¯Ë®±Ã¡£ */
+ 810   1      if (!App_FSM_BatteryPumpAllowed()) {
+ 811   2          g_Device.timer_pump_s = 0; /* ½ûÖ¹¾É¼ÆÊ±»òºìÍâÇëÇó¼ÌÐøÇý¶¯Ë®±Ã¡£ */
+ 812   2      }
+ 813   1          // ==========================================
+ 814   1          // 5. ºËÐÄÒµÎñÁ÷×ª (Ë®±Ã¿ØÖÆ)
+ 815   1          // ==========================================
+ 816   1          switch (g_Device.state) {
+ 817   2              case STATE_OFF:
+ 818   2              case STATE_ERROR:
+ 819   2                  /* ¹Ø»ú»òÈ±Ë®Ê±Ö»ÇÐ»»Ä£Ê½ÒâÍ¼£¬±¾·ÖÖ§²»Æô¶¯Ë®±Ã¡£ */
+ 820   2                  if (g_Device.req_mode_toggle) {
+ 821   3                      g_Device.req_mode_toggle = 0;
+ 822   3      
+ 823   3                      if (g_Device.target_work_mode == 0) {
+ 824   4                          if (g_Device.power_mode == POWER_AC) {
+ 825   5                              g_Device.target_work_mode = 1;
+ 826   5                          }
+ 827   4                      } else {
+ 828   4                          g_Device.target_work_mode = 0;
+ 829   4                      }
+ 830   3      
+ 831   3                      /* ÈýÌõÂ·¾¶¶¼ÌáÊ¾Ò»´Î£¬ºÏ²¢µ÷ÓÃ²¢±£ÁôÔ­Ö´ÐÐÎ»ÖÃ¡£ */
+ 832   3                      HAL_Buzzer_Beep(1);
+ 833   3                      g_Device.display_timer_s = 10;
+ 834   3                  }
+ 835   2                  break;
+ 836   2      
+ 837   2              case STATE_IDLE:
+ 838   2              case STATE_SENSING:
+ 839   2                  // ´¿ÒÀ¿¿ timer_pump_s Î¬»¤ÔËÐÐ
+ 840   2                  if (g_Device.timer_pump_s > 0) {
+ 841   3                      if (g_Device.state == STATE_IDLE) {
+ 842   4                          g_Device.state = STATE_SENSING;
+ 843   4                          App_FSM_PumpStartIfReady();
+ 844   4                      }
+ 845   3                  } else {
+ 846   3                      if (g_Device.state == STATE_SENSING) {
+ 847   4                          g_Device.state = STATE_IDLE;
+ 848   4                          HAL_PWM_Pump_Stop();
+ 849   4                      }
+ 850   3                  }
+ 851   2                  
+ 852   2                  // µ¥»÷ÇÐ»»µ½³ÖÐøÄ£Ê½
+ 853   2                  if (g_Device.req_mode_toggle) {
+ 854   3                      g_Device.req_mode_toggle = 0;
+ 855   3                      HAL_Buzzer_Beep(1); 
+ 856   3                      if (g_Device.power_mode == POWER_AC) {
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 15  
+
+ 857   4                          g_Device.state = STATE_CONTINUOUS;
+ 858   4                          g_Device.target_work_mode = 1; 
+ 859   4                          App_FSM_PumpStartIfReady();
+ 860   4                      } 
+ 861   3                      g_Device.display_timer_s = 10; 
+ 862   3                  }
+ 863   2                  break;
+ 864   2      
+ 865   2              case STATE_CONTINUOUS:
+ 866   2                  // ÔÙ´Îµ¥»÷ÍË³ö³ÖÐøÄ£Ê½
+ 867   2                  if (g_Device.req_mode_toggle) {
+ 868   3                      g_Device.req_mode_toggle = 0;
+ 869   3                      HAL_Buzzer_Beep(1);
+ 870   3                      
+ 871   3                      // ¡¾Ë¿»¬ÐÞ¸´¡¿£ºÎÞÊÓµ±Ç°µ¹¼ÆÊ±£¬Ç¿ÖÆ×¢Èë 8 ÃëÑÓÊ±£¬Æ½»¬ÇÐÈë¸ÐÓ¦Ì¬
+ 872   3                      g_Device.state = STATE_SENSING; 
+ 873   3                      g_Device.timer_pump_s = 8; // ºËÐÄ£º±£³ÖË®±ÃÔËÐÐ£¬½»ÓÉºìÍâ½Ó¹Ü
+ 874   3                      
+ 875   3                      g_Device.target_work_mode = 0; // ¡¾ÐÞ¸´¡¿£º²¹È«½á¹¹ÌåÇ°×º
+ 876   3                      g_Device.display_timer_s = 10;
+ 877   3                  }
+ 878   2                  break;
+ 879   2          }
+ 880   1      
+ 881   1          // ==========================================
+ 882   1          // 6. ¸¨Öú°´¼ü¿ØÖÆÂß¼­ (¼ÓÈÈÓëUVC)
+ 883   1          // ==========================================
+ 884   1          if (g_Device.state != STATE_OFF) {  
+ 885   2              if (g_Device.req_heating) {
+ 886   3                  g_Device.req_heating = 0;
+ 887   3                  if (g_Device.power_mode == POWER_AC && !g_Device.is_empty) {
+ 888   4                      g_Device.heating_enabled = !g_Device.heating_enabled; 
+ 889   4                  }
+ 890   3              }
+ 891   2      
+ 892   2              if (g_Device.req_uvc) {
+ 893   3                  g_Device.req_uvc = 0;
+ 894   3                  if (g_Device.power_mode == POWER_AC && !g_Device.is_empty) {
+ 895   4                      HAL_Buzzer_Beep(1); 
+ 896   4                      if (g_Device.uvc_armed) {
+ 897   5                          g_Device.uvc_armed = 0;    
+ 898   5                          g_Device.timer_uvc_s = 0;  
+ 899   5                      } else {
+ 900   5                          g_Device.uvc_armed = 1;    
+ 901   5                      }
+ 902   4                  } else {
+ 903   4                      HAL_Buzzer_Beep(1); 
+ 904   4                  }
+ 905   3              }
+ 906   2          } else {
+ 907   2              g_Device.req_heating = 0;
+ 908   2              g_Device.req_uvc = 0;
+ 909   2          }
+ 910   1      
+ 911   1          // ==========================================
+ 912   1          // 7. ÎïÀíÍâÉèÖ´ÐÐ²ã (ÍêÈ«ÓÉ×´Ì¬±äÁ¿Çý¶¯)
+ 913   1          // ==========================================
+ 914   1          if (g_Device.state != STATE_OFF) {
+ 915   2              // UVC Ö´ÐÐ
+ 916   2              if (g_Device.timer_uvc_s > 0 && water_stable_full && g_Device.is_empty == 0) {
+ 917   3                  HAL_UVCING_Start();
+ 918   3                  uvc_cooling_flag = 1; 
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 16  
+
+ 919   3              } else {
+ 920   3                  if (uvc_cooling_flag) {
+ 921   4                      HAL_UVCING_Stop();
+ 922   4                      uvc_cooling_flag = 0;
+ 923   4                      // ¡¾ÐÞ¸Ä¡¿£ºÒÆ³ý g_Device.uvc_armed = 0; 
+ 924   4                      // µ¹¼ÆÊ±½áÊøÖ»¹Ø±ÕÎïÀí×ÏÍâÏßµÆ£¬±£³Ö uvc_armed = 1¡£
+ 925   4                      // ÕâÑù UI Ö¸Ê¾µÆ»á±£³Ö³£ÁÁ£¬ÇÒÏÂ´ÎºìÍâ´¥·¢Ê±»áÔÙ´ÎµãÁÁÎïÀíµÆ¡£
+ 926   4                  }
+ 927   3              }
+ 928   2      
+ 929   2              // ¼ÓÈÈÖ´ÐÐ (´ø¹ýÎÂÀ¹½Ø)
+ 930   2              if (g_Device.heating_enabled && g_Device.power_mode == POWER_AC && !g_Device.is_empty && water_sta
+             -ble_full) {
+ 931   3                  if (cached_temperature_c > 28) {
+ 932   4                      HAL_PWM_Heating_Stop();
+ 933   4                  } else {
+ 934   4                      HAL_PWM_Heating_Start();
+ 935   4                  }
+ 936   3              } else {
+ 937   3                  HAL_PWM_Heating_Stop();
+ 938   3              }
+ 939   2              
+ 940   2              /* ¹ýÎÂ¡¢È±Ë®»òµç³ØµÍµçÁ¿Ê±£¬Ç¿ÖÆÍ£Ö¹Ë®±Ã¡£ */
+ 941   2              if ((cached_temperature_c > 37) ||
+ 942   2                  (hardware_empty != 0) ||
+ 943   2                  !App_FSM_BatteryPumpAllowed()) { /* Í£±ÃÓÉ±£»¤Ðí¿É¾ö¶¨¡£ */
+ 944   3      
+ 945   3                  HAL_PWM_Pump_Stop();
+ 946   3              } else {
+ 947   3                  /* Á½ÖÖÔËÐÐÌõ¼þ¹²ÓÃÆô±Ãµ÷ÓÃ£¬±£ÁôÔ­¶ÌÂ·ÅÐ¶ÏË³Ðò¡£ */
+ 948   3                  if ((g_Device.state == STATE_CONTINUOUS) ||
+ 949   3                      ((g_Device.state == STATE_SENSING) &&
+ 950   3                       (g_Device.timer_pump_s > 0))) {
+ 951   4                      App_FSM_PumpStartIfReady();
+ 952   4                  } else {
+ 953   4                      HAL_PWM_Pump_Stop();
+ 954   4                  }
+ 955   3              }
+ 956   2          } else {
+ 957   2              // ¹Ø»úÎïÀíÇå³¡
+ 958   2              HAL_PWM_Pump_Stop();
+ 959   2              HAL_PWM_Heating_Stop();
+ 960   2              HAL_UVCING_Stop();
+ 961   2          }
+ 962   1      }
+ 963          
+ 964          static void App_UI_SetSenseIndicators(uint8_t status)
+ 965          {
+ 966   1          /* ºÏ²¢Á½´¦ÎåµÆË¢ÐÂ´úÂë£¬±£ÁôÔ­À´µÄÖðµÆµ÷ÓÃ¼°Ë³Ðò¡£ */
+ 967   1          HAL_LED_SetStatus(LED_SENSE_IND_1, status);
+ 968   1          HAL_LED_SetStatus(LED_SENSE_IND_2, status);
+ 969   1          HAL_LED_SetStatus(LED_SENSE_IND_3, status);
+ 970   1          HAL_LED_SetStatus(LED_SENSE_IND_4, status);
+ 971   1          HAL_LED_SetStatus(LED_SENSE_IND_5, status);
+ 972   1      }
+ 973          
+ 974          // ==========================================
+ 975          // ¶ÀÁ¢ UI äÖÈ¾²ã£ºÖ»¶Á²»Ð´
+ 976          // ==========================================
+ 977          void App_UI_Refresh_Task(void) {
+ 978   1          static uint8_t blink_tick = 0;
+ 979   1          static uint8_t blink_slow = 0; 
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 17  
+
+ 980   1          uint8_t ir_led_state;
+ 981   1          static uint8_t last_typec_present = 0;
+ 982   1          uint8_t typec_present;
+ 983   1        if (App_FSM_BatteryShutdownActive()) {
+ 984   2          return; /* P00ÒÑ¹Ø±Õ£¬Í£Ö¹ÏòÏÔÊ¾Ð¾Æ¬Ë¢ÐÂ¡£ */
+ 985   2          }
+ 986   1          typec_present = HAL_Power_TypeCIsPresent();
+ 987   1      
+ 988   1          if (typec_present && !last_typec_present) {
+ 989   2              blink_tick = 0;
+ 990   2              blink_slow = 1; /* ²åµçÏÈÁÁ£¬Ëæºó°´Ô­½Ú×àÂýÉÁ¡£ */
+ 991   2          }
+ 992   1      
+ 993   1          last_typec_present = typec_present;
+ 994   1          // 100ms ÂÖÑ¯²úÉú 800ms ÂýÉÁ½ÚÅÄ
+ 995   1          if (++blink_tick >= 8) {       
+ 996   2              blink_tick = 0;
+ 997   2              blink_slow = !blink_slow;
+ 998   2          }
+ 999   1      
+1000   1          // ----------------------------------------------------
+1001   1          // 4. Wi-Fi ÅäÍø×´Ì¬¸²Ð´ 
+1002   1          // ----------------------------------------------------
+1003   1          // ¡¾ºËÐÄÐÞ¸´2¡¿£ºÍêÈ«°þÀë¶Ô mcu_get_wifi_work_state() µÄÊµÊ±ÒÀÀµ¡£
+1004   1          // Ö»ÒªÎÒÃÇµÄ 3 ·ÖÖÓµ¹¼ÆÊ±Ã»½áÊø£¨Ã»³¬Ê±Ò²Ã»±»µ¥»÷È¡Ïû£©£¬¾Í°ÔÕ¼ UI Ç¿ÖÆÉÁË¸£¡
+1005   1          // ¡¾ºËÐÄÐÞ¸´¡¿£ºÔö¼Ó g_Device.state != STATE_OFF ÅÐ¶Ï¡£
+1006   1          // ¹Ø»ú×´Ì¬ÏÂÔÆ¶Ë½â°óÒÀ¾ÉÔÊÐíÄ£×é½øÈëÅäÍø£¬µ«µ¥Æ¬»ú²»ÉÁË¸Ö¸Ê¾µÆ¡£
+1007   1          if (g_Device.wifi_pairing_timer_s > 0 && g_Device.state != STATE_OFF) {
+1008   2              
+1009   2              uint8_t net_led_status = blink_slow ? LED_ON : LED_OFF; 
+1010   2              
+1011   2              // Ç¿ÐÐ¸²¸ÇÉÏÊöËãºÃµÄÒµÎñ×´Ì¬£¬²úÉúÈ«ÅÌÉÁË¸Ð§¹û
+1012   2              HAL_LED_SetStatus(LED_NO_WATER,  net_led_status);
+1013   2              HAL_LED_SetStatus(LED_WATER_Q,   net_led_status);
+1014   2              HAL_LED_SetStatus(LED_HEATING,   net_led_status);
+1015   2              HAL_LED_SetStatus(LED_MODE_CONT, net_led_status);
+1016   2              HAL_LED_SetStatus(LED_MODE_SENSE,net_led_status);
+1017   2              
+1018   2              HAL_LED_SetStatus(LED_SW2, net_led_status);
+1019   2              HAL_LED_SetStatus(LED_SW1, net_led_status);
+1020   2              
+1021   2              return; // ´¦ÓÚÅäÍø×´Ì¬Ê±£¬°ÔÕ¼ËùÓÐµÆ¹â£¬Ìø¹ýºóÐøÒµÎñäÖÈ¾£¡
+1022   2          }
+1023   1          
+1024   1          // ----------------------------------------------------
+1025   1          // 1. ³ä·ÅµçÖ¸Ê¾ (ÓÅÏÈ¼¶×î¸ß£¬¹Ø»ú×´Ì¬ÏÂÒ²ÐèÉúÐ§)
+1026   1          // ----------------------------------------------------
+1027   1          if (g_Device.power_mode == POWER_AC) {
+1028   2              HAL_LED_SetStatus(LED_SW2, LED_OFF); 
+1029   2              if (App_FSM_GetChargeState() == APP_CHARGE_DONE) {
+1030   3                  HAL_LED_SetStatus(LED_SW1, LED_ON);  
+1031   3              } else {
+1032   3                  HAL_LED_SetStatus(LED_SW1, blink_slow ? LED_ON : LED_OFF); 
+1033   3              }
+1034   2          } else {
+1035   2              HAL_LED_SetStatus(LED_SW1, LED_OFF); 
+1036   2              /* ÓëAPPÉÏ±¨¹²ÓÃÂË²¨ºóµÄµçÁ¿µµÎ»£º0¸ß¡¢1ÖÐ¡¢2µÍ¡£ */
+1037   2            if ((g_Device.state != STATE_OFF) &&
+1038   2                ((HAL_ADC_Get_Battery_SOC() == 2U) ||
+1039   2                 !App_FSM_BatteryPumpAllowed())) {
+1040   3                /* ÌáÐÑµµ»òÍ£±ÃËø´æÊ±±£³ÖºìµÆ£¬±ÜÃâ»Øµ¯ºóÌáÊ¾ÏûÊ§¡£ */
+1041   3                HAL_LED_SetStatus(
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 18  
+
+1042   3                    LED_SW2, blink_slow ? LED_ON : LED_OFF);
+1043   3            } else {
+1044   3                HAL_LED_SetStatus(LED_SW2, LED_OFF);
+1045   3            }
+1046   2          }
+1047   1          
+1048   1          // ----------------------------------------------------
+1049   1          // 2. ¹Ø»úÇå³¡¼ì²é
+1050   1          // ----------------------------------------------------
+1051   1          if (g_Device.state == STATE_OFF) {
+1052   2              HAL_LED_SetStatus(LED_MODE_SENSE, LED_OFF);
+1053   2              HAL_LED_SetStatus(LED_MODE_CONT,  LED_OFF);
+1054   2              HAL_LED_SetStatus(LED_HEATING,    LED_OFF);
+1055   2              HAL_LED_SetStatus(LED_WATER_Q,    LED_OFF);
+1056   2              HAL_LED_SetStatus(LED_NO_WATER,   LED_OFF);
+1057   2              
+1058   2              /* ¸´ÓÃÎåµÆË¢ÐÂ£¬¹Ø»úÇå³¡ÈÔÔÚÔ­À´µÄÎ»ÖÃÖ´ÐÐ¡£ */
+1059   2              App_UI_SetSenseIndicators(LED_OFF);
+1060   2              return;
+1061   2          }
+1062   1      
+1063   1          // ----------------------------------------------------
+1064   1          // 3. ÆÕÍ¨ÒµÎñäÖÈ¾
+1065   1          // ----------------------------------------------------
+1066   1          ir_led_state = g_Device.uvc_armed ? LED_ON : LED_OFF;
+1067   1      
+1068   1          /* ¸´ÓÃÍ¬Ò»Ë¢ÐÂË³Ðò£¬UVCÖ¸Ê¾ÈÔÓÉÔ­À´µÄÐí¿É±êÖ¾¾ö¶¨¡£ */
+1069   1          App_UI_SetSenseIndicators(ir_led_state);
+1070   1          
+1071   1          if (g_Device.display_timer_s > 0) {
+1072   2              HAL_LED_SetStatus(LED_MODE_SENSE, (g_Device.target_work_mode == 0) ? LED_ON : LED_OFF);
+1073   2              HAL_LED_SetStatus(LED_MODE_CONT,  (g_Device.target_work_mode == 1) ? LED_ON : LED_OFF);
+1074   2          } else {
+1075   2              HAL_LED_SetStatus(LED_MODE_SENSE, LED_OFF);
+1076   2              HAL_LED_SetStatus(LED_MODE_CONT,  LED_OFF);
+1077   2          }
+1078   1                  
+1079   1          if (cached_temperature_c > 37) {
+1080   2              HAL_LED_SetStatus(LED_HEATING, blink_slow ? LED_ON : LED_OFF); 
+1081   2          } else {
+1082   2              HAL_LED_SetStatus(LED_HEATING, g_Device.heating_enabled ? LED_ON : LED_OFF); 
+1083   2          }
+1084   1      
+1085   1          HAL_LED_SetStatus(LED_WATER_Q, (g_Device.water_quality == WATER_BAD) ? LED_ON : LED_OFF);
+1086   1           // ¡¾ÐÞ¸Ä¡¿£ºÈ±Ë®µÆÓÉ¼«ËÙÏìÓ¦±êÖ¾Çý¶¯£¬²»ÔÙµÈ´ý×´Ì¬»úµÄ2Ãë·ÀÎóÉ±ÑÓ³Ù
+1087   1          HAL_LED_SetStatus(LED_NO_WATER, g_ui_water_empty ? LED_ON : LED_OFF);
+1088   1      }
+1089          
+1090          /* ¼ì²éÒµÎñ×´Ì¬ºÍÏÔÊ¾ÐèÇó£»Ó²¼þ¡¢Í¨ÐÅÌõ¼þÓÉmain¼ÌÐø¼ì²é¡£ */
+1091          uint8_t App_FSM_StopStateReady(void)
+1092          {
+1093   1          /* Èí¼þ¹Ø»úÑØÓÃÔ­ÓÐSTOP¹æÔò¡£ */
+1094   1          if (g_Device.state == STATE_OFF) {
+1095   2              return 1;
+1096   2          }
+1097   1      
+1098   1          /* ¿ª»úµÍµçÁ¿Ê±±£³ÖºìµÆÉÁË¸£¬²»ÄÜ½øÈëSTOP¹Ø±ÕÏÔÊ¾¡£ */
+1099   1          if ((g_Device.power_mode == POWER_BATTERY) &&
+1100   1              ((HAL_ADC_Get_Battery_SOC() == 2U) ||
+1101   1               !App_FSM_BatteryPumpAllowed())) {
+1102   2              return 0; /* ±£³ÖµÍµç¼°Í£±Ã±£»¤ÌáÊ¾¡£ */
+1103   2          }
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 19  
+
+1104   1          
+1105   1          if (g_Device.state != STATE_IDLE ||
+1106   1              g_Device.target_work_mode != 0) {
+1107   2              return 0;
+1108   2          }
+1109   1      
+1110   1          /* »î¶¯µ¹¼ÆÊ±¡¢ÉèÖÃÖ¸Ê¾ºÍÅäÍøÏÔÊ¾ÆÚ¼ä±£³ÖÕý³£µ÷¶È¡£ */
+1111   1          if (g_Device.timer_pump_s ||
+1112   1              g_Device.timer_uvc_s ||
+1113   1              g_Device.display_timer_s ||
+1114   1              g_Device.wifi_pairing_timer_s ||
+1115   1              g_Device.heating_enabled ||
+1116   1              g_Device.uvc_armed) {
+1117   2              return 0;
+1118   2          }
+1119   1      
+1120   1          /* Í¬Ê±¸²¸ÇÈ±Ë®Ô­Ê¼ÊäÈë¡¢ÒµÎñ×´Ì¬ºÍÖ¸Ê¾µÆËø´æ¡£ */
+1121   1          if (HAL_ADC_Get_IsEmpty() ||
+1122   1              g_Device.is_empty ||
+1123   1              g_ui_water_empty) {
+1124   2              return 0;
+1125   2          }
+1126   1      
+1127   1          /*
+1128   1           * ¼ì²éÒµÎñÖµ¼°×îÐÂ²ÉÑù»º´æ£¬±ÜÃâADCÒÑ¸üÐÂ¡¢
+1129   1           * FSMÉÐÎ´¸üÐÂµÄ¶ÌÔÝ´°¿ÚÔÊÐíÈëË¯¡£
+1130   1           * GetterÖ»¶ÁÈ¡»º´æ£¬²»Æô¶¯ÐÂ²ÉÑù¡£
+1131   1           */
+1132   1          if (g_Device.water_quality == WATER_BAD ||
+1133   1              HAL_ADC_Get_WaterQuality() == WATER_BAD ||
+1134   1              g_Device.sys_voltage_mv < 3500U ||
+1135   1              HAL_ADC_Get_SystemVoltage_mV() < 3500U ||
+1136   1              cached_temperature_c > 37) {
+1137   2              return 0;
+1138   2          }
+1139   1      
+1140   1          return 1;
+1141   1      }
+1142          
+1143          /**
+1144           * @brief »Ö¸´³ö³§ÉèÖÃ£¨Çå³ý±¾µØÓÃ»§Êý¾Ý²¢±£´æ£©
+1145           */
+1146          void App_Restore_Factory_Settings(void) {
+1147   1          g_Device.req_clean_alarm = 0;
+1148   1          g_Device.req_filter_alarm = 0;
+1149   1        
+1150   1          // 1. »Ö¸´¸÷ÏîºÄ²Ä²ÎÊýÎªÄ¬ÈÏÖµ
+1151   1          g_Device.target_clean_days = 7; 
+1152   1          g_Device.target_filter_days = 14;
+1153   1          g_Device.last_clean_timestamp = 0;
+1154   1          g_Device.last_filter_timestamp = 0;
+1155   1          
+1156   1          // 3. »Ö¸´Ä¬ÈÏÉùÒô×´Ì¬£¨0:·¢Éù£©
+1157   1          g_Device.mute_enabled = 0;
+1158   1          
+1159   1          // 4. Çå³ýÔÆ¶ËÍ¬²½±êÖ¾£¬È·±£ÏÂ´ÎÁ¬ÔÆºóÖØÐÂ´¥·¢È«Á¿ÉÏ±¨
+1160   1          g_cloud_data_synced = 0;
+1161   1      
+1162   1          // 5. Ç¿ÖÆ±£´æµ½ EEPROM£¬¸²¸Ç¾ÉÊý¾Ý
+1163   1          HAL_EEPROM_Save_AllData();
+1164   1      
+1165   1      }
+C51 COMPILER V9.60.7.0   APP_FSM                                                           10/21/2026 14:40:21 PAGE 20  
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   3566    ----
+   CONSTANT SIZE    =     12    ----
+   XDATA SIZE       =    109      33
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

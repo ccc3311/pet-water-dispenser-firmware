@@ -1,0 +1,441 @@
+C51 COMPILER V9.60.7.0   SC92F_INT                                                         10/13/2026 10:46:29 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SC92F_INT
+OBJECT MODULE PLACED IN ..\Output\sc92f_int.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\FWLib\SC92F_Lib\src\sc92f_int.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE IN
+                    -CDIR(..\FWLib\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753x
+                    -) DEBUG PRINT(..\List\sc92f_int.lst) TABS(2) OBJECT(..\Output\sc92f_int.obj)
+
+line level    source
+
+   1          /**
+   2           ******************************************************************************
+   3           * @file    sc92f_int.c
+   4           * @author  SOC AE Team
+   5           * @version V1.2.4
+   6           * @date    2026-2-28
+   7           * @brief   INT function module
+   8           ******************************************************************************
+   9           * @attention
+  10           *
+  11           *1.This software is supplied by SinOne Microelectronics Co.,Ltd. and is only 
+  12           *intended for use with SinOne products. No other uses are authorized. This 
+  13           *software is owned by SinOne Microelectronics Co.,Ltd. and is protected under 
+  14           *all applicable laws, including copyright laws. 
+  15           *2.The software which is for guidance only aims at providing customers with 
+  16           *coding information regarding their products in order for them to save time. 
+  17           *As a result, SinOne shall not be held liable for any direct, indirect or 
+  18           *consequential damages with respect to any claims arising from the content of 
+  19           *such software and/or the use made by customers of the coding information 
+  20           *contained herein in connection with their products.
+  21           *
+  22           *  COPYRIGHT 2025 SinOne Microelectronics
+  23           ******************************************************************************
+  24           */
+  25          
+  26          /* Includes ------------------------------------------------------------------*/
+  27          #include "sc92f_int.h"
+  28          
+  29          /** @addtogroup sc92f_StdPeriph_Driver
+  30           * @{
+  31           */
+  32           
+  33          /** @defgroup INT
+  34           * @brief INT driver modules
+  35           * @{
+  36           */
+  37          
+  38           /** @defgroup INT_Functions
+  39           * @{
+  40           */
+  41          
+  42           /** @defgroup INT_Group1 Initialization and Configuration functions
+  43           *  @brief Initialization and Configuration functions
+  44           *
+  45           
+  46          @verbatim
+  47           ===============================================================================
+  48                               ##### Initialization and Configuration functions #####
+  49           ===============================================================================
+  50          @endverbatim
+  51            * @{
+  52            */
+  53          
+C51 COMPILER V9.60.7.0   SC92F_INT                                                         10/13/2026 10:46:29 PAGE 2   
+
+  54          /**
+  55           * @brief The INTx related register is reset to the default value
+  56           * @param  INTx[in]: INTx Selection
+  57           *              SC92F827X,SC92F837X,SC92F730x,SC92F725X,SC92F735X,SC92F7490,SC92F730x_2,SC92F720x,SC92F730
+             -8B
+  58           *              Selection range (INT0,INT2)
+  59           *              SC92F84Hx,SC92F83Hx,SC92F6x1x,SC92F5x1x,SC92R436,SC92R439,SC92R422A,SC92F652x,SC92F531x,SC
+             -92F637x,SC92F663x
+  60           *              Selection range(INT0,INT1)
+  61           *              else Selection range(INT0~INT2)
+  62           *              - INT0:External interrupt 0
+  63           *              - INT1:External interrupt 1
+  64           *              - INT2:External interrupt 2
+  65           * @retval None
+  66           */ 
+  67          #if defined (SC92F827X) || defined (SC92F837X) || defined (SC92F730x) || defined (SC92F725X) || defined (S
+             -C92F735X)\
+  68          || defined (SC92F7490) || defined(SC92F730x_2) || defined(SC92F720x)|| defined (SC92F7308B)
+              void INT_DeInit(INTx_Typedef INTx)
+              {
+                switch(INTx)
+                {
+                  case INT0:
+                    INT0R = 0x00;
+                    INT0F = 0x00;
+                    IE &= (~0X01);
+                    IP &= ~0X01;
+                    TCON &= (~0X02);
+                    break;
+              
+                  case INT2:
+                    INT2R = 0x00;
+                    INT2F = 0x00;
+                    IE1 &= (~0X08);
+                    IP1 &= ~0X08;
+                    break;
+              
+                  default:
+                    break;
+                }
+              }
+              #elif defined(SC92F84Hx) || defined(SC92F83Hx)  || defined(SC92F6x1x) || defined(SC92F5x1x) || defined(SC9
+             -2R436)|| defined(SC92R438)\
+                 || defined(SC92R439)|| defined(SC92R422A)|| defined(SC92F652x)|| defined(SC92R51x_R52x) || defined (SC9
+             -2F552x)|| defined(SC92F5x5x)|| defined(SC92F531x)\
+                 || defined(SC92F637x)|| defined(SC92F663x)
+              
+              void INT_DeInit(INTx_Typedef INTx)
+              {
+                switch(INTx)
+                {
+                  case INT0:
+                    INT0R = 0x00;
+                    INT0F = 0x00;
+                    IE &= (~0X01);
+                    IP &= ~0X01;
+                    TCON &= (~0X02);
+                    break;
+              
+                  case INT1:
+                    INT1R = 0x00;
+                    INT1F = 0x00;
+C51 COMPILER V9.60.7.0   SC92F_INT                                                         10/13/2026 10:46:29 PAGE 3   
+
+                    IE &= (~0X04);
+                    IP &= ~0X04;
+                    TCON &= (~0X08);
+                    break;
+                  
+                  default:
+                    break;
+                }
+              }
+              #else
+ 121          void INT_DeInit(INTx_Typedef INTx)
+ 122          {
+ 123   1        switch(INTx)
+ 124   1        {
+ 125   2          case INT0:
+ 126   2            INT0R = 0x00;
+ 127   2            INT0F = 0x00;
+ 128   2            IE &= (~0X01);
+ 129   2            IP &= ~0X01;
+ 130   2            TCON &= (~0X02);
+ 131   2            break;
+ 132   2      
+ 133   2          case INT1:
+ 134   2            INT1R = 0x00;
+ 135   2            INT1F = 0x00;
+ 136   2            IE &= (~0X04);
+ 137   2            IP &= ~0X04;
+ 138   2            TCON &= (~0X08);
+ 139   2            break;
+ 140   2      
+ 141   2          case INT2:
+ 142   2            INT2R = 0x00;
+ 143   2            INT2F = 0x00;
+ 144   2            IE1 &= (~0X08);
+ 145   2            IP1 &= ~0X08;
+ 146   2            break;
+ 147   2      
+ 148   2          default:
+ 149   2            break;
+ 150   2        }
+ 151   1      }
+ 152          #endif
+ 153          
+ 154          /**
+ 155           * @brief  INT0x Interrupt trigger configuration function
+ 156           * @param  INT0x[in]: INT0x Select
+ 157           * @param  TriggerMode[in]: 
+ 158           *              - INT_TRIGGER_RISE_ONLY:The external interrupt triggering mode is ascending edge
+ 159           *              - INT_TRIGGER_FALL_ONLY:The external interrupt triggering mode is falling edge
+ 160           *              - INT_TRIGGER_RISE_FALL:The external interrupt triggering modes are rising edge and fallin
+             -g edge
+ 161           *              - INT_TRIGGER_DISABLE:Disable external interrupt triggering
+ 162           * @retval None
+ 163           */ 
+ 164          void INT0_SetTriggerMode(uint8_t INT0x,
+ 165                                   INT_TriggerMode_Typedef TriggerMode)
+ 166          {
+ 167   1        switch(TriggerMode)
+ 168   1        {
+ 169   2          case INT_TRIGGER_RISE_ONLY:
+ 170   2            INT0R |= INT0x;
+ 171   2            INT0F &= (~INT0x);
+C51 COMPILER V9.60.7.0   SC92F_INT                                                         10/13/2026 10:46:29 PAGE 4   
+
+ 172   2            break;
+ 173   2      
+ 174   2          case INT_TRIGGER_FALL_ONLY:
+ 175   2            INT0R &= (~INT0x);
+ 176   2            INT0F |= INT0x;
+ 177   2            break;
+ 178   2      
+ 179   2          case INT_TRIGGER_RISE_FALL:
+ 180   2            INT0R |= INT0x;
+ 181   2            INT0F |= INT0x;
+ 182   2            break;
+ 183   2      
+ 184   2          case INT_TRIGGER_DISABLE:
+ 185   2            INT0R &= (~INT0x);
+ 186   2            INT0F &= (~INT0x);
+ 187   2      
+ 188   2          default:
+ 189   2            break;
+ 190   2        }
+ 191   1      }
+ 192          
+ 193          /**
+ 194           * @brief  INT1x Configures the interrupt triggering mode
+ 195           * @param  INT1x[in]: INT1x selection
+ 196           * @param  TriggerMode[in]: 
+ 197           *              - INT_TRIGGER_RISE_ONLY:The external interrupt triggering mode is ascending edge
+ 198           *              - INT_TRIGGER_FALL_ONLY:The external interrupt triggering mode is falling edge
+ 199           *              - INT_TRIGGER_RISE_FALL:The external interrupt triggering modes are rising edge and fallin
+             -g edge
+ 200           *              - INT_TRIGGER_DISABLE:Disable external interrupt triggering
+ 201           * @retval None
+ 202           */ 
+ 203          #if !defined (SC92F827X) && !defined (SC92F837X) && !defined (SC92F730x) && !defined (SC92F725X) && !defin
+             -ed (SC92F735X) && !defined (SC92F7490) && !defined(SC92F730x_2)\
+ 204             && !defined(SC92F720x) && !defined (SC92F7308B)
+ 205          void INT1_SetTriggerMode(uint8_t INT1x,
+ 206                                   INT_TriggerMode_Typedef TriggerMode)
+ 207          {
+ 208   1        switch(TriggerMode)
+ 209   1        {
+ 210   2          case INT_TRIGGER_RISE_ONLY:
+ 211   2            INT1R |= INT1x;
+ 212   2            INT1F &= (~INT1x);
+ 213   2            break;
+ 214   2      
+ 215   2          case INT_TRIGGER_FALL_ONLY:
+ 216   2            INT1R &= (~INT1x);
+ 217   2            INT1F |= INT1x;
+ 218   2            break;
+ 219   2      
+ 220   2          case INT_TRIGGER_RISE_FALL:
+ 221   2            INT1R |= INT1x;
+ 222   2            INT1F |= INT1x;
+ 223   2            break;
+ 224   2      
+ 225   2          case INT_TRIGGER_DISABLE:
+ 226   2            INT1R &= (~INT1x);
+ 227   2            INT1F &= (~INT1x);
+ 228   2      
+ 229   2          default:
+ 230   2            break;
+ 231   2        }
+C51 COMPILER V9.60.7.0   SC92F_INT                                                         10/13/2026 10:46:29 PAGE 5   
+
+ 232   1      }
+ 233          #endif
+ 234          
+ 235          /**
+ 236           * @brief INT2x Configures the interrupt triggering mode
+ 237           * @param  INT2x[in]:  INT1x selection
+ 238           * @param  TriggerMode[in]: 
+ 239           *              - INT_TRIGGER_RISE_ONLY:The external interrupt triggering mode is ascending edge
+ 240           *              - INT_TRIGGER_FALL_ONLY:The external interrupt triggering mode is falling edge
+ 241           *              - INT_TRIGGER_RISE_FALL:The external interrupt triggering modes are rising edge and fallin
+             -g edge
+ 242           *              - INT_TRIGGER_DISABLE:Disable external interrupt triggering
+ 243          
+ 244           * @retval None
+ 245           */ 
+ 246          #if !defined(SC92F84Hx) && !defined(SC92F83Hx)&& !defined(SC92F6x1x) && !defined(SC92F5x1x) && !defined(SC
+             -92R436)&& !defined(SC92R438)\
+ 247             && !defined(SC92R439) && !defined(SC92R422A)&& !defined(SC92F652x)&& !defined(SC92R51x_R52x) && !define
+             -d(SC92F552x)&& !defined(SC92F5x5x)&& !defined(SC92F531x)\
+ 248             && !defined(SC92F637x) && !defined(SC92F663x)
+ 249          void INT2_SetTriggerMode(uint8_t INT2x,
+ 250                                   INT_TriggerMode_Typedef TriggerMode)
+ 251          {
+ 252   1        switch(TriggerMode)
+ 253   1        {
+ 254   2          case INT_TRIGGER_RISE_ONLY:
+ 255   2            INT2R |= INT2x;
+ 256   2            INT2F &= (~INT2x);
+ 257   2            break;
+ 258   2      
+ 259   2          case INT_TRIGGER_FALL_ONLY:
+ 260   2            INT2R &= (~INT2x);
+ 261   2            INT2F |= INT2x;
+ 262   2            break;
+ 263   2      
+ 264   2          case INT_TRIGGER_RISE_FALL:
+ 265   2            INT2R |= INT2x;
+ 266   2            INT2F |= INT2x;
+ 267   2            break;
+ 268   2      
+ 269   2          case INT_TRIGGER_DISABLE:
+ 270   2            INT2R &= (~INT2x);
+ 271   2            INT2F &= (~INT2x);
+ 272   2      
+ 273   2          default:
+ 274   2            break;
+ 275   2        }
+ 276   1      }
+ 277          #endif
+ 278          
+ 279          /**
+ 280           * @brief INT0 interrupts initialization
+ 281           * @param  NewState[in]: Disable Enable/Disable selection
+ 282           *              - DISABLE:Off
+ 283           *              - ENABLE:enable
+ 284           * @param  Priority[in]: Interrupt priority selection
+ 285           *              - LOW:low
+ 286           *              - HIGH:high
+ 287           * @retval None
+ 288           */ 
+ 289          void INT0_ITConfig(FunctionalState NewState,
+ 290                             PriorityStatus Priority)
+C51 COMPILER V9.60.7.0   SC92F_INT                                                         10/13/2026 10:46:29 PAGE 6   
+
+ 291          {
+ 292   1        if(NewState != DISABLE)
+ 293   1        {
+ 294   2          IE |= 0X01;
+ 295   2        }
+ 296   1        else
+ 297   1        {
+ 298   2          IE &= (~0X01);
+ 299   2        }
+ 300   1      
+ 301   1        if(Priority == LOW)
+ 302   1        {
+ 303   2          IP &= ~0X01;
+ 304   2        }
+ 305   1        else
+ 306   1        {
+ 307   2          IP |= 0X01;
+ 308   2        }
+ 309   1      }
+ 310          
+ 311          
+ 312          
+ 313          /**
+ 314          * @brief INT1 Interrupt initialization
+ 315          * @param NewState[in]: disables the enable/disable selection
+ 316          *                -DISABLE: disables the function
+ 317          *                -ENABLE: enables the function
+ 318          * @param Priority[in]: indicates the interrupt priority
+ 319          *                -LOW: indicates the low value
+ 320          *                - HIGH: High
+ 321          * @retval None
+ 322          */
+ 323          
+ 324          #if !defined (SC92F827X) && !defined (SC92F837X) && !defined (SC92F730x) && !defined (SC92F725X) && !defin
+             -ed (SC92F735X) && !defined (SC92F7490)\
+ 325          && !defined(SC92F730x_2) && !defined(SC92F720x) && !defined (SC92F7308B)
+ 326          void INT1_ITConfig(FunctionalState NewState,
+ 327                             PriorityStatus Priority)
+ 328          {
+ 329   1        if(NewState != DISABLE)
+ 330   1        {
+ 331   2          IE |= 0X04;
+ 332   2        }
+ 333   1        else
+ 334   1        {
+ 335   2          IE &= (~0X04);
+ 336   2        }
+ 337   1      
+ 338   1        if(Priority == LOW)
+ 339   1        {
+ 340   2          IP &= ~0X04;
+ 341   2        }
+ 342   1        else
+ 343   1        {
+ 344   2          IP |= 0X04;
+ 345   2        }
+ 346   1      }
+ 347          #endif
+ 348          /**
+ 349          * @brief INT2 Interrupt initialization
+ 350          * @param NewState[in]: disables the enable/disable selection
+ 351          *                 -DISABLE: disables the function
+C51 COMPILER V9.60.7.0   SC92F_INT                                                         10/13/2026 10:46:29 PAGE 7   
+
+ 352          *                 -ENABLE: enables the function
+ 353          * @param Priority[in]: indicates the interrupt priority
+ 354          *                 -LOW: indicates the low value
+ 355          *                 - HIGH: High
+ 356          * @retval None
+ 357          */
+ 358          
+ 359          #if !defined(SC92F84Hx) && !defined(SC92F83Hx) &&!defined(SC92F6x1x) && !defined(SC92F5x1x) && !defined(SC
+             -92R436)&& !defined(SC92R438)\
+ 360              && !defined(SC92R439)&& !defined(SC92R422A)&& !defined(SC92F652x)&& !defined(SC92R51x_R52x) && !define
+             -d(SC92F552x)&& !defined(SC92F5x5x)&& !defined(SC92F531x)\
+ 361              && !defined(SC92F637x) && !defined(SC92F663x)
+ 362          void INT2_ITConfig(FunctionalState NewState,
+ 363                             PriorityStatus Priority)
+ 364          {
+ 365   1        if(NewState != DISABLE)
+ 366   1        {
+ 367   2          IE1 |= 0X08;
+ 368   2        }
+ 369   1        else
+ 370   1        {
+ 371   2          IE1 &= (~0X08);
+ 372   2        }
+ 373   1      
+ 374   1        if(Priority == LOW)
+ 375   1        {
+ 376   2          IP1 &= ~0X08;
+ 377   2        }
+ 378   1        else
+ 379   1        {
+ 380   2          IP1 |= 0X08;
+ 381   2        }
+ 382   1      }
+ 383          #endif
+ 384          
+ 385          /******************* (C) COPYRIGHT 2025 SinOne Microelectronics *****END OF FILE****/
+ 386          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    248    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,907 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              10/22/2026 15:52:30 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN ..\Output\main.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\User\main.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE INCDIR(..\FWLib\SC92F_
+                    -Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753x) DEBUG PRINT(..\Lis
+                    -t\main.lst) TABS(2) OBJECT(..\Output\main.obj)
+
+line level    source
+
+   1          /*****************************************************************************************************
+   2            * @copyright  (c)  Shenzhen Saiyuan Microelectronics Co., Ltd
+   3            * @file       main.c
+   4            
+   5          2026/6/26
+   6          TL2 T1      ¹¦ÄÜ±ä¸ü    
+   7          1¡¢µ÷ÕûTDSËã·¨£¬Ê¹ÓÃ²î·ÖÈÚºÏ·¨£¬×öµ½TDS·¶Î§0-300¼äÎó²î+-20
+   8          2¡¢ÐÞ¸Ä·äÃùÆ÷Ë«»÷·äÃù¼ä¸ôÊ±¼ä
+   9          3¡¢ÐÞ¸Ä³äµçÖÐºÍµÍµçÁ¿ÉÁµÆÊ±¼ä´Ó500msÂýÉÁ¸ÄÎª800ms
+  10          4¡¢ÐÞ¸ÄÈ±Ë®Âß¼­½â¾öÈ±Ë®×´Ì¬ÏÂ°´¼üÒÔ¼°µÆ¹âÏÔÊ¾ÎÊÌâ
+  11          5¡¢ÐÞ¸Ä¸ÐÓ¦µÆÁÁµÆÂß¼­£¬ÏÖÔÚÖ»ÔÚ°´¼ü°´ÏÂ²Å»áÁÁµÆ£¬²»»áÒòÎª¸ÐÓ¦µ½ÎïÌåÖØÐÂÁÁµÆ
+  12          6¡¢ÐÞ¸ÄÈ±Ë®Ïû¶¶Âß¼­£¬ÏÖÔÚ²»½øÐÐÈ±Ë®Ïû¶¶"
+  13          
+  14          2026/7/2  
+  15          TL2 T2  Ó²¼þ±ä¸üÈí¼þÊÊÅä    
+  16          1.µ÷ÕûTM1650ÑÓÊ±¿ªÆô
+  17          2¡¢¹Ì¶¨ÎÂ¶ÈµçÑ¹Îª3.3V
+  18          3.TDS¼Ó³¤ÑÓÊ±£¬½â¾öÔö¼ÓµçÈÝµ¼ÖÂµÄ³ä·ÅµçÎÊÌâ
+  19          4.Ôö¼ÓTYPEC¹©µçadcÅÐ¶Ï¿Ú£¬·ÖÀëBAT_IO¹©µçÓë³äµçÂß¼­"
+  20          
+  21          2026/7/10 
+  22          TL2 T3  Èí¼þÐèÇó    
+  23          1.ÐÞ¸Ä·äÃùÆ÷ÉùÏì¼ä¸ôÎª100ms
+  24          2.Ôö¸ßÈ±Ë®ÅÐ¶ÏÓÅÏÈ¼¶±£Ö¤ÁéÃô¶È
+  25          3.Ôö¼Ó38¶È¹ýÎÂ±¨¾¯¹¦ÄÜ"
+  26          
+  27          2026/7/30
+  28          TL2_T4  Èí¼þÐèÇó    
+  29          1.Ôö¼ÓWIFI¹¦ÄÜ  
+  30          
+  31          2026/8/8
+  32          TL2_T4  Èí¼þÐèÇó    
+  33          1.ÒûË®´ÎÊý¼ÆÈëEEPROM
+  34          2.ÒýÈë¿´ÃÅ¹·¡¢Í¨Ñ¶³¬Ê±ÍË³ö½â¾öÅ¼·¢ÐÔWIFIÍ¨Ñ¶¿¨ËÀÎÊÌâ
+  35          3.ºìÍâÔö¼Ó2Â·£¬±äÎª3Â·¸ßµÍ¼ì²â
+  36          
+  37          2026/8/15
+  38          TL2_T10 Èí¼þÐèÇó    
+  39          1.¸ÐÓ¦³öË®Ê±¼äÐÞÕý£¨¸ü»»ÍêÒ»Ìå°åºóÊ±¼äËøËÀÎª3S£¬¸ÐÓ¦³ö²ÎÊý¸ÄÕýÎª12
+  40          2.Ê¹ÓÃÍ¿Ñ»module_reset_notify_handlerº¯Êý£¬ÊµÏÖÇø·ÖÔÆ¶ËÇå³ýÊý¾ÝÓë»Ö¸´³ö³§ÉèÖÃ¹¦ÄÜ
+  41          3.ÐÞ¸ÄWIFI¶Ë±¨¾¯Âß¼­£¬App_Cloud_Sync_TaskÐÞ¸ÄÊµÏÖÄ¿±êÒªÇó           Õë¶ÔÏûÏ¢ÌáÐÑºÍÍÆËÍÎÊÌâ
+  42                                                                            1¡¢ÇåÏ´ÌáÐÑºÍÍÆËÍ---ÊµÊ±¼ÆËãÊµÊ±ÏÂ·¢£¬ÍÆËÍÊ±¼äÎªÊµÊ±
+  43                                                                            2¡¢ÂËÐ¾±£ÑøÌáÐÑºÍÍÆËÍ--ÊµÊ±¼ÆËãÊµÊ±ÏÂ·¢£¬ÍÆËÍÊ±¼äÎªÊµÊ±
+  44                                                                            3¡¢Ë®ÎÂÒì³£ÌáÐÑºÍÍÆËÍ--³¬38¶ÈÊ±£¬¹Ì¼þÊµÊ±ÉÏ±¨£¬ÔÆ¶ËÊµÊ±ÏÂ·¢£¬ÍÆËÍÊµÊ±ÏÂ·¢
+  45                                                                            4¡¢È±Ë®ÌáÐÑºÍÍÆËÍÒ»ÁÙ½çµãÀ´»ØÌø¶¯£¬ÀÛ¼Æ´¥·¢10´Î£¬»ò¼ì²âÈ±Ë®ÎÈ¶¨1·ÖÖÓ£¬¹Ì¼
+             -þÉÏ±¨Ò»´ÎTDSÒì
+  46                                                                            ÉÏ±¨Ò»´ÎTDSÒì³££¬¿ªÆô30·ÖÖÓ¹Ì¼þÉÏ±¨ÀäÈ´£¬ÔÆ¶Ë¿ªÆô3Ð¡Ê±ÍÆËÍÀäÈ´
+  47                                                                            5¡¢TDSË®ÖÊ³¬±ê¾¯¸æºÍÍÆËÍ-ÁÙ½çµãÀ´»ØÌø¶¯£¬ÀÛ¼Æ´¥·¢10´Î£¬»ò¼ì²âµ½³¬±ê×´Ì¬ÎÈ
+             -¶¨1·ÖÖÓ£¬¹Ì¼þÉÏ±¨Ò»´ÎTDSÒì
+  48                                                                            ÉÏ±¨Ò»´ÎTDSÒì³££¬¿ªÆô30·ÖÖÓ¹Ì¼þÉÏ±¨ÀäÈ´£¬ÔÆ¶Ë¿ªÆô3Ð¡Ê±ÍÆËÍÀäÈ´
+  49                                                                            6¡¢µÍµçÁ¿ÌáÐÑºÍÍÆËÍ--µÍµçÁ¿´¥·¢ºó£¬¹Ì¼þÉÏ±¨ÀäÈ´30·ÖÖÓ£¬30·ÖÖÓÄÚµçÑ¹ÎÞ»ØÉý
+             -£¬ÔÙ´ÎÉÏ±¨DP.ÍÆ
+  50                                                                            ËÍÏÂ·¢ÀäÈ´Ê±¼äÎª3Ð¡Ê±
+C51 COMPILER V9.60.7.0   MAIN                                                              10/22/2026 15:52:30 PAGE 2   
+
+  51          4.Ôö¼ÓÁËÂËÐ¾ÓëÇå½àÊ±¼äµÄÊ±¼äÌø±ä·À´ôif (days_passed > 0 && days_passed < 365)¶ÏµçÖØÆô»ñÈ¡ÔÆ¶ËÊ±¼äµÄË²¼ä£¬¼
+             -«Ò×Òý·¢Ê±¼ä´ÁµÄ¶Ï²ãÌø±ä¡£ÇåÏ´Âß¼­ÓÐ < 365 µÄ·À´ô»¤³ÇºÓ£¬Ìø±äµÄÊý¾Ý±»Å×ÆúÁË
+  52          
+  53          2026/8/25
+  54          TL2_T11 Èí¼þÐèÇó    
+  55          1. // ÖØÖÃWIFIºó£¬Ç¿ÐÐÁô³öÖÁÉÙ3Ãë(180->177)µÄÊ±¼äÈÃÄ£×éÀëÏßË¢ÐÂ×´Ì¬¡£
+  56             // ÑÏ½ûÔÚ´Ë´°¿ÚÆÚÄÚ²ÉÐÅÄ£×é¾ÉµÄÒÑÁ¬½Ó×´Ì¬£¬·ÀÖ¹ÅäÍøÉÁË¸±»Ë²¼äÇåÁã£¡
+  57             if (g_Device.wifi_pairing_timer_s < 177) {
+  58                 g_Device.wifi_pairing_timer_s = 0;  
+  59                 HAL_Buzzer_Beep(1); // Á¬ÔÆ³É¹¦ÌáÊ¾Òô
+  60             }
+  61          2. ÐÞ¸ÄË®ÎÂµÄÉÏ±¨Âß¼­£¬½â¾ö1s³¤Ê±¼äÆµ·±ÉÏ±¨WIFIÄ£×éÄÚ´æÒç³ö¿¨ËÀ
+  62          3. ÐÞ¸´ÒÑÅäÍøÉè±¸ÖØÐÂÅäÍøÊ±Ö¸Ê¾µÆÒì³£Ï¨ÃðÎÊÌâ£¨ÖØ¹¹ÅäÍø×´Ì¬»úTask_Wifi_Pairing_Check£¬ÒýÈëµÈ´ý¶Ï¿ª±êÖ¾Î»Ìæ
+             -´úÓ²ÑÓÊ±£¬³¹µ×½â¾öÍ¿Ñ»Ä£×éÖØÆôÆÚ¼äSDK¾É×´Ì¬»º´æµ¼ÖÂµÄ¡°¼ÙÁ¬Íø¡±ÎóÅÐ£©
+  63          4. ÐÞ¸ÄUIäÖÈ¾Âß¼­App_UI_Refresh_Task£ºÆÁ±ÎÉè±¸¹Ø»ú×´Ì¬ÏÂµÄµÍµçÁ¿(LED_SW2)ÉÁË¸±¨¾¯£¬±ÜÃâ¹Ø»úÉÁË¸¡£
+  64          5. ÐÞ¸Ä°´¼ü·´À¡Âß¼­£ºÉè±¸ÔÚ¹Ø»ú(STATE_OFF)×´Ì¬ÏÂ£¬¶ªÆúËùÓÐµÄµ¥»÷¡¢Ë«»÷ÒâÍ¼²¢ÆÁ±Î´¥Ãþ·äÃùÆ÷ÉùÒô¡£
+  65          6. ÐÞ¸ÄÅäÍøUI±íÏÖ£ºµ±Éè±¸´¦ÓÚ¹Ø»ú×´Ì¬ÏÂ±»APP¶ËÒÆ³ý²¢×Ô¶¯½øÈëÅäÍøÊ±£¬ÔÊÐíºóÌ¨ÅäÍøµ«½ûÖ¹UIÖ¸Ê¾µÆÉÁË¸¡£  
+  66          7. ÐÞ¸´ÖÂÃüÓ²¼þ±£»¤È±ÏÝ£¨PWM¸ßÆµÕ¶²¨£©£º½â¾öÎïÀíÈ±Ë®±£»¤Óë×´Ì¬»ú2Ãë·ÀÎóÉ±Ïû¶¶²úÉúµÄ¾ºÌ¬³åÍ»¡£ÔÚ App_FSM_Ru
+             -n ÍâÉèÖ´ÐÐ²ãÒýÈë hardware_empty ±êÖ¾Î»½øÐÐÖ±½ÓÎïÀíÀ¹½Ø£¬¶Å¾øË®Ãæ»Î¶¯Ê±¼ÌµçÆ÷/MOS¹ÜµÄ¸ßÆµ¿ª¹Ø¡£
+  67          8. ÐÞ¸´WiFiÍ¨Ñ¶¿¨ËÀËÀËøÒþ»¼£ºÉ¾³ýÁË protocol.c ÖÐ get_wifi_status ÀïµÄÍ¬Ãû¾Ö²¿¾²Ì¬±äÁ¿ reset_notify_enable
+             -d£¬Í³Ò»µ÷ÓÃÍâ²¿È«¾Ö±êÖ¾Î» g_reset_notify_enabled£¬½â¾öµ¥Æ¬»úÒò±êÖ¾Î»²»Í¬²½¶øÃ¿ÃëÏòÄ£×é¿ñ·¢ 0x04 0x00 Ö¸ÁîÔì³ÉµÄ´®¿ÚÒç³öË
+             -ÀËø¡£
+  68          10. ÐÞ¸´Ä£×éÖØÖÃÍ¨Öª(Reset Notify)Ð­Òé´íÎó£ºÐÞÕý module_reset_notify_handler º¯ÊýµÄ ACK Ó¦´ð»úÖÆ£¬½«´íÎóÐ´
+             -ËÀµÄ 0x04 (Æô¶¯ÇëÇó) ÐÞ¸ÄÎªÔ­Ñù·µ»Ø cmd_bytes[0] (µ±Ç°½ÓÊÕµÄ×ÓÃüÁî×Ö)£¬³¹µ×¶Å¾øÒò¡°´ð·ÇËùÎÊ¡±Òý·¢µÄÍ¿Ñ»Ä£×é³¬Ê±ÖØ´«·ç±©¼
+             -° EEPROM Òì³£²ÁÐ´¡£
+  69          11. ÐÞ¸´³ö³§EEPROMÊý¾Ý·À´ôÓ²±àÂë´íÎ»£ºÔÚ HAL_EEPROM_Load_AllData() ÖÐ£¬½«³ö³§¿ÕÆ¬£¨0xFF£©¸´Î»Ê±µÄÓ²±àÂëÄ§Ê
+             -ý 31 ºÍ 30£¬Í³Ò»Ìæ»»Îª¶¥²ãºê¶¨Òå DEFAULT_CLEAN_DAYS Óë DEFAULT_FILTER_DAYS£¬È·±£³ö³§Ä¬ÈÏÅäÖÃÓëÒµÎñ²ãÉè¶¨ÍêÃÀ¶ÔÆë¡£
+  70          12. ½â¾öÁË¡°Ë®ÃæÒ»»Î£¬¼ÓÈÈ¾ÍÍ£¡±µÄ Bug£¬ÌåÑé¸üÁ¬¹á
+  71              ¹ýÈ¥£º»úÆ÷¹ýÓÚÃô¸Ð¡£³èÎïºÈË®»òÕß»úÆ÷ÇáÎ¢»Î¶¯£¬Ë®ÃæÖ»Òª²úÉúÁãµã¼¸ÃëµÄ²¨ÎÆ£¬»úÆ÷¾Í»áÈÏÎª¡°È±Ë®ÁË¡±£¬Ë²¼ä
+             -Í£»ú£¬»á°ÑÔÚ APP ÉÏÉèÖÃºÃµÄ¡°¼ÓÈÈ¡±ºÍ¡°É±¾ú¡±¹¦ÄÜ¹Øµô¡£
+  72              ÏÖÔÚ£º¼ÓÈëÁË¡°2ÃëÖÇÄÜ·ÀÎóÉ±¡±»úÖÆ¡£Ë®ÃæÇáÎ¢»Î¶¯Ê±£¬»úÆ÷ÒÀÈ»»á¼«ËÙ¶Ïµç±£»¤·ÀÖ¹¸ÉÉÕ£¬µ«²»»áÔÙ´Û¸Ä¿Í»§µÄÉ
+             -è¶¨¡£Ë®ÃæÒ»Æ½¾²£¬»úÆ÷×Ô¶¯»Ö¸´¼ÓÈÈºÍÉ±¾ú¡£
+  73          13. É¾³ýÁËÒûË®´ÎÊýµÄÍ³¼Æ
+  74          14. Ôö¼Ó P02 ¹©µç³ÙÖÍ·À¶¶£ºÏµÍ³µçÑ¹<3350mV¶Ïµç£¬>3500mV»Ö¸´£¬¼ÓÈë500ms·À¶¶±ÜÃâÁÙ½çÌø¶¯¡£
+  75          15. ¼ò»¯µçÁ¿¼ÆËãÎªÈýµµ£ºÈ¡Ïû²é±í£¬¸ÄÎª>3.9V(100%)¡¢3.5-3.9V(50%)¡¢<3.5V(10%)Èýµµ¡£´ø¸ºÔØ²¹³¥Óë3Ãë·À¶¶£¬Ã¿´
+             -ÎÇÐµµ·äÃùÆ÷³¤Ãù3Ãë¡£
+  76          16. Í¬²½ÐÞ¸ÄWIFIµçÁ¿ÉÏ±¨£º¸ù¾ÝÐÂµÄÈýµµÊµÊ±±ßÑØÉÏ±¨£¬ÇÒ½öÔÚµÍµçÁ¿µµ(10%)Ê±±£³Ö30·ÖÖÓÑ­»·ÍÆËÍ¡£
+  77          17. ÐÞÕýÍ¿Ñ»Ð­ÒéµçÁ¿DPÅäÖÃ£º½« DPID_BAT µÄÐ­ÒéÀàÐÍÓÉ VALUE(ÊýÖµ) ÕýÊ½¸üÕýÎª ENUM(Ã¶¾Ù)¡£
+  78          18. ÊµÏÖÈ±Ë®Ö¸Ê¾µÆµÄ¡°¼«ËÙÏìÓ¦¡±Óë¡°·À¶¶Ëø´æ¡±»úÖÆ£¬ÌáÉýÊÓ¾õ·´À¡ÌåÑé¡£
+  79              ¹ýÈ¥£ºÈ±Ë®µÆÊÜÏÞÓÚ×´Ì¬»úµÄ2Ãë·ÀÎóÉ±Âß¼­£¬µ¼ÖÂÓ²¼þÒÑË²¼ä¶Ïµç±£»¤£¬µ«Ö¸Ê¾µÆÑÓ³Ù1~2Ãë²ÅÁÁ£¬ÇÒË®Ãæ²¨¶¯Ê±ÈÝ
+             -Ò×Æµ·±ÉÁË¸¡£
+  80              ÏÖÔÚ£º½«UIÈ±Ë®µÆ¿ØÖÆÓëÒµÎñ×´Ì¬»ú½âñî¡£Ö»ÒªÎïÀí²ã¼ì²âµ½È±Ë®»òË®Ãæ»Î¶¯£¬È±Ë®µÆ0ÑÓ³ÙË²¼äµãÁÁ²¢±£³Ö³£ÁÁ£¨Ë
+             -ø´æ×´Ì¬£©£»½öµ±Ë®ÃæÁ¬Ðø2ÃëÕæÕýÎÈ¶¨¸ßË®Î»Ê±²ÅÏ¨Ãð¡£È·±£µÆ¹â·´À¡ÓëÓ²¼þ¶Ïµç±£»¤¾ø¶ÔÍ¬Æµ£¬¸øÓÃ»§Ã÷È·µÄ¡°ÕýÔÚ·À¸ÉÉÕ±£»¤¡±ÊÓ¾õ
+             -ÌáÊ¾¡£
+  81          
+  82          2026/9/29  
+  83          TL2_T12¡¡Èí¼þÐÞ¸Ä
+  84          1. ÒýÈë Wi-Fi µÍ¹¦ºÄ¹ÜÀí£¬Ö§³Ö APP Ô¶³Ì»½ÐÑ¡¢ÃüÁî´¦Àí¼°±¾µØ×´Ì¬Í¬²½¡£
+  85          2. ÒýÈë MCU STOP µÍ¹¦ºÄ£¬Ö§³Ö¹Ø»ú¼°µç³Ø¹©µçÏÂ¸ÐÓ¦´ý»ú¿ÕÏÐÐÝÃß£»¿ª»úÊ±ÓÐ±¨¾¯ÏÔÊ¾»òÍâÉèÔËÐÐÔò±£³ÖÕý³£¹¤×÷¡£
+  86          3. ³äµçÄ£¿é¸ü»»Îª SC89601£¬ÊÊÅä 12V ÊäÈë£¬Ôö¼ÓÈí¼þ IIC Í¨Ñ¶¡¢³äµç×´Ì¬¼ì²â¡¢Ð¾Æ¬¿´ÃÅ¹·¼°Òì³£ÖØÊÔ¡£
+  87          4. µ÷ÕûÒý½Å£ºË®±Ã¸ÄÎª P0.2£¬ÍâÉè¹©µç¿ª¹Ø¸ÄÎª P0.0£¬UV ¸ÄÎª P5.1£¬µç³Ø ADC ¸ÄÎª P2.2£¬³äµçÐ¾Æ¬ IIC Ê¹ÓÃ P1.
+             -6/P1.7¡£
+  88          5. Type-C ¼ì²â¸ÄÎª P5.0 Êý×ÖÊäÈë£¬µÍµçÆ½±íÊ¾²åÈë£»±£Áô P0.3 ³äµç×´Ì¬ÐÅºÅ¡£
+  89          6. ºìÍâ¼ì²âºÏ²¢Îª P0.6 µ¥Â·¸ßµçÆ½ÓÐÐ§£¬±£ÁôÏû¶¶¼°¸ÐÓ¦³öË®Âß¼­¡£
+  90          7. ÍêÉÆÇåÏ´¼°ÂËÐ¾ºÄ²Ä¼ÆÊ±£¬Ö§³ÖÐÝÃßÆÚ¼ä¼ÆÊ±¡¢µ½ÆÚ»½ÐÑ´¦Àí¡¢APP ÉÏ±¨¼° EEPROM ±£´æ»Ö¸´¡£
+  91          8. ÇåÀíÁÙÊ±²âÊÔ´úÂë¡¢µ÷ÊÔÈÕÖ¾¼°Î´Ê¹ÓÃº¯Êý£¬½µµÍ ROM Õ¼ÓÃ¡£
+  92            ***************************************************************************************************/ 
+  93          #include "tuya_type.h"
+  94          #include "SC_Init.h"
+  95          #include "SC_it.h"
+  96          #include "..\Drivers\SCDriver_list.h"
+  97          #include "HeadFiles\SysFunVarDefine.h"
+C51 COMPILER V9.60.7.0   MAIN                                                              10/22/2026 15:52:30 PAGE 3   
+
+  98          #include "app_fsm.h"
+  99          #include "hal_pwm.h"
+ 100          #include "hal_buzzer.h"
+ 101          #include "hal_tm1650.h"
+ 102          #include "hal_touch.h"
+ 103          #include "hal_ir.h"
+ 104          #include "hal_adc.h"
+ 105          #include "hal_power.h"
+ 106          #include "hal_uart.h"
+ 107          #include "hal_lpd.h"
+ 108          #include <stdio.h>
+ 109          #include "wifi.h"
+ 110          #include "protocol.h"
+ 111          #include "app_wifi.h"
+ 112          #include "sc89601.h"
+ 113          
+ 114          /* ±£Áôµ±Ç°µ÷ÊÔÅäÖÃ£º1 Ìø¹ý±¾ÎÄ¼þµÄÎïÀíÈ±Ë®±£»¤£»ÕýÊ½Ê¹ÓÃÓ¦ÉèÎª 0¡£ */
+ 115          #define DEBUG_IGNORE_WATER_EMPTY  1
+ 116          /* ´òÓ¡Ä£Ê½±£³ÖÕý³£µ÷¶È£¬±ÜÃâµç³Ø¹©µçÊ±½øÈëSTOP¶øÖÐ¶ÏÈÕÖ¾¡£ */
+ 117          #define APP_MCU_STOP_ENABLE  1  /* ±£ÁôÔ­STOPÁ÷³Ì£¬Óë´òÓ¡¿ª¹Ø¶ÀÁ¢¡£ */
+ 118          
+ 119          #define APP_MCU_STOP_IDLE_10MS   6000U  /* ÃûÒå¿ÕÏÐ60Ãëºó¼ì²éSTOP×Ê¸ñ¡£ */
+ 120          
+ 121          /* Timer0 ÖÐ¶ÏÖÃÎ»£¬Ö÷Ñ­»·Ïû·Ñ£»ÃëÈÎÎñÊ¹ÓÃ BTM£¬flag_1000ms ÔÝ±£Áô¡£ */
+ 122          volatile uint8_t flag_10ms = 0;
+ 123          volatile uint8_t flag_100ms = 0;
+ 124          volatile uint8_t flag_500ms = 0;
+ 125          volatile uint8_t flag_1000ms = 0;
+ 126          extern bit TIM0Flag2;
+ 127          extern uint8_t g_reset_notify_enabled;
+ 128          uint8_t cached_is_empty = 0;
+ 129          
+ 130          /* BOOT ½×¶Î¾ÉÔÆÍ¬²½µÄÎÂ¶È¡¢Ë®Î»¡¢Ë®ÖÊºÍµçÁ¿¼ÇÂ¼¡£ */
+ 131          static uint8_t last_temp_state = 0xFF;
+ 132          static uint8_t last_reported_temp = 0xFF;
+ 133          static uint8_t temp_sync_timer = 0;
+ 134          static uint8_t tds_debounce_count = 0;
+ 135          static uint8_t tds_stable_timer_s = 0;
+ 136          static uint16_t tds_report_cooldown_s = 0;
+ 137          static uint8_t last_water_quality = 0xFF;
+ 138          static uint16_t bat_report_cooldown_s = 0;
+ 139          static uint8_t last_bat_soc = 0xFF;
+ 140          
+ 141          /* MCU ¿ÕÏÐ¼ÆÊ±¡¢BTM ·ÖÆµºÍË¯ÃßÑ²¼ì×´Ì¬¡£ */
+ 142          static uint16_t s_power_idle_10ms = 0;
+ 143          static uint8_t s_power_sleeping = 0;
+ 144          static uint8_t s_power_second_div = 0;
+ 145          static uint8_t s_power_adc_div = 0;
+ 146          static uint8_t s_power_adc_due = 0;
+ 147          static uint8_t s_power_input_seen = 0;
+ 148          
+ 149          /* ÈëË¯Ç°±£´æÒý½Å¡¢µç³ØµçÑ¹ºÍ ADC ¿ªÆô×´Ì¬£¬¹©Ñ²¼ì¼°»½ÐÑ»Ö¸´Ê¹ÓÃ¡£ */
+ 150          static uint8_t s_power_water_before = 0;
+ 151          static uint8_t s_power_bat_io_before = 0;
+ 152          static uint16_t s_power_battery_before = 0;
+ 153          static uint8_t s_power_adc_enabled = 0;
+ 154          
+ 155          #define POWER_BAT_LOW_MV       3350U
+ 156          #define POWER_BAT_CHANGE_MV    100U
+ 157          
+ 158          /* ·ÏÆú¾ÉÍ¬²½¼ÇÂ¼£»ÎÈ¶¨¼ÆÊ±Ô¤ÖÃ 60 Ãë£¬Ê¹Æô¶¯Ê±ÒÑÓÐµÄÒì³£¿ÉÁ¢¼´½øÈëÉÏ±¨ÅÐ¶Ï¡£ */
+ 159          void App_Cloud_Sync_Reset(void)
+C51 COMPILER V9.60.7.0   MAIN                                                              10/22/2026 15:52:30 PAGE 4   
+
+ 160          {
+ 161   1          g_Device_Shadow.state = 0xFF;
+*** WARNING C259 IN LINE 161 OF ..\User\main.c: '=': different enumeration types
+ 162   1          g_Device_Shadow.target_work_mode = 0xFF;
+ 163   1          g_Device_Shadow.is_empty = 0xFF;
+ 164   1        App_Wifi_WaterSyncSubmit(); /* ÖØÐÂÍ¬²½ÒÑÈ·ÈÏË®Î»£¬±£ÁôÔ­È·ÈÏ½ø¶È¡£ */
+ 165   1          g_Device_Shadow.water_quality = 0xFF;
+ 166   1          g_Device_Shadow.uvc_armed = 0xFF;
+ 167   1          g_Device_Shadow.heating_enabled = 0xFF;
+ 168   1          g_Device_Shadow.mute_enabled = 0xFF;
+ 169   1      
+ 170   1          tds_debounce_count = 0;
+ 171   1          tds_report_cooldown_s = 0;
+ 172   1          tds_stable_timer_s = 60;
+ 173   1          last_water_quality = 0xFF;
+ 174   1      
+ 175   1          last_temp_state = 0xFF;
+ 176   1          last_reported_temp = 0xFF;
+ 177   1          temp_sync_timer = 0;
+ 178   1          last_bat_soc = 0xFF;
+ 179   1          bat_report_cooldown_s = 0;
+ 180   1          g_cloud_data_synced = 0;
+ 181   1      }
+ 182          
+ 183          /* BOOT ½×¶ÎÃ¿Ãëµ÷ÓÃ£»ÑØÓÃ SDK ·µ»ØÖµ¸üÐÂÍ¬²½¼ÇÂ¼£¬²»´ú±íÔÆ¶ËÈ·ÈÏ¡£ */
+ 184          void App_Cloud_Sync_Task(void)
+ 185          {
+ 186   1          static uint8_t sync_wait_s = 0;
+ 187   1          static uint8_t req_time_timer = 0;
+ 188   1          uint8_t is_temp_high;
+ 189   1          uint8_t current_temp;
+ 190   1      
+ 191   1          if (mcu_get_wifi_work_state() != WIFI_CONN_CLOUD) {
+ 192   2              return;
+ 193   2          }
+ 194   1      
+ 195   1          /* ÉÐÎ´È¡µÃÊ±¼äÊ±£¬Ã¿ 3 ÃëÌá½»Ò»´ÎÐ£Ê±ÇëÇó¡£ */
+ 196   1          if (g_Device.current_unix_time == 0) {
+ 197   2              req_time_timer++;
+ 198   2              if (req_time_timer >= 3) {
+ 199   3                  req_time_timer = 0;
+ 200   3                  App_Wifi_TimeSyncSubmit();
+ 201   3              }
+ 202   2          } else {
+ 203   2              req_time_timer = 0;
+ 204   2          }
+ 205   1      
+ 206   1          /* 30 ÃëºóÖÃÍ¬²½±êÖ¾£»µ±Ç°´úÂë²»»áÓÃ¸Ã±êÖ¾×èÖ¹ÏÂÃæµÄ DP ÉÏ±¨¡£ */
+ 207   1          if (!g_cloud_data_synced) {
+ 208   2              sync_wait_s++;
+ 209   2              if (sync_wait_s >= 30) {
+ 210   3                  g_cloud_data_synced = 1;
+ 211   3              }
+ 212   2          } else {
+ 213   2              sync_wait_s = 0;
+ 214   2          }
+ 215   1      
+ 216   1          /* ×Ü¿ª¹ØÉÏ±¨£ºOFF Îª 0£¬ÆäÓàÉè±¸×´Ì¬¾ùÎª 1¡£ */
+ 217   1          if (g_Device.state != g_Device_Shadow.state) {
+ 218   2              if (SUCCESS == mcu_dp_bool_update(DPID_SWITCH,
+ 219   2                                               (g_Device.state != STATE_OFF))) {
+ 220   3                  g_Device_Shadow.state = g_Device.state;
+C51 COMPILER V9.60.7.0   MAIN                                                              10/22/2026 15:52:30 PAGE 5   
+
+ 221   3              }
+ 222   2          }
+ 223   1      
+ 224   1          /* ÄÚ²¿Ä£Ê½ 0 ¸ÐÓ¦¡¢1 ³ÖÐø£»Í¬Ê±Í¬²½ WORK_MODE ºÍ¾É PIR/CONTINUE DP¡£ */
+ 225   1          if (g_Device.target_work_mode != g_Device_Shadow.target_work_mode) {
+ 226   2              if (SUCCESS == mcu_dp_enum_update(
+ 227   2                      DPID_WORK_MODE, g_Device.target_work_mode == 1 ? 0 : 1)) {
+ 228   3                  mcu_dp_bool_update(DPID_PIR, g_Device.target_work_mode == 0);
+ 229   3                  mcu_dp_bool_update(DPID_CONTINUE, g_Device.target_work_mode == 1);
+ 230   3                  g_Device_Shadow.target_work_mode = g_Device.target_work_mode;
+ 231   3              }
+ 232   2          }
+ 233   1      
+ 234   1          /* TDS ±¨¾¯ÑØÓÃÏàÍ¬µÄ´ÎÊý¡¢ÎÈ¶¨Ê±¼äºÍÀäÈ´¹æÔò£»»Ö¸´Õý³£Ê±½â³ýÀäÈ´²¢Í¬²½¡£ */
+ 235   1          if (last_water_quality == 0xFF) {
+ 236   2              last_water_quality = g_Device.water_quality;
+ 237   2          } else if (g_Device.water_quality != last_water_quality) {
+ 238   2              tds_debounce_count++;
+ 239   2              last_water_quality = g_Device.water_quality;
+ 240   2          }
+ 241   1      
+ 242   1          if (g_Device.water_quality == WATER_BAD) {
+ 243   2              if (tds_stable_timer_s < 0xFFU) {
+ 244   3                  tds_stable_timer_s++;
+ 245   3              }
+ 246   2          } else {
+ 247   2              tds_stable_timer_s = 0;
+ 248   2              tds_report_cooldown_s = 0;
+ 249   2              if (g_Device_Shadow.water_quality != g_Device.water_quality) {
+ 250   3                  if (SUCCESS == mcu_dp_enum_update(DPID_TDS_RO,
+ 251   3                                                   g_Device.water_quality)) {
+ 252   4                      g_Device_Shadow.water_quality = g_Device.water_quality;
+ 253   4                      tds_debounce_count = 0;
+ 254   4                  }
+ 255   3              }
+ 256   2          }
+ 257   1      
+ 258   1          if ((tds_debounce_count >= 10) || (tds_stable_timer_s >= 60)) {
+ 259   2              if ((g_Device.water_quality == WATER_BAD) &&
+ 260   2                  (tds_report_cooldown_s == 0)) {
+ 261   3                  if (SUCCESS == mcu_dp_enum_update(DPID_TDS_RO,
+ 262   3                                                   g_Device.water_quality)) {
+ 263   4                      g_Device_Shadow.water_quality = g_Device.water_quality;
+ 264   4                      tds_report_cooldown_s = 1800;
+ 265   4                  }
+ 266   3              }
+ 267   2              tds_debounce_count = 0;
+ 268   2              tds_stable_timer_s = 0;
+ 269   2          }
+ 270   1          if (tds_report_cooldown_s > 0) {
+ 271   2              tds_report_cooldown_s--;
+ 272   2          }
+ 273   1      
+ 274   1          /* Í¬²½ UVC Îä×°ÉèÖÃºÍ¼ÓÈÈÉèÖÃ¡£ */
+ 275   1          if (g_Device.uvc_armed != g_Device_Shadow.uvc_armed) {
+ 276   2              if (SUCCESS == mcu_dp_bool_update(DPID_UV, g_Device.uvc_armed)) {
+ 277   3                  g_Device_Shadow.uvc_armed = g_Device.uvc_armed;
+ 278   3              }
+ 279   2          }
+ 280   1          if (g_Device.heating_enabled != g_Device_Shadow.heating_enabled) {
+ 281   2              if (SUCCESS == mcu_dp_bool_update(DPID_HEAT, g_Device.heating_enabled)) {
+ 282   3                  g_Device_Shadow.heating_enabled = g_Device.heating_enabled;
+C51 COMPILER V9.60.7.0   MAIN                                                              10/22/2026 15:52:30 PAGE 6   
+
+ 283   3              }
+ 284   2          }
+ 285   1      
+ 286   1          /* ÎÂ¶È¿çÔ½ >38¡æ µÄ×´Ì¬±ß½çÊ±Á¢¼´ÉÏ±¨£¬ÆÕÍ¨±ä»¯Ã¿ 60 Ãë¼ì²éÒ»´Î¡£ */
+ 287   1          current_temp = HAL_ADC_Get_Temperature_C();
+ 288   1          is_temp_high = (current_temp > 38) ? 1 : 0;
+ 289   1          if (last_temp_state == 0xFF) {
+ 290   2              last_temp_state = is_temp_high;
+ 291   2          } else if (is_temp_high != last_temp_state) {
+ 292   2              last_temp_state = is_temp_high;
+ 293   2              if (SUCCESS == mcu_dp_value_update(DPID_TEMP_CURRENT, (u32)current_temp)) {
+ 294   3                  last_reported_temp = current_temp;
+ 295   3              }
+ 296   2          }
+ 297   1      
+ 298   1          temp_sync_timer++;
+ 299   1          if (temp_sync_timer >= 60) {
+ 300   2              if (current_temp != last_reported_temp) {
+ 301   3                  if (SUCCESS == mcu_dp_value_update(DPID_TEMP_CURRENT, (u32)current_temp)) {
+ 302   4                      last_reported_temp = current_temp;
+ 303   4                  }
+ 304   3              }
+ 305   2              temp_sync_timer = 0;
+ 306   2          }
+ 307   1      
+ 308   1          /* µçÁ¿Ê¹ÓÃ ADC ×îÖÕµµÎ»£º0 ¸ß¡¢1 ÖÐ¡¢2 µÍ£»Ê×±¨¡¢±äµµ¼°µÍµçÁ¿Ã¿ 1800 ÃëÉÏ±¨¡£ */
+ 309   1          {
+ 310   2              uint8_t current_soc;
+ 311   2              current_soc = HAL_ADC_Get_Battery_SOC();
+ 312   2      
+ 313   2              if (last_bat_soc == 0xFF) {
+ 314   3                  if (SUCCESS == mcu_dp_enum_update(DPID_BAT, current_soc)) {
+ 315   4                      last_bat_soc = current_soc;
+ 316   4                      if (current_soc == 2) {
+ 317   5                          bat_report_cooldown_s = 1800;
+ 318   5                      }
+ 319   4                  }
+ 320   3              } else if (current_soc != last_bat_soc) {
+ 321   3                  if (SUCCESS == mcu_dp_enum_update(DPID_BAT, current_soc)) {
+ 322   4                      last_bat_soc = current_soc;
+ 323   4                      if (current_soc == 2) {
+ 324   5                          bat_report_cooldown_s = 1800;
+ 325   5                      }
+ 326   4                  }
+ 327   3              }
+ 328   2      
+ 329   2              if (current_soc == 2) {
+ 330   3                  if (bat_report_cooldown_s == 0) {
+ 331   4                      if (SUCCESS == mcu_dp_enum_update(DPID_BAT, current_soc)) {
+ 332   5                          bat_report_cooldown_s = 1800;
+ 333   5                      }
+ 334   4                  }
+ 335   3              } else {
+ 336   3                  bat_report_cooldown_s = 0;
+ 337   3              }
+ 338   2              if (bat_report_cooldown_s > 0) {
+ 339   3                  bat_report_cooldown_s--;
+ 340   3              }
+ 341   2          }
+ 342   1      
+ 343   1          if (g_Device.mute_enabled != g_Device_Shadow.mute_enabled) {
+ 344   2              if (SUCCESS == mcu_dp_bool_update(DPID_BEEP, g_Device.mute_enabled)) {
+C51 COMPILER V9.60.7.0   MAIN                                                              10/22/2026 15:52:30 PAGE 7   
+
+ 345   3                  g_Device_Shadow.mute_enabled = g_Device.mute_enabled;
+ 346   3              }
+ 347   2          }
+ 348   1      }
+ 349          
+ 350          extern volatile uint8_t g_uvc_exti_flag;
+ 351          static uint8_t s_power_display_restore = 0;
+ 352          
+ 353          /* Í¬Ê±¼ì²éÊµÊ±ÊäÈëºÍÖÐ¶ÏËø´æ£¬±ÜÃâÎ´´¦ÀíµÄÊäÈëÊÂ¼þ±»Ë¯ÃßÑÓ³Ù¡£ */
+ 354          static uint8_t App_Power_InputActive(void)
+ 355          {
+ 356   1          if (HAL_IR_IsActive()) {
+ 357   2              return 1;
+ 358   2          }
+ 359   1          if (P00 && ((P07 == 0) || (P11 == 0))) {
+ 360   2              return 1;
+ 361   2          }
+ 362   1          if (g_uvc_exti_flag || HAL_Power_InputPending()) {
+ 363   2              return 1;
+ 364   2          }
+ 365   1          if (P20) {
+ 366   2              return 1;
+ 367   2          }
+ 368   1          return 0;
+ 369   1      }
+ 370          
+ 371          /* ÒµÎñÔÊÐíÐÝÃßÇÒÃ»ÓÐÊäÈë¡¢¸ºÔØ»î¶¯Ê±£¬ÀÛ¼Æ¿ÕÏÐÊ±¼ä¡£ */
+ 372          static void App_Power_IdleTick10ms(void)
+ 373          {
+ 374   1          if (!App_FSM_StopStateReady() ||
+ 375   1              g_Device.power_mode != POWER_BATTERY ||
+ 376   1              HAL_PWM_Pump_IsRunning() ||
+ 377   1              P02 ||
+ 378   1              HAL_IR_IsActive() ||
+ 379   1              s_power_input_seen) {
+ 380   2              s_power_idle_10ms = 0;
+ 381   2          } else if (s_power_idle_10ms < APP_MCU_STOP_IDLE_10MS) {
+ 382   2              s_power_idle_10ms++;
+ 383   2          }
+ 384   1      
+ 385   1          s_power_input_seen = 0;
+ 386   1      }
+ 387          
+ 388          /* ÈëË¯Ç°¼ì²é¿ÕÏÐÊ±¼ä¡¢ÍâÉè»î¶¯¡¢ÒµÎñµ¹¼ÆÊ±ºÍ´ý´¦ÀíÇëÇó¡£ */
+ 389          static uint8_t App_Power_BaseReady(void)
+ 390          {
+ 391   1          if (!sc89601_can_stop()) {
+ 392   2            return 0;
+ 393   2          }
+ 394   1        
+ 395   1          /* ÔÊÐíÈí¼þ¹Ø»ú£¬»òÎÞÏÔÊ¾ÐèÇóµÄ¿ª»ú¸ÐÓ¦´ý»ú¡£ */
+ 396   1          if (!App_FSM_StopStateReady() ||
+ 397   1              !App_Wifi_McuStopReady()) {
+ 398   2              return 0;
+ 399   2          }
+ 400   1          
+ 401   1          if (s_power_idle_10ms < APP_MCU_STOP_IDLE_10MS) {
+ 402   2              return 0;
+ 403   2          }
+ 404   1          if ((g_Device.power_mode != POWER_BATTERY) ||
+ 405   1              HAL_PWM_Pump_IsRunning() || P02 || HAL_IR_IsActive()) {
+ 406   2              return 0;
+C51 COMPILER V9.60.7.0   MAIN                                                              10/22/2026 15:52:30 PAGE 8   
+
+ 407   2          }
+ 408   1          if (HAL_Touch_IsBusy() || HAL_Buzzer_IsBusy() || App_Power_InputActive()) {
+ 409   2              return 0;
+ 410   2          }
+ 411   1          if (P10 ||
+ 412   1          #if !APP_CHARGE_DEBUG
+                      P13 ||  /* UVÄ£Ê½¼ì²é¸ºÔØÊä³ö£»´òÓ¡Ä£Ê½²»°ÑTXµçÆ½×÷Îª¸ºÔØ¡£ */
+                  #endif
+ 415   1              g_Device.timer_pump_s || g_Device.timer_uvc_s ||
+ 416   1              g_Device.display_timer_s || g_Device.wifi_pairing_timer_s) {
+ 417   2              return 0;
+ 418   2          }
+ 419   1          if (g_Device.req_power_toggle || g_Device.req_mode_toggle ||
+ 420   1              g_Device.req_heating || g_Device.req_uvc || g_Device.req_wifi_reset ||
+ 421   1              g_Device.req_cancel_pairing) {
+ 422   2              return 0;
+ 423   2          }
+ 424   1          return 1;
+ 425   1      }
+ 426          
+ 427          /* BTMÃ¿8¸öTickÍÆ½øÒ»Ãë£¬°üº¬STOPÑ²¼ìÆÚ¼ä¡£ */
+ 428          static void App_Power_ClockTask(void)
+ 429          {
+ 430   1          uint16_t ticks;
+ 431   1      
+ 432   1          ticks = HAL_Power_TakeTicks();
+ 433   1      
+ 434   1          while (ticks != 0) {
+ 435   2              ticks--;
+ 436   2      
+ 437   2              if (s_power_sleeping) {
+ 438   3                  if (++s_power_adc_div >= 4) {
+ 439   4                      s_power_adc_div = 0;
+ 440   4                      s_power_adc_due = 1;
+ 441   4                  }
+ 442   3              }
+ 443   2      
+ 444   2              if (++s_power_second_div >= 8) {
+ 445   3                  s_power_second_div = 0;
+ 446   3      
+ 447   3                  /* µ±Ç°ÔÚÖ÷Ñ­»·ÖÐ£¬¿ÉÖ´ÐÐ³äµçÐ¾Æ¬I2CÎ¬»¤¡£ */
+ 448   3                  sc89601_tick_1s();
+ 449   3                  App_FSM_BatteryTick_1s(); /* ·ÅÔÚË¯Ãß·ÖÖ§Ö®Ç°£¬±£Ö¤ÐÝÃßÆÚ¼äÒ²¼ÆÊ±¡£ */
+ 450   3                  if (s_power_sleeping) {
+ 451   4                      if (g_Device.current_unix_time != 0) {
+ 452   5                          g_Device.current_unix_time++;
+ 453   5                      }
+ 454   4                  } else {
+ 455   4                      App_FSM_Tick_1s();
+ 456   4      
+ 457   4                      if (App_WifiTest_IsBoot()) {
+ 458   5                          App_Cloud_Sync_Task();
+ 459   5                      }
+ 460   4      
+ 461   4                      App_WifiTest_Tick1s();
+ 462   4                  }
+ 463   3              }
+ 464   2          }
+ 465   1      }
+ 466          
+ 467          /* ÏÈ½áËãË¯Ãß Tick£¬ÔÙ»Ö¸´ ADC/Timer0£»Ç¿ÖÆ²ÉÑùºÍ FSM/UI ¸üÐÂºó»Ö¸´ÏÔÊ¾¡£ */
+ 468          static void App_Power_Exit(void)
+C51 COMPILER V9.60.7.0   MAIN                                                              10/22/2026 15:52:30 PAGE 9   
+
+ 469          {
+ 470   1          App_Power_ClockTask();
+ 471   1          s_power_sleeping = 0;
+ 472   1          s_power_idle_10ms = 0;
+ 473   1          s_power_adc_div = 0;
+ 474   1          s_power_adc_due = 0;
+ 475   1          s_power_input_seen = 0;
+ 476   1      
+ 477   1          HAL_Power_TakeInputEvent();  /* g_uvc_exti_flag Áô¸øÕý³£ÒµÎñÏû·Ñ¡£ */
+ 478   1          flag_10ms = 0;
+ 479   1          flag_100ms = 0;
+ 480   1          flag_500ms = 0;
+ 481   1          flag_1000ms = 0;
+ 482   1          if (s_power_adc_enabled) {
+ 483   2              ADCCON |= 0x80;
+ 484   2          }
+ 485   1          HAL_Power_Resume();
+ 486   1          flag_500ms = 1;
+ 487   1          flag_100ms = 1;
+ 488   1          s_power_display_restore = 1;
+ 489   1      }
+ 490          
+ 491          /* ÈëË¯Á÷³ÌÖÐ¸´²é´ý°ìÊÂ¼þ£»±£´æ¿ìÕÕ²¢¹Ø±ÕÏÔÊ¾¡¢ADC£¬±£Áô´«¸ÐÆ÷¹©µç¡£ */
+ 492          static void App_Power_TryEnter(void)
+ 493          {
+ 494   1          if (!App_Power_BaseReady()) {
+ 495   2              return;
+ 496   2          }
+ 497   1          if (flag_10ms || flag_100ms || flag_500ms) {
+ 498   2              return;
+ 499   2          }
+ 500   1      
+ 501   1          HAL_Power_Prepare();
+ 502   1          if (!App_Power_BaseReady() || flag_10ms || flag_100ms || flag_500ms) {
+ 503   2              HAL_Power_Resume();
+ 504   2              return;
+ 505   2          }
+ 506   1      
+ 507   1          s_power_water_before = P01;
+ 508   1          s_power_bat_io_before = P03;
+ 509   1          s_power_battery_before = HAL_ADC_Get_SystemVoltage_mV();
+ 510   1          s_power_adc_enabled = ADCCON & 0x80;
+ 511   1          s_power_adc_div = 0;
+ 512   1          s_power_adc_due = 0;
+ 513   1      
+ 514   1          P24 = 0;
+ 515   1          P25 = 0;
+ 516   1          HAL_TM1650_PowerOff();
+ 517   1          s_power_display_restore = 1;
+ 518   1          ADCCON &= 0x7F;
+ 519   1          s_power_sleeping = 1;
+ 520   1      
+ 521   1          if (!App_Wifi_McuStopReady() ||App_Power_InputActive() || (P01 != s_power_water_before) ||
+ 522   1              (P03 != s_power_bat_io_before)) {
+ 523   2              App_Power_Exit();
+ 524   2              return;
+ 525   2          }
+ 526   1      HAL_Power_StopOnce();
+ 527   1      }
+ 528          
+ 529          /* Ã¿´ÎÓ²¼þ»½ÐÑºóÑ²¼ì£»³öÏÖÊäÈë»òµçÔ´±ä»¯ÔòÍË³öË¯Ãß£¬·ñÔòÎ¹¹·ºóÔÙ´Î STOP¡£ */
+ 530          static void App_Power_SleepTask(void)
+C51 COMPILER V9.60.7.0   MAIN                                                              10/22/2026 15:52:30 PAGE 10  
+
+ 531          {
+ 532   1          uint8_t event;
+ 533   1          uint16_t battery_mv;
+ 534   1          uint16_t change_mv;
+ 535   1      
+ 536   1          App_Power_ClockTask();
+ 537   1        if (App_FSM_BatteryShutdownActive() &&
+ 538   1          (P00 || g_Device.state != STATE_OFF)) {
+ 539   2          App_Power_Exit(); /* ÐÝÃßÖÐ¼ÆÊ±µ½ÆÚ£¬»Ö¸´ÒµÎñÈÎÎñÍê³É¹Ø±Õ¡£ */
+ 540   2          return;
+ 541   2        }
+ 542   1      /* ºÄ²Äµ½ÆÚÊ±»Ö¸´Õý³£µ÷¶È£¬½»¸øÔ­ÃëÈÎÎñ½áËã¡£ */
+ 543   1      if (App_FSM_ConsumableUpdateDue()) {
+ 544   2          App_Power_Exit();
+ 545   2          return;
+ 546   2      }
+ 547   1          event = HAL_Power_TakeInputEvent();
+ 548   1          if (event || !App_Wifi_McuStopReady() || App_Power_InputActive() || (P01 != s_power_water_before) ||
+ 549   1              (P03 != s_power_bat_io_before)) {
+ 550   2              App_Power_Exit();
+ 551   2              return;
+ 552   2          }
+ 553   1      
+ 554   1          /* Ã¿ 500ms Ö»Ñ²¼ìµç³ØºÍ Type-C£»²ÉÑùÊ§°Ü¡¢µÍÑ¹»òµçÑ¹±ä»¯´ïµ½ãÐÖµÊ±»½ÐÑ¡£ */
+ 555   1          if (s_power_adc_due) {
+ 556   2              s_power_adc_due = 0;
+ 557   2              WDT_SetReload();
+ 558   2              if (sc89601_sleep_wake_required()) {
+ 559   3                  App_Power_Exit();
+ 560   3                  return;
+ 561   3              }
+ 562   2              if (!HAL_ADC_PowerPoll(&battery_mv)) {
+ 563   3                  App_Power_Exit();
+ 564   3                  return;
+ 565   3              }
+ 566   2              if (battery_mv >= s_power_battery_before) {
+ 567   3                  change_mv = battery_mv - s_power_battery_before;
+ 568   3              } else {
+ 569   3                  change_mv = s_power_battery_before - battery_mv;
+ 570   3              }
+ 571   2              if (HAL_Power_TypeCIsPresent() ||
+ 572   2                  (!App_FSM_BatteryShutdownActive() &&
+ 573   2                   ((battery_mv < POWER_BAT_LOW_MV) ||
+ 574   2                    ((g_Device.state != STATE_OFF) &&
+ 575   2                     (battery_mv < 3600U)) ||
+ 576   2                    (change_mv >= POWER_BAT_CHANGE_MV)))) {
+ 577   3                  App_Power_Exit();
+ 578   3                  return;
+ 579   3              }
+ 580   2              /* ±£»¤¹Ø»úºó£¬µÍÑ¹¼°µçÑ¹»Øµ¯²»ÔÙ·´¸´»½ÐÑ£»²åµç¼ì²âÈÔÓÐÐ§¡£ */
+ 581   2          }
+ 582   1      
+ 583   1          if (!App_Wifi_McuStopReady() || App_Power_InputActive() || (P01 != s_power_water_before) ||
+ 584   1              (P03 != s_power_bat_io_before)) {
+ 585   2              App_Power_Exit();
+ 586   2              return;
+ 587   2          }
+ 588   1          WDT_SetReload();
+ 589   1      HAL_Power_StopOnce();
+ 590   1      }
+ 591          
+ 592          #if APP_CHARGE_DEBUG
+C51 COMPILER V9.60.7.0   MAIN                                                              10/22/2026 15:52:30 PAGE 11  
+
+ 593          
+ 594          extern volatile sc_u8 g_sc89601_debug_ready;
+ 595          
+ 596          /*
+ 597           * Ã¿100msµ÷ÓÃ£¬Ã¿2ÃëÆô¶¯Ò»Ö¡¡£
+ 598           * ÏÈ±£´æÍêÕû¿ìÕÕ£¬ÔÙ·ÖÅú´òÓ¡£¬±ÜÃâÒ»´Î³¤Ê±¼äÕ¼ÓÃÖ÷Ñ­»·¡£
+ 599           */
+ 600          static App_Charge_Debug100ms(void)
+ 601          {
+ 602   1          static sc_u8 divider = 0u;
+ 603   1          static sc_u8 phase = 0u;
+ 604   1          static sc_u8 reg_index = 0u;
+ 605   1          static sc89601_snapshot_t frame;
+ 606   1          sc_u8 count;
+ 607   1          static sc_u8 frame_init_result = SC89601_PENDING;
+ 608   1          static sc_u8 frame_poll_result = SC89601_PENDING;
+ 609   1          if (++divider >= 20u) { /* 100ms ¡Á 20£ºÃ¿2ÃëÆô¶¯Ò»×éÈÕÖ¾¡£ */
+ 610   2              divider = 0u;
+ 611   2          }
+ 612   1      
+ 613   1          if (phase == 0u) {
+ 614   2              if (divider != 0u) {
+ 615   3                  return;
+ 616   3              }
+ 617   2      
+ 618   2              printf("\r\n[CHGR] init=%u poll=%u new=%u\r\n",
+ 619   2                  (unsigned int)g_sc89601_init_result,
+ 620   2                  (unsigned int)g_sc89601_poll_result,
+ 621   2                  (unsigned int)g_sc89601_debug_ready);
+ 622   2      
+ 623   2              if (!g_sc89601_debug_ready) {
+ 624   3                  return; /* ÎÞÍêÕûÐÂ¿ìÕÕÊ±£¬Ö»Êä³öÇý¶¯½á¹û¡£ */
+ 625   3              }
+ 626   2      
+ 627   2              /* ¹Ì¶¨±¾Ö¡Êý¾Ý£¬±ÜÃâ·ÖÅú´òÓ¡Ê±»ìÈëÏÂÒ»ÂÖ¿ìÕÕ¡£ */
+ 628   2              frame = g_sc89601_snapshot;
+ 629   2              /* Çý¶¯½á¹ûÓë¼Ä´æÆ÷¿ìÕÕÒ»Æð±£´æ£¬±£Ö¤±¾Ö¡×´Ì¬½âÊÍÒ»ÖÂ¡£ */
+ 630   2              frame_init_result = g_sc89601_init_result;
+ 631   2              frame_poll_result = g_sc89601_poll_result;
+ 632   2              
+ 633   2              g_sc89601_debug_ready = 0u;
+ 634   2      
+ 635   2              reg_index = 0u;
+ 636   2              phase = 1u;
+ 637   2              return;
+ 638   2          }
+ 639   1      
+ 640   1          if (phase == 1u) {
+ 641   2              printf("[CREG]");
+ 642   2              count = 0u;
+ 643   2      
+ 644   2              /* Ã¿´Î×î¶à´òÓ¡4¸ö¼Ä´æÆ÷£¬¸øÆäËûÖ÷Ñ­»·ÈÎÎñÁô³ö»ú»á¡£ */
+ 645   2              while ((count < 4u) &&
+ 646   2                     (reg_index < SC89601_REG_COUNT)) {
+ 647   3      
+ 648   3                  printf(" R%02X=%02X",
+ 649   3                      (unsigned int)reg_index,
+ 650   3                      (unsigned int)frame.reg[reg_index]);
+ 651   3      
+ 652   3                  reg_index++;
+ 653   3                  count++;
+ 654   3              }
+C51 COMPILER V9.60.7.0   MAIN                                                              10/22/2026 15:52:30 PAGE 12  
+
+ 655   2      
+ 656   2              printf("\r\n");
+ 657   2      
+ 658   2              if (reg_index >= SC89601_REG_COUNT) {
+ 659   3                  phase = 2u;
+ 660   3              }
+ 661   2              return;
+ 662   2          }
+ 663   1      
+ 664   1          if (phase == 2u) {
+ 665   2              printf("[CSTA] vbus=%u pg=%u gd=%u CHG=",
+ 666   2                  (unsigned int)frame.vbus_status,
+ 667   2                  (unsigned int)frame.power_good,
+ 668   2                  (unsigned int)frame.vbus_good);
+ 669   2      
+ 670   2              if (!frame.vbus_good) {
+ 671   3                  printf("NO_INPUT");
+ 672   3              } else if ((frame.fault_current & 0xFCu) != 0u) {
+ 673   3                  /* ÓëÒµÎñ²ãÊ¹ÓÃÏàÍ¬µÄÖ÷Òª¹ÊÕÏÑÚÂë¡£ */
+ 674   3                  printf("FAULT");
+ 675   3              } else if (!frame.power_good ||
+ 676   2                         frame_init_result != SC89601_OK ||
+ 677   2                         frame_poll_result != SC89601_OK) {
+ 678   3                  printf("WAIT_READY");
+ 679   3              } else if (frame.charge_status != 0u &&
+ 680   2                         (frame.reg[SC89601_REG_STAT2] & 0x08u) != 0u) {
+ 681   3                  /* ²¹³ä¼ÆÊ±ÓÅÏÈÏÔÊ¾£¬±ÜÃâ½×¶ÎÂë3±»ÌáÇ°½âÊÍÎªÍê³É¡£ */
+ 682   3                  printf("TOP_OFF");
+ 683   3              } else {
+ 684   3                  switch (frame.charge_status) {
+ 685   4                      case 0u:
+ 686   4                          printf("NOT_CHARGING");
+ 687   4                          break;
+ 688   4      
+ 689   4                      case 1u:
+ 690   4                          printf("PRECHARGE");
+ 691   4                          break;
+ 692   4      
+ 693   4                      case 2u:
+ 694   4                          printf("FAST_CHARGE");
+ 695   4                          break;
+ 696   4      
+ 697   4                      case 3u:
+ 698   4                          /* Ç°ÃæÒÑÅÅ³ý¹ÊÕÏ¡¢Î´¾ÍÐ÷ºÍTop-offÈÔ¼ÆÊ±µÄÇé¿ö¡£ */
+ 699   4                          printf("CHARGE_DONE");
+ 700   4                          break;
+ 701   4      
+ 702   4                      default:
+ 703   4                          printf("UNKNOWN");
+ 704   4                          break;
+ 705   4                  }
+ 706   3              }
+ 707   2      
+ 708   2              /* ±£ÁôÔ­Ê¼½×¶ÎÂë¼°Top-offÎ»£¬·½±ãºË¶Ô×´Ì¬½âÊÍ¡£ */
+ 709   2              printf(" raw=%u top=%u\r\n",
+ 710   2                  (unsigned int)frame.charge_status,
+ 711   2                  (unsigned int)(
+ 712   2                      (frame.reg[SC89601_REG_STAT2] & 0x08u) != 0u));
+ 713   2      
+ 714   2              phase = 3u;
+ 715   2              return;
+ 716   2          }
+C51 COMPILER V9.60.7.0   MAIN                                                              10/22/2026 15:52:30 PAGE 13  
+
+ 717   1      
+ 718   1          printf("[CFLT] lat=%02X now=%02X\r\n",
+ 719   1              (unsigned int)frame.fault_latched,
+ 720   1              (unsigned int)frame.fault_current);
+ 721   1      
+ 722   1          phase = 0u;
+ 723   1      }
+ 724          
+ 725          #endif
+ 726          
+ 727          /* ³õÊ¼»¯Ó²¼þ¡¢Ð­ÒéºÍÊ±»ù£¬°´Ê±¼äÆ¬µ÷¶ÈÒµÎñ¡£ */
+ 728          void main(void)
+ 729          {
+ 730   1          volatile uint32_t boot_delay_i = 300000;
+ 731   1          volatile uint32_t boot_delay_j = 300000;
+ 732   1      
+ 733   1          while (boot_delay_i--);
+ 734   1      
+ 735   1          IcResourceInit();
+ 736   1          WiFi_WakeupPin_Init();
+ 737   1      
+ 738   1      #if defined(HIBERNATE_ENABLE)
+ 739   1          g_wifi_allow_sleep = 0;
+ 740   1          g_wifi_lp_state = WIFI_LP_UNKNOWN;
+ 741   1          g_wifi_sleep_reason = 0xFF;
+ 742   1      #endif
+ 743   1      
+ 744   1          /* ±£³ÖÔ­ÓÐ³õÊ¼»¯Ë³ÐòºÍÉÏµçµÈ´ý¡£ */
+ 745   1      //    HAL_LPD_Init();
+ 746   1          P00 = 0;
+ 747   1          HAL_UART_Init();
+ 748   1          HAL_Buzzer_Init();
+ 749   1      
+ 750   1          while (boot_delay_j--);
+ 751   1      
+ 752   1          HAL_TM1650_Init();
+ 753   1          HAL_Touch_Init();
+ 754   1          HAL_IR_Init();
+ 755   1          App_FSM_Init();
+ 756   1      
+ 757   1          SC_USCI2_Init();
+ 758   1          wifi_protocol_init();
+ 759   1          App_WifiTest_Init();
+ 760   1          sc89601_service_init();
+ 761   1      
+ 762   1          WDT_Init(WDT_OverflowTime_500MS);
+ 763   1          WDT_Cmd(ENABLE);
+ 764   1          HAL_Power_Init();
+ 765   1      
+ 766   1          while (1) {
+ 767   2              if (s_power_sleeping) {
+ 768   3                  App_Power_SleepTask();
+ 769   3                  continue;
+ 770   3              }
+ 771   2      
+ 772   2              if (HAL_Power_TakeInputEvent()) {
+ 773   3                  s_power_input_seen = 1;
+ 774   3              }
+ 775   2      
+ 776   2              wifi_uart_service();
+ 777   2      
+ 778   2              App_Power_ClockTask();
+C51 COMPILER V9.60.7.0   MAIN                                                              10/22/2026 15:52:30 PAGE 14  
+
+ 779   2              App_Wifi_WaterTick1s(); /* ·ÅÔÚË¯Ãß·ÖÖ§Ö®Ç°£¬±ÜÃâÐÝÃßÔÝÍ£È·ÈÏ¡£ */
+ 780   2              if (flag_10ms) {
+ 781   3                  flag_10ms = 0;
+ 782   3                  HAL_IR_Scan();
+ 783   3                  App_Power_IdleTick10ms();
+ 784   3              }
+ 785   2      
+ 786   2              /* ADCÏÈÓÚFSMÖ´ÐÐ£¬¹©Í¬ÂÖÒµÎñ¶ÁÈ¡¡£ */
+ 787   2              if (flag_500ms) {
+ 788   3                  flag_500ms = 0;
+ 789   3                  HAL_ADC_Sample_All();
+ 790   3              }
+ 791   2      
+ 792   2              if (flag_100ms) {
+ 793   3                  flag_100ms = 0;
+ 794   3      
+ 795   3                  sc89601_service_100ms(); /* ¸üÐÂ³äµç¼°ÉýÑ¹È·ÈÏ×´Ì¬¡£ */
+ 796   3      
+ 797   3              #if APP_CHARGE_DEBUG
+ 798   3                  App_Charge_Debug100ms();
+ 799   3              #endif
+ 800   3      
+ 801   3                  App_FSM_Run(); /* ÏÈ´¦Àí¿ª¹Ø»ú¡¢¸ÐÓ¦ºÍ³öË®ÇëÇó¡£ */
+ 802   3      
+ 803   3                  App_UI_Refresh_Task();
+ 804   3                  HAL_PWM_Pump_Constant_Voltage(
+ 805   3                      g_Device.sys_voltage_mv);
+ 806   3      
+ 807   3                  if (s_power_display_restore) {
+ 808   4                      if (P00 && !App_FSM_BatteryShutdownActive()) {
+ 809   5                          HAL_TM1650_PowerOn(); /* ¹©µçÓÐÐ§ÇÒÎ´±£»¤¹Ø»úÊ±²Å»Ö¸´ÏÔÊ¾¡£ */
+ 810   5                      }
+ 811   4                      s_power_display_restore = 0;
+ 812   4                  }
+ 813   3              }
+ 814   2      
+ 815   2      #if !DEBUG_IGNORE_WATER_EMPTY
+                      if (P01 == 1) {
+                          HAL_PWM_Pump_Stop();
+                          HAL_PWM_Heating_Stop();
+                          HAL_UVCING_Stop();
+                      }
+              #endif
+ 822   2      
+ 823   2              App_WifiTest_Task();
+ 824   2              WDT_SetReload();
+ 825   2      
+ 826   2      #if APP_MCU_STOP_ENABLE
+ 827   2              App_Power_TryEnter();
+ 828   2      #endif
+ 829   2          }
+ 830   1      }
+*** WARNING C290 IN LINE 723 OF ..\User\main.c: missing return value
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   2543    ----
+   CONSTANT SIZE    =    221    ----
+   XDATA SIZE       =     60      17
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+C51 COMPILER V9.60.7.0   MAIN                                                              10/22/2026 15:52:30 PAGE 15  
+
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  2 WARNING(S),  0 ERROR(S)

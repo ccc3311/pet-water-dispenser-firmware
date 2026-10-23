@@ -1,0 +1,214 @@
+C51 COMPILER V9.60.7.0   SC92F_LPD                                                         10/13/2026 10:46:32 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SC92F_LPD
+OBJECT MODULE PLACED IN ..\Output\sc92f_lpd.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\FWLib\SC92F_Lib\src\sc92f_lpd.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE IN
+                    -CDIR(..\FWLib\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753x
+                    -) DEBUG PRINT(..\List\sc92f_lpd.lst) TABS(2) OBJECT(..\Output\sc92f_lpd.obj)
+
+line level    source
+
+   1          /**
+   2           ******************************************************************************
+   3           * @file    sc92F_LPD.c
+   4           * @author  SOC AE Team
+   5           * @version V1.2.4
+   6           * @date    2026-2-28
+   7           * @brief   LPD function module
+   8           ******************************************************************************
+   9           * @attention
+  10           *
+  11           *1.This software is supplied by SinOne Microelectronics Co.,Ltd. and is only 
+  12           *intended for use with SinOne products. No other uses are authorized. This 
+  13           *software is owned by SinOne Microelectronics Co.,Ltd. and is protected under 
+  14           *all applicable laws, including copyright laws. 
+  15           *2.The software which is for guidance only aims at providing customers with 
+  16           *coding information regarding their products in order for them to save time. 
+  17           *As a result, SinOne shall not be held liable for any direct, indirect or 
+  18           *consequential damages with respect to any claims arising from the content of 
+  19           *such software and/or the use made by customers of the coding information 
+  20           *contained herein in connection with their products.
+  21           *
+  22           *  COPYRIGHT 2025 SinOne Microelectronics
+  23           ******************************************************************************
+  24           */
+  25          
+  26          /* Includes ------------------------------------------------------------------*/
+  27          #include "sc92f_lpd.h"
+  28          
+  29          #if defined (SC92L853x) || defined (SC92L753x) || defined (SC92L840x)
+  30          /** @addtogroup sc92f_StdPeriph_Driver
+  31           * @{
+  32           */
+  33           
+  34          /** @defgroup LPD
+  35           * @brief LPD driver modules
+  36           * @{
+  37           */
+  38          
+  39          /** @defgroup LPD_Functions
+  40           * @{
+  41           */
+  42           
+  43          /** @defgroup LPD_Group1 Initialization and Configuration functions
+  44           *  @brief Initialization and Configuration functions
+  45           *
+  46           
+  47          @verbatim
+  48           ===============================================================================
+  49                               ##### Initialization and Configuration functions #####
+  50           ===============================================================================
+  51          @endverbatim
+  52            * @{
+  53            */
+C51 COMPILER V9.60.7.0   SC92F_LPD                                                         10/13/2026 10:46:32 PAGE 2   
+
+  54            
+  55          /**
+  56           * @brief  LPD相关寄存器复位至缺省值
+  57           * @param  None
+  58           * @retval None
+  59           */ 
+  60          void LPD_DeInit(void)
+  61          {
+  62   1        /* 配置相关寄存器复位 */
+  63   1        LPDCFG = 0x00;
+  64   1        /* 中断相关寄存器复位 */
+  65   1        IE2 &= 0x7F;
+  66   1        IP2 &= 0x7F;
+  67   1      }
+  68          
+  69          /**
+  70           * @brief  设置LPD门限电压阈值
+  71           * @param  LPD_Vtrip[in]: LPD门限电压阈值
+  72           *              - LPD_VTRIP_1_85V:LPD门限电压阈值为1.85V
+  73           *              - LPD_VTRIP_2_05V:LPD门限电压阈值为2.05V
+  74           *              - LPD_VTRIP_2_25V:LPD门限电压阈值为2.25V
+  75           *              - LPD_VTRIP_2_45V:LPD门限电压阈值为2.45V
+  76           *              - LPD_VTRIP_2_65V:LPD门限电压阈值为2.65V
+  77           *              - LPD_VTRIP_2_85V:LPD门限电压阈值为2.85V
+  78           *              - LPD_VTRIP_3_45V:LPD门限电压阈值为3.05V
+  79           *              - LPD_VTRIP_3_45V:LPD门限电压阈值为3.45V
+  80           *              - LPD_VTRIP_3_85V:LPD门限电压阈值为3.85V
+  81           *              - LPD_VTRIP_4_45V:LPD门限电压阈值为4.45V
+  82           * @retval None
+  83           */ 
+  84          void LPD_VtripConfig(LPD_Vtrip_TypeDef LPD_Vtrip)
+  85          {
+  86   1        LPDCFG &= 0xF1; /*复位门限电压阈值寄存器*/
+  87   1        LPDCFG = LPD_Vtrip << 1;  /*设置门限电压阈值寄存器*/
+  88   1      }
+  89          
+  90          /**
+  91           * @brief  使能LPD功能
+  92           * @param  NewState[in]: 断使能/关闭选择
+  93           *              - DISABLE:关闭
+  94           *              - ENABLE:使能
+  95           * @retval None
+  96           */ 
+  97          void LPD_Cmd(FunctionalState NewState)
+  98          {
+  99   1        if(NewState == ENABLE)
+ 100   1        {
+ 101   2          LPDCFG |= 0x01;
+ 102   2          
+ 103   2        }
+ 104   1        else
+ 105   1        {
+ 106   2          LPDCFG &= 0xFE;
+ 107   2        }
+ 108   1      }
+ 109          /**
+ 110           * @}
+ 111           */
+ 112          /* End of LPD_Group1. */
+ 113          
+ 114          
+ 115          /** @defgroup LPD_Group2 Interrupts management functions
+C51 COMPILER V9.60.7.0   SC92F_LPD                                                         10/13/2026 10:46:32 PAGE 3   
+
+ 116           *  @brief   Interrupts management functions
+ 117           *
+ 118          @verbatim
+ 119           ===============================================================================
+ 120                               ##### Interrupts management functions #####
+ 121           ===============================================================================
+ 122          @endverbatim
+ 123            * @{
+ 124            */
+ 125          
+ 126          /**
+ 127           * @brief  LPD中断初始化
+ 128           * @param  NewState[in]: 断使能/关闭选择
+ 129           *              - DISABLE:关闭
+ 130           *              - ENABLE:使能
+ 131           * @param  Priority[in]: 中断优先级选择
+ 132           *              - LOW:低
+ 133           *              - HIGH:高
+ 134           * @retval None
+ 135           */ 
+ 136          void LPD_ITConfig(FunctionalState NewState, PriorityStatus Priority)
+ 137          {
+ 138   1      
+ 139   1        /* 中断开关 */
+ 140   1        if (NewState != DISABLE)
+ 141   1        {
+ 142   2          IE2 |= 0x80;
+ 143   2        }
+ 144   1        else
+ 145   1        {
+ 146   2          IE2 &= 0x7F;
+ 147   2        }
+ 148   1      
+ 149   1      
+ 150   1        /* 中断开关 */
+ 151   1        if (Priority != LOW)
+ 152   1        {
+ 153   2          IP2 |= 0x80;
+ 154   2        }
+ 155   1        else
+ 156   1        {
+ 157   2          IP2 &= 0x7F;
+ 158   2        }
+ 159   1      
+ 160   1      }
+ 161          
+ 162          /**
+ 163           * @}
+ 164           */
+ 165          /* End of LPD_Group2. */
+ 166          
+ 167          /**
+ 168           * @}
+ 169           */
+ 170          
+ 171          /**
+ 172           * @}
+ 173           */
+ 174          
+ 175          /**
+ 176           * @}
+ 177           */
+C51 COMPILER V9.60.7.0   SC92F_LPD                                                         10/13/2026 10:46:32 PAGE 4   
+
+ 178          #endif
+ 179          /******************* (C) COPYRIGHT 2025 SinOne Microelectronics *****END OF FILE****/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     53    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

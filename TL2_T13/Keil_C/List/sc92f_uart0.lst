@@ -1,0 +1,1505 @@
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SC92F_UART0
+OBJECT MODULE PLACED IN ..\Output\sc92f_uart0.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\FWLib\SC92F_Lib\src\sc92f_uart0.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE 
+                    -INCDIR(..\FWLib\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L75
+                    -3x) DEBUG PRINT(..\List\sc92f_uart0.lst) TABS(2) OBJECT(..\Output\sc92f_uart0.obj)
+
+line level    source
+
+   1          /**
+   2           ******************************************************************************
+   3           * @file    sc92f_uart0.c
+   4           * @author  SOC AE Team
+   5           * @version V1.2.4
+   6           * @date    2026-2-28
+   7           * @brief   UART0 function module
+   8           *******************************************************************************
+   9           * @attention
+  10           *
+  11           *1.This software is supplied by SinOne Microelectronics Co.,Ltd. and is only 
+  12           *intended for use with SinOne products. No other uses are authorized. This 
+  13           *software is owned by SinOne Microelectronics Co.,Ltd. and is protected under 
+  14           *all applicable laws, including copyright laws. 
+  15           *2.The software which is for guidance only aims at providing customers with 
+  16           *coding information regarding their products in order for them to save time. 
+  17           *As a result, SinOne shall not be held liable for any direct, indirect or 
+  18           *consequential damages with respect to any claims arising from the content of 
+  19           *such software and/or the use made by customers of the coding information 
+  20           *contained herein in connection with their products.
+  21           *
+  22           *  COPYRIGHT 2025 SinOne Microelectronics
+  23           ******************************************************************************
+  24           */
+  25           
+  26          /* Includes ------------------------------------------------------------------*/
+  27          #include "sc92f_uart0.h"
+  28          
+  29          #if !defined (SC92F742x) && !defined (SC92F827X) && !defined (SC92F837X) && !defined (SC92F7490) && !defin
+             -ed (SC92F5x5x) && !defined (SC92F637x)
+  30          /** @addtogroup sc92f_StdPeriph_Driver
+  31           * @{
+  32           */
+  33          
+  34          /** @defgroup UART0
+  35           * @brief UART0 driver modules
+  36           * @{
+  37           */
+  38          
+  39          /** @defgroup UART0_Functions
+  40           * @{
+  41           */
+  42           
+  43          #if !defined (SC92F652x) && !defined(SC92R51x_R52x) && !defined(SC92F552x) && !defined(SC92F663x)
+  44          
+  45          /** @defgroup UART0_Group1 Configuration of the UART0 computation unit functions
+  46           *  @brief   Configuration of the UART0 computation unit functions
+  47           *
+  48           
+  49          @verbatim
+  50           ===============================================================================
+  51                               ##### UART0 configuration functions #####
+  52           ===============================================================================
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 2   
+
+  53          @endverbatim
+  54            * @{
+  55            */
+  56           
+  57           /**
+  58           * @brief  UART0œ‡πÿºƒ¥Ê∆˜∏¥Œª÷¡»± °÷µ
+  59           * @param  None
+  60           * @retval None
+  61           */ 
+  62          void UART0_DeInit(void)
+  63          {
+  64   1      #if defined (SC92F7003) || defined (SC92F8003) || defined (SC92F8003B) || defined (SC92F740x)
+                OTCON &= 0XEF;
+              #elif defined(SC92F84Hx) || defined(SC92F83Hx)
+                OTCON &= 0XCF;
+              #endif
+  69   1        SCON = 0X00;
+  70   1        PCON &= 0X7F;
+  71   1        IE &= 0XEF;
+  72   1        IP &= 0XEF;
+  73   1      }
+  74          
+  75          #if defined (SC92F7003) || defined (SC92F8003) || defined (SC92F8003B) || defined (SC92F740x) || defined(S
+             -C92F84Hx) || defined(SC92F83Hx)
+              /**
+               * @brief  UART0“˝Ω≈—°‘Ò
+               * @param  PinSeletion[in]:≈‰÷√º∆ ˝≥ı÷µ
+               *          - UART0_PinSelection_P15P16:UART0“˝Ω≈Œ™P15£¨P16
+               *          - UART0_PinSelection_P15:UART0“˝Ω≈Œ™P15£¨P16£¨ŒﬁRX
+               *          - UART0_PinSelection_P11P20:UART0“˝Ω≈Œ™P11£¨P20
+               *          - UART0_PinSelection_P20:UART0“˝Ω≈Œ™P20£¨ŒﬁRX
+               * @retval None
+               */
+              void UART0_PinSelection(UART0_PinSelection_TypeDef
+                                      PinSeletion)
+              {
+              #if defined (SC92F7003) || defined (SC92F8003) || defined (SC92F8003B) || defined (SC92F740x)
+                OTCON = OTCON & 0XDF | PinSeletion;
+              #elif defined(SC92F84Hx) || defined(SC92F83Hx)
+                OTCON = OTCON & 0XCF | PinSeletion;
+              #endif
+              }
+              #endif
+  95          
+  96          /**
+  97           * @brief  UART0≥ı ºªØ≈‰÷√∫Ø ˝
+  98           * @param  Uart0Fsys[in]:œµÕ≥ ±÷”∆µ¬ 
+  99           * @param  BaudRate[in]:≤®Ãÿ¬ 
+ 100           * @param  Mode[in]:œµÕ≥ ±÷”∆µ¬ 
+ 101           *          - UART0_PinSelection_P15P16:UART0“˝Ω≈Œ™P15£¨P16
+ 102           *          - UART0_PinSelection_P15:UART0“˝Ω≈Œ™P15£¨P16£¨ŒﬁRX
+ 103           *          - UART0_PinSelection_P11P20:UART0“˝Ω≈Œ™P11£¨P20
+ 104           *          - UART0_PinSelection_P20:UART0“˝Ω≈Œ™P20£¨ŒﬁRX
+ 105           * @param  ClockMode[in]:≤®Ãÿ¬  ±÷”‘¥£®TIMER1/TIMER2£©
+ 106           *          - UART0_CLOCK_TIMER1:TIMER1◊ˆ≤®Ãÿ¬ ∑¢…˙∆˜
+ 107           *          - UART0_CLOCK_TIMER2:TIMER2◊ˆ≤®Ãÿ¬ ∑¢…˙∆˜
+ 108           * @param  RxMode[in]:Ω” ’‘ –Ì—°‘Ò
+ 109           *          - UART0_RX_ENABLE:‘ –ÌΩ” ’ ˝æ›
+ 110           *          - UART0_RX_DISABLE:≤ª‘ –ÌΩ” ’ ˝æ›
+ 111           * @retval None
+ 112           */
+ 113          void UART0_Init(uint32_t Uart0Fsys, uint32_t BaudRate,
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 3   
+
+ 114                          UART0_Mode_Typedef Mode, UART0_Clock_Typedef ClockMode,
+ 115                          UART0_RX_Typedef RxMode)
+ 116          {
+ 117   1      #if defined (SC92F725X) || defined (SC92F735X) || defined (SC92F730x) || defined (SC92F732X)  || defined (
+             -SC93F833x) || defined (SC93F843x) || defined (SC93F743x)\
+ 118   1          || defined (SC92F730x_2) || defined (SC92F720x) ||defined(SC92F7308B)
+                {
+                  SCON  = SCON & 0X2F | Mode | RxMode;  //…Ë÷√UARTπ§◊˜ƒ£ Ω,…Ë÷√Ω” ’‘ –ÌŒª
+              
+                  if(Mode == UART0_Mode_8B ||
+                      Mode == UART0_Mode_11B_BaudRateFix)
+                  {
+                    if(BaudRate == UART0_BaudRate_FsysDIV12 ||
+                        BaudRate == UART0_BaudRate_FsysDIV64)
+                    {
+                      PCON &= 0X7F;
+                    }
+                    else if(BaudRate == UART0_BaudRate_FsysDIV4 ||
+                            BaudRate == UART0_BaudRate_FsysDIV32)
+                    {
+                      PCON |= 0X80;
+                    }
+                  }
+                  else
+                  {
+                    T2CON = (T2CON & 0xCF) | (ClockMode &  0X30);   //…Ë÷√≤®Ãÿ¬  ±÷”‘¥
+              
+                    if((ClockMode & 0X70) == 0X00)
+                    {
+                      TMOD |= 0X20;
+                      if(ClockMode & 0x80)
+                      {
+                        PCON |= 0X80;
+                        Uart0Fsys = Uart0Fsys * 2;
+                      }
+                      else
+                      {
+                        PCON &= 0X7F;
+                      }
+              
+                      if(ClockMode & 0x0F)
+                      {
+                        TMCON |= 0x02;
+                      }
+                      else
+                      {
+                        TMCON &= 0xFD;
+                        Uart0Fsys = Uart0Fsys / 12;
+                      }
+              
+                      TH1 = 256 - (Uart0Fsys / 32 / BaudRate);
+                      TL1 = TH1;
+                      TR1 = 1;
+                    }
+                    else if((ClockMode & 0X70) == 0X30)
+                    {
+                      if(ClockMode & 0x0F)
+                      {
+                        TMCON |= 0x04;
+                      }
+                      else
+                      {
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 4   
+
+                        TMCON &= 0xFB;
+                        Uart0Fsys = Uart0Fsys / 12;
+                      }
+              
+                      RCAP2H = (65536 - Uart0Fsys / 32 / BaudRate) /
+                               256;
+                      RCAP2L = (65536 - Uart0Fsys / 32 / BaudRate) %
+                               256;
+                      TR2 = 1;
+                    }
+                  }
+                }
+              #elif defined (SC92F848x) || defined (SC92F748x) || defined (SC92F859x) || defined (SC92F759x) || defined 
+             -(SC92R511x)
+                {
+                  SCON  = (SCON & 0X2F) | Mode | RxMode;  //…Ë÷√UARTπ§◊˜ƒ£ Ω,…Ë÷√Ω” ’‘ –ÌŒª
+              
+                  if(Mode == UART0_Mode_8B)
+                  {
+                    if(BaudRate == UART0_BaudRate_FsysDIV12)
+                    {
+                      PCON &= 0X7F;
+                    }
+                    else if(BaudRate == UART0_BaudRate_FsysDIV4)
+                    {
+                      PCON |= 0X80;
+                    }
+                  }
+                  else
+                  {
+                    T2CON = (T2CON & 0xCF) | (ClockMode & 0x30);    //…Ë÷√≤®Ãÿ¬  ±÷”‘¥
+              
+                    if(ClockMode & 0x80)
+                    {
+                      PCON |= 0x80;
+                      Uart0Fsys = Uart0Fsys / 16;
+                    }
+                    else
+                    {
+                      PCON &= 0x7F;
+                    }
+              
+                    if((ClockMode & 0x7F)  == UART0_CLOCK_TIMER1)
+                    {
+                      TH1 = (Uart0Fsys / BaudRate) / 256;
+                      TL1 = (Uart0Fsys / BaudRate) % 256;
+                      TR1 = 0;
+                    }
+                    else if((ClockMode & 0x7F)  == UART0_CLOCK_TIMER2)
+                    {
+                      RCAP2H = (Uart0Fsys / BaudRate) / 256;
+                      RCAP2L = (Uart0Fsys / BaudRate) % 256;
+                      TR2 = 1;
+                    }
+                  }
+                }
+              #elif defined (SC92L853x) || defined (SC92L753x) || defined(SC92F84Hx) || defined(SC92F83Hx) || defined(SC
+             -92F646x) || defined(SC92F546x) || defined(SC92F542x) 
+ 231   1        {
+ 232   2          SCON = (SCON & 0X2F) | Mode | RxMode; //…Ë÷√UARTπ§◊˜ƒ£ Ω,…Ë÷√Ω” ’‘ –ÌŒª
+ 233   2      
+ 234   2          /* »Áπ˚UART0—°‘ÒŒ™8Œª∞ÎÀ´π§Õ¨≤ΩÕ®–≈ƒ£ Ω£¨¥Æ––∂Àø⁄‘⁄œµÕ≥ ±÷”µƒ12∑÷∆µªÚ4∑÷∆µœ¬‘À––*/
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 5   
+
+ 235   2          if(Mode == UART0_Mode_8B)
+ 236   2          {
+ 237   3            if(BaudRate == UART0_BaudRate_FsysDIV12)
+ 238   3            {
+ 239   4      #if defined(SC92F646x) || defined(SC92F546x) || defined(SC92F542x) 
+                          SCON &= 0XDF;
+              #else
+ 242   4                  PCON &= 0X7F;
+ 243   4      #endif
+ 244   4            }
+ 245   3            else if(BaudRate == UART0_BaudRate_FsysDIV4)
+ 246   3            {
+ 247   4      #if defined(SC92F646x) || defined(SC92F546x) || defined(SC92F542x)  
+                          SCON |= 0X20;
+              #else       
+ 250   4                  PCON |= 0X80;
+ 251   4      #endif
+ 252   4            }
+ 253   3          }
+ 254   2          /* UART0—°‘Òƒ£ Ω1/3£¨≤®Ãÿ¬ Œ™ø…±‰ */
+ 255   2          else
+ 256   2          {
+ 257   3      
+ 258   3      
+ 259   3            /* ƒ£ Ω1/3ø…“‘‘⁄œµÕ≥ ±÷”µƒ1∑÷∆µªÚ16∑÷∆µœ¬‘À–– */
+ 260   3            if(ClockMode & 0x80)
+ 261   3            {
+ 262   4              PCON |= 0x80;
+ 263   4              Uart0Fsys = Uart0Fsys / 16;
+ 264   4            }
+ 265   3            else
+ 266   3            {
+ 267   4              PCON &= 0x7F;
+ 268   4            }
+ 269   3      
+ 270   3            /* ≈‰÷√UART0 ±÷”‘¥ */
+ 271   3            if((ClockMode & 0x7F)  == UART0_CLOCK_TIMER1)//UART0 ±÷”‘¥Œ™TIMER1
+ 272   3            {
+ 273   4              TH1 = (Uart0Fsys / BaudRate) / 256;
+ 274   4              TL1 = (Uart0Fsys / BaudRate) % 256;
+ 275   4              TR1 = 0;
+ 276   4            }
+ 277   3            else if((ClockMode & 0x7F)  == UART0_CLOCK_TIMER2)//UART0 ±÷”‘¥Œ™TIMER2
+ 278   3            {
+ 279   4              TXINX = 0X02;
+ 280   4              RCAPXH = (Uart0Fsys / BaudRate) / 256;
+ 281   4              RCAPXL = (Uart0Fsys / BaudRate) % 256;
+ 282   4              TRX = 1;
+ 283   4            }
+ 284   3            TXCON = (TXCON & 0xCF) | ClockMode;   //…Ë÷√≤®Ãÿ¬  ±÷”‘¥
+ 285   3          }
+ 286   2        }
+ 287   1      
+ 288   1      #else
+                {
+                  SCON  = (SCON & 0X2F) | Mode | RxMode;  //…Ë÷√UARTπ§◊˜ƒ£ Ω,…Ë÷√Ω” ’‘ –ÌŒª
+              
+                  if(Mode == UART0_Mode_8B)
+                  {
+                    if(BaudRate == UART0_BaudRate_FsysDIV12)
+                    {
+                    #if !defined(SC92L840x) 
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 6   
+
+                      PCON &= 0X7F;
+                    #else
+                      SCON &= 0XDF;
+                    #endif
+                      
+                    }
+                    else if(BaudRate == UART0_BaudRate_FsysDIV4)
+                    {
+                    #if !defined(SC92L840x) 
+                      PCON |= 0X80;
+                    #else
+                       SCON |= 0X20;
+                    #endif
+                      
+                    }
+                  }
+                  else
+                  {
+                    T2CON = (T2CON & 0xCF) |
+                            (ClockMode & 0x30);   //…Ë÷√≤®Ãÿ¬  ±÷”‘¥
+              
+                    if(ClockMode == UART0_CLOCK_TIMER1)
+                    {
+                      TH1 = (Uart0Fsys / BaudRate) / 256;
+                      TL1 = (Uart0Fsys / BaudRate) % 256;
+                      TR1 = 0;
+                    }
+                    else if(ClockMode == UART0_CLOCK_TIMER2)
+                    {
+                      RCAP2H = (Uart0Fsys / BaudRate) / 256;
+                      RCAP2L = (Uart0Fsys / BaudRate) % 256;
+              #if defined (SC92F846xB) || defined (SC92F746xB) || defined (SC92F836xB) || defined (SC92F736xB) || define
+             -d (SC92F83Ax) || defined (SC92F73Ax)\
+                  || defined (SC92F84Ax) || defined (SC92F74Ax) || defined (SC92F7003) || defined (SC92F8003) || defined (
+             -SC92F8003B) || defined (SC92F740x)\
+                  || defined (SC92R342) || defined (SC92F6x1x) || defined (SC92F5x1x)|| defined (SC92R436)|| defined (SC92
+             -R438)|| defined (SC92R439)|| defined (SC92R422A)\
+                  || defined (SC92F531x)    
+                      TR2 = 1;
+              #endif
+                    }
+                  }
+                }
+              #endif
+ 338   1      }
+ 339          /**
+ 340           * @}
+ 341           */
+ 342          /* End of UART0_Group1. */
+ 343          
+ 344          /** @defgroup UART0_Group2 Base functions
+ 345           *  @brief   UART0 functions
+ 346           *
+ 347          @verbatim
+ 348           ===============================================================================
+ 349                               ##### Base functions #####
+ 350           ===============================================================================
+ 351          @endverbatim
+ 352            * @{
+ 353            */
+ 354          
+ 355          
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 7   
+
+ 356          /**
+ 357           * @brief  UART0∑¢ÀÕ8Œª ˝æ›
+ 358           * @param  Data[in]:UART0∑¢ÀÕ8Œª ˝æ›
+ 359           * @retval None
+ 360           */
+ 361          void UART0_SendData8(uint8_t Data)
+ 362          {
+ 363   1        SBUF = Data;
+ 364   1      }
+ 365          
+ 366          /**
+ 367           * @brief  ªÒµ√SBUF÷–µƒ÷µ
+ 368           * @param  None
+ 369           * @retval UARTΩ” ’µΩµƒ8Œª ˝æ›
+ 370           */
+ 371          uint8_t UART0_ReceiveData8(void)
+ 372          {
+ 373   1        return SBUF;
+ 374   1      }
+ 375          
+ 376          /**
+ 377           * @brief  UART0∑¢ÀÕ9Œª ˝æ›
+ 378           * @param  Data[in]:∑¢ÀÕµƒ ˝æ›
+ 379           * @retval None
+ 380           */
+ 381          void UART0_SendData9(uint16_t Data)
+ 382          {
+ 383   1        uint8_t Data_9Bit;
+ 384   1        Data_9Bit = (Data >> 8);
+ 385   1      
+ 386   1        if(Data_9Bit)
+ 387   1        {
+ 388   2          SCON |= 0X08;
+ 389   2        }
+ 390   1        else
+ 391   1        {
+ 392   2          SCON &= 0XF7;
+ 393   2        }
+ 394   1      
+ 395   1        SBUF = (uint8_t)Data;
+ 396   1      }
+ 397          
+ 398          /**
+ 399           * @brief  ªÒµ√SBUF÷–µƒ÷µº∞µ⁄æ≈Œªµƒ÷µ
+ 400           * @param  None
+ 401           * @retval UARTΩ” ’µΩµƒ ˝æ›
+ 402           */
+ 403          uint16_t UART0_ReceiveData9(void)
+ 404          {
+ 405   1        uint16_t Data9;
+ 406   1        Data9 =  SBUF + (((uint16_t)(SCON & 0X04) & 0x00FF) << 6);
+ 407   1        SCON &= 0XFB;
+ 408   1        return Data9;
+ 409   1      }
+ 410          
+ 411          /**
+ 412           * @brief  UART‘⁄¬÷—Øƒ£ Ωœ¬∑¢ÀÕ¥Û¡ø ˝æ›
+ 413           * @param  UART_HANDLE[out]:÷∏œÚ∞¸∫¨÷∏∂®UARTƒ£øÈµƒ≈‰÷√–≈œ¢Ω·ππÃÂµƒ÷∏’Î
+ 414           * @param  pData[out]:Ω” ’ ˝æ›µƒ¥Ê∑≈«¯
+ 415           * @param  Size[in]:¥˝Ω” ’µƒ ˝æ›¡ø
+ 416           * @param  timeout[in]:≥¨ ± ±º‰…Ë÷√
+ 417           * @retval SSI ◊¥Ã¨
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 8   
+
+ 418           *          - Status_ERROR:¥ÌŒÛ
+ 419           *          - Status_OK:’˝≥£
+ 420           *          - Status_BUSY:’˝√¶
+ 421           *          - Status_TIMEOUT:≥¨ ±
+ 422           */
+ 423          StatusTypeDef UART0_Transmit(UART0_HandleInfoDef* UART_HANDLE, uint8_t* pData, uint8_t Size, uint32_t Time
+             -out)
+ 424          {
+ 425   1          uint32_t TimeoutCnt;
+ 426   1          /* ºÏ≤È“ª∏ˆ∑¢ÀÕΩ¯≥Ã «∑Ò’˝‘⁄Ω¯–– */
+ 427   1          if (UART_HANDLE->TxState == UART0_STATE_READY)
+ 428   1          {
+ 429   2              /* ¥˝∑¢ÀÕ ˝æ›≥§∂»±ÿ–Î¥Û”⁄0£¨∑Ò‘Ú∑µªÿ¥ÌŒÛ◊¥Ã¨ */
+ 430   2              if (Size == 0U)
+ 431   2              {
+ 432   3                  return  Status_ERROR;
+ 433   3              }
+ 434   2      
+ 435   2              UART_HANDLE->TxState = UART0_STATE_BUSY;      //∑¢ÀÕΩ¯≥Ã√¶¬µ÷–
+ 436   2              TI = 0; //∑¢ÀÕ«∞«Â≥˝∑¢ÀÕ±Í÷æ
+ 437   2              UART_HANDLE->pTxBuffPtr.Size_u8 = pData;      //÷∏œÚ¥˝∑¢ÀÕ ˝æ›µƒµÿ÷∑
+ 438   2              UART_HANDLE->TxXferSize = Size;     //∏¸–¬¥˝∑¢ÀÕµƒ ˝æ›¡ø
+ 439   2              UART_HANDLE->TxXferCount = 0;     //∑¢ÀÕº∆ ˝∆˜«Â¡„
+ 440   2      
+ 441   2              while (UART_HANDLE->TxXferCount < UART_HANDLE->TxXferSize)//≈–∂œ «∑ÒΩ” ’À˘”– ˝æ›
+ 442   2              {
+ 443   3                  if (SCON & 0xC0 == UART0_Mode_11B)
+ 444   3                  {
+ 445   4                      SCON &= ~0x08;
+ 446   4                      SCON |= (*(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount) >> 5);//…Ë÷√µ⁄9Œª–
+             -£—ÈŒª
+ 447   4                      SBUF = *(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount);
+ 448   4                  }
+ 449   3                  else
+ 450   3                  {
+ 451   4                      SBUF = *(UART_HANDLE->pTxBuffPtr.Size_u8 + UART_HANDLE->TxXferCount);
+ 452   4                  }
+ 453   3      
+ 454   3                  while (!TI) //µ»¥˝∑¢ÀÕÕÍ≥…
+ 455   3                  {
+ 456   4                      if (TimeoutCnt++ > Timeout)
+ 457   4                      {
+ 458   5                          UART_HANDLE->TxState = UART0_STATE_TIMEOUT;//∑¢ÀÕ≥¨ ±
+ 459   5                          return Status_TIMEOUT;
+ 460   5                      }
+ 461   4                      WDTCON |= 0x10;;          //Œππ∑∫Ø ˝£¨∑¿÷πø¥√≈π∑∏¥Œª
+ 462   4                  }
+ 463   3      
+ 464   3                  UART0_ClearFlag(UART0_FLAG_TI); //∑¢ÀÕ÷–∂œ±Í÷æ«Â≥˝£¨–¥1/–¥0«Â¡„
+ 465   3                  TimeoutCnt = 0;
+ 466   3                  UART_HANDLE->TxXferCount++; //∑¢ÀÕ ˝æ›¡øº∆ ˝
+ 467   3              }
+ 468   2      
+ 469   2              if (UART_HANDLE->TxXferCount == UART_HANDLE->TxXferSize)
+ 470   2              {
+ 471   3                  UART_HANDLE->TxState = UART0_STATE_READY; //∑¢ÀÕÕÍ≥…
+ 472   3                  return Status_OK;
+ 473   3              }
+ 474   2              else
+ 475   2              {
+ 476   3                  UART_HANDLE->TxState = UART0_STATE_ERROR;//∑¢…˙∑¢ÀÕ¥ÌŒÛ
+ 477   3                  return Status_ERROR;
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 9   
+
+ 478   3              }
+ 479   2          }
+ 480   1          else
+ 481   1          {
+ 482   2              return Status_BUSY;//∑µªÿ√¶¬µ◊¥Ã¨
+ 483   2          }
+ 484   1      }
+ 485          
+ 486          /**
+ 487           * @brief  UART‘⁄÷–∂œƒ£ Ωœ¬∑¢ÀÕ¥Û¡ø ˝æ› ±£¨œ»‘⁄main∫Ø ˝÷–µ˜”√¥À∫Ø ˝
+ 488           * @param  UART_HANDLE[out]:÷∏’Î÷∏œÚUART ˝æ›–≈œ¢¥Ê∑≈«¯
+ 489           * @param  pData[out]:Ω” ’ ˝æ›µƒ¥Ê∑≈«¯
+ 490           * @param  Size[in]:¥˝Ω” ’µƒ ˝æ›¡ø
+ 491           * @param  timeout[in]:≥¨ ± ±º‰…Ë÷√
+ 492           * @retval ∫Ø ˝÷¥––◊¥Ã¨
+ 493           *          - Status_ERROR:¥ÌŒÛ
+ 494           *          - Status_OK:’˝≥£
+ 495           *          - Status_BUSY:’˝√¶
+ 496           *          - Status_TIMEOUT:≥¨ ±
+ 497           */
+ 498          StatusTypeDef UART0_Transmit_IT(UART0_HandleInfoDef* UART_HANDLE, uint8_t* pData, uint8_t Size)
+ 499          {
+ 500   1          /* ºÏ≤È“ª∏ˆ∑¢ÀÕΩ¯≥Ã «∑Ò’˝‘⁄Ω¯–– */
+ 501   1          if (UART_HANDLE->TxState == UART0_STATE_READY)
+ 502   1          {
+ 503   2              /* √ª”–ø™∆ÙUART0÷–∂œªÚ∑¢ÀÕ ˝æ›¡ø¥Û–°Œ™0£¨∑µªÿ¥ÌŒÛ */
+ 504   2              if ((EUART == 0) || (UART_HANDLE->TxXferSize == 0U))
+ 505   2              {
+ 506   3                  return Status_ERROR;
+ 507   3              }
+ 508   2      
+ 509   2              UART_HANDLE->TxState = UART0_STATE_BUSY;      //∑¢ÀÕΩ¯≥Ã√¶¬µ÷–
+ 510   2              TI = 0; //∑¢ÀÕ«∞«Â≥˝∑¢ÀÕ±Í÷æ
+ 511   2              UART_HANDLE->pTxBuffPtr.Size_u8 = pData;      //÷∏œÚ¥˝∑¢ÀÕ ˝æ›µƒµÿ÷∑
+ 512   2              UART_HANDLE->TxXferSize = Size;     //∏¸–¬¥˝∑¢ÀÕµƒ ˝æ›¡ø
+ 513   2              UART_HANDLE->TxXferCount = 0;     //∑¢ÀÕº∆ ˝∆˜«Â¡„
+ 514   2      
+ 515   2      
+ 516   2              /* ∑¢ÀÕµ⁄1÷° ˝æ› */
+ 517   2              if (SCON & 0xC0 == UART0_Mode_11B)
+ 518   2              {
+ 519   3                  SCON |= (*(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount) >> 5) & 0x08;//…Ë÷√µ⁄9
+             -Œª–£—ÈŒª
+ 520   3                  SBUF = *(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount);
+ 521   3              }
+ 522   2              else
+ 523   2              {
+ 524   3                  SBUF = *(UART_HANDLE->pTxBuffPtr.Size_u8 + UART_HANDLE->TxXferCount);
+ 525   3              }
+ 526   2              return Status_OK;
+ 527   2          }
+ 528   1          else
+ 529   1          {
+ 530   2              return Status_BUSY;//∑µªÿ±Í÷æŒª
+ 531   2          }
+ 532   1      }
+ 533          
+ 534          /**
+ 535           * @brief  UART‘⁄÷–∂œƒ£ Ωœ¬∑¢ÀÕ¥Û¡ø ˝æ› ±£¨‘⁄÷–∂œ∑˛ŒÒ∫Ø ˝÷–µ˜”√
+ 536           * @param  UART_HANDLE[out]:÷∏œÚ∞¸∫¨÷∏∂®UARTƒ£øÈµƒ≈‰÷√–≈œ¢Ω·ππÃÂµƒ÷∏’Î
+ 537           * @retval ∫Ø ˝÷¥––◊¥Ã¨
+ 538           *          - Status_ERROR:¥ÌŒÛ
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 10  
+
+ 539           *          - Status_OK:’˝≥£
+ 540           *          - Status_BUSY:’˝√¶
+ 541           *          - Status_TIMEOUT:≥¨ ±
+ 542           */
+ 543          StatusTypeDef UART0_Transmit_IRQHandler(UART0_HandleInfoDef* UART_HANDLE)
+ 544          {
+ 545   1          /* ¥¶”⁄∑¢ÀÕœﬂ≥Ã */
+ 546   1          if (UART_HANDLE->TxState == UART0_STATE_BUSY)
+ 547   1          {
+ 548   2              UART_HANDLE->TxXferCount++;
+ 549   2              /* ≈–∂œ…œ“ª¥Œ∑¢ÀÕ «∑Ò «◊Ó∫Û“ª¥Œ */
+ 550   2              if (UART_HANDLE->TxXferCount < UART_HANDLE->TxXferSize)
+ 551   2              {
+ 552   3                  /* ¥˝∑¢ÀÕ ˝æ›¡øŒ¥Œ™0£¨ºÃ–¯∑¢ÀÕ */
+ 553   3                  if (SCON & 0xC0 == UART0_Mode_11B)
+ 554   3                  {
+ 555   4                      SCON |= (*(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount) >> 5) & 0x08;//…Ë÷
+             -√µ⁄9Œª–£—ÈŒª
+ 556   4                      SBUF = *(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount);
+ 557   4                  }
+ 558   3                  else
+ 559   3                  {
+ 560   4                      SBUF = *(UART_HANDLE->pTxBuffPtr.Size_u8 + UART_HANDLE->TxXferCount);
+ 561   4                  }
+ 562   3                  return Status_BUSY;
+ 563   3              }
+ 564   2              else if (UART_HANDLE->TxXferCount == UART_HANDLE->TxXferSize)
+ 565   2              {
+ 566   3                  /* ∑¢ÀÕÕÍ≥… */
+ 567   3                  UART_HANDLE->TxState = UART0_STATE_READY;
+ 568   3                  return Status_OK;
+ 569   3              }
+ 570   2              else
+ 571   2              {
+ 572   3                  /* ∑¢ÀÕ ˝æ›¡øŒ™0 ±ªπ∑¢ÀÕ ˝æ›£¨∑µªÿ¥ÌŒÛ */
+ 573   3                  UART_HANDLE->TxState = UART0_STATE_ERROR;
+ 574   3                  return Status_ERROR;
+ 575   3              }
+ 576   2          }
+ 577   1          else
+ 578   1          {
+ 579   2              return Status_ERROR;
+ 580   2          }
+ 581   1      }
+ 582          
+ 583          /**
+ 584           * @brief  UART‘⁄¬÷—Øƒ£ Ωœ¬Ω” ’¥Û¡ø ˝æ›
+ 585           * @param  UART_HANDLE[out]:÷∏’Î÷∏œÚUART ˝æ›–≈œ¢¥Ê∑≈«¯
+ 586           * @param  pData[out]:Ω” ’ ˝æ›µƒ¥Ê∑≈«¯
+ 587           * @param  Size[in]:¥˝Ω” ’µƒ ˝æ›¡ø
+ 588           * @param  timeout[in]:≥¨ ± ±º‰…Ë÷√
+ 589           * @retval ∫Ø ˝÷¥––◊¥Ã¨
+ 590           *          - Status_ERROR:¥ÌŒÛ
+ 591           *          - Status_OK:’˝≥£
+ 592           *          - Status_BUSY:’˝√¶
+ 593           *          - Status_TIMEOUT:≥¨ ±
+ 594           */
+ 595          StatusTypeDef UART0_Receive(UART0_HandleInfoDef* UART_HANDLE, uint8_t* pData, uint8_t Size, uint32_t Timeo
+             -ut)
+ 596          {
+ 597   1          uint32_t TimeoutCnt = 0;
+ 598   1          /* ºÏ≤ÈΩ” ’Ω¯≥Ã’˝‘⁄‘À–– */
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 11  
+
+ 599   1          if (UART_HANDLE->RxState == UART0_STATE_READY)
+ 600   1          {
+ 601   2              /* ºÏ≤ÈΩ” ’ ˝æ›¡ø¥Û–°∫Õ «∑Òø™∆ÙΩ” ’ πƒ‹ */
+ 602   2              if ((UART_HANDLE->RxXferSize == 0U) || ((SCON & 0x10) == UART0_RX_ENABLE))
+ 603   2              {
+ 604   3                  return  Status_ERROR;
+ 605   3              }
+ 606   2      
+ 607   2              UART_HANDLE->RxState = UART0_STATE_BUSY;      //◊¥Ã¨∏¸–¬Œ™Ω” ’√¶¬µ÷–
+ 608   2              RI = 0;      //Ω” ’«∞«Â≥˝Ω” ’÷–∂œ±Í÷æ
+ 609   2              UART_HANDLE->pRxBuffPtr.Size_u8 = pData;      //÷∏œÚ¥˝∑¢ÀÕ ˝æ›µƒµÿ÷∑
+ 610   2              UART_HANDLE->RxXferSize = Size;     //∏¸–¬¥˝∑¢ÀÕµƒ ˝æ›¡ø
+ 611   2              UART_HANDLE->RxXferCount = 0;     //∑¢ÀÕº∆ ˝∆˜«Â¡„
+ 612   2      
+ 613   2              while (UART_HANDLE->RxXferCount < UART_HANDLE->RxXferSize) //≈–∂œ «∑ÒΩ” ’À˘”– ˝æ›
+ 614   2              {
+ 615   3                  if (RI) //≈–∂œΩ” ’±Í÷æŒª
+ 616   3                  {
+ 617   4                      if (SCON & 0xC0 == UART0_Mode_11B)
+ 618   4                      {
+ 619   5                          *(UART_HANDLE->pRxBuffPtr.Size_u16 + UART_HANDLE->RxXferCount) = SBUF + ((uint16_t)(SC
+             -ON & 0X04) << 6); //Ω” ’ ˝æ›
+ 620   5                      }
+ 621   4                      else
+ 622   4                      {
+ 623   5                          *(UART_HANDLE->pRxBuffPtr.Size_u8 + UART_HANDLE->RxXferCount) = SBUF;     //Ω” ’ ˝æ›
+ 624   5                      }
+ 625   4                      RI = 0;     //Ω” ’±Í÷æŒª«Â¡„
+ 626   4                      UART_HANDLE->RxXferCount++; //Ω” ’ ˝æ›¡øº∆ ˝º”1
+ 627   4                      TimeoutCnt = 0;// ’µΩ ˝æ›£¨≥¨ ±º∆ ˝«Â¡„
+ 628   4                  }
+ 629   3                  else
+ 630   3                  {
+ 631   4                      if (TimeoutCnt++ > Timeout)//º∆ ±“Á≥ˆ
+ 632   4                      {
+ 633   5                          UART_HANDLE->RxState = UART0_STATE_TIMEOUT;//∑¢ÀÕ≥¨ ±
+ 634   5                          return Status_TIMEOUT;
+ 635   5                      }
+ 636   4                      WDTCON |= 0x10;;      //Œππ∑£¨∑¿÷πµ»¥˝ ±º‰π˝≥§£¨µº÷¬WDT∏¥Œª
+ 637   4                  }
+ 638   3              }
+ 639   2      
+ 640   2              if (UART_HANDLE->RxXferCount == UART_HANDLE->RxXferSize)
+ 641   2              {
+ 642   3                  UART_HANDLE->RxState = UART0_STATE_READY; //Ω” ’ÕÍ≥…
+ 643   3                  return Status_OK;
+ 644   3              }
+ 645   2              else
+ 646   2              {
+ 647   3                  UART_HANDLE->RxState = UART0_STATE_ERROR;//Ω” ’¥ÌŒÛ
+ 648   3                  return Status_ERROR;
+ 649   3              }
+ 650   2          }
+ 651   1          else
+ 652   1          {
+ 653   2              return Status_BUSY;//∑µªÿ±Í÷æŒª
+ 654   2          }
+ 655   1      }
+ 656          
+ 657          /**
+ 658           * @brief  UART‘⁄÷–∂œƒ£ Ωœ¬Ω” ’¥Û¡ø ˝æ› ±£¨œ»‘⁄main∫Ø ˝÷–µ˜”√¥À∫Ø ˝
+ 659           * @param  UART_HANDLE[out]:÷∏’Î÷∏œÚUART ˝æ›–≈œ¢¥Ê∑≈«¯
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 12  
+
+ 660           * @param  pData[out]:Ω” ’ ˝æ›µƒ¥Ê∑≈«¯
+ 661           * @param  Size[in]:¥˝Ω” ’µƒ ˝æ›¡ø
+ 662           * @retval ∫Ø ˝÷¥––◊¥Ã¨
+ 663           *          - Status_ERROR:¥ÌŒÛ
+ 664           *          - Status_OK:’˝≥£
+ 665           *          - Status_BUSY:’˝√¶
+ 666           *          - Status_TIMEOUT:≥¨ ±
+ 667           */
+ 668          StatusTypeDef UART0_Receive_IT(UART0_HandleInfoDef* UART_HANDLE, uint8_t* pData, uint8_t Size)
+ 669          {
+ 670   1          /* ºÏ≤È“ª∏ˆΩ” ’Ω¯≥Ã «∑Ò’˝‘⁄Ω¯–– */
+ 671   1          if (UART_HANDLE->RxState == UART0_STATE_READY)
+ 672   1          {
+ 673   2              /* ºÏ≤È «∑Òø™∆ÙUART0÷–∂œªÚ∑¢ÀÕ ˝æ›¡ø¥Û–°Œ™0ªÚ «∑Òø™∆ÙΩ” ’ πƒ‹£¨∑µªÿ¥ÌŒÛ */
+ 674   2              if ((EUART == 0) || (Size == 0U) || ((SCON & 0x10) == UART0_RX_ENABLE))
+ 675   2              {
+ 676   3                  return UART0_STATE_ERROR;
+ 677   3              }
+ 678   2      
+ 679   2              UART_HANDLE->RxState = UART0_STATE_BUSY;
+ 680   2              UART_HANDLE->pRxBuffPtr.Size_u8 = pData;      //÷∏œÚΩ” ’ ˝æ›µƒ¥Ê∑≈µÿ÷∑
+ 681   2              UART_HANDLE->RxXferSize = Size;     //∏¸–¬¥˝Ω” ’µƒ ˝æ›¡ø
+ 682   2              UART_HANDLE->RxXferCount = 0;     //∑¢ÀÕº∆ ˝∆˜«Â¡„
+ 683   2      
+ 684   2              return Status_OK;
+ 685   2          }
+ 686   1          else
+ 687   1          {
+ 688   2              return Status_BUSY;//∑µªÿ±Í÷æŒª
+ 689   2          }
+ 690   1      }
+ 691          
+ 692          /**
+ 693           * @brief  UART‘⁄÷–∂œƒ£ Ωœ¬Ω” ’¥Û¡ø ˝æ› ±£¨‘⁄÷–∂œ∑˛ŒÒ∫Ø ˝÷–µ˜”√ ◊¢£∫∏√∫Ø ˝µ˜”√–Ë“™≈–∂œ÷–∂œ±Í÷æŒª «∑Ò÷√∆
+ 694           * @param  UART_HANDLE[out]:÷∏’Î÷∏œÚSSI ˝æ›–≈œ¢¥Ê∑≈«¯
+ 695           * @retval ∫Ø ˝÷¥––◊¥Ã¨
+ 696           *          - Status_ERROR:¥ÌŒÛ
+ 697           *          - Status_OK:’˝≥£
+ 698           *          - Status_BUSY:’˝√¶
+ 699           *          - Status_TIMEOUT:≥¨ ±
+ 700           */
+ 701          StatusTypeDef UART0_Receive_IRQHandler(UART0_HandleInfoDef* UART_HANDLE)
+ 702          {
+ 703   1          /* ºÏ≤È“ª∏ˆΩ” ’Ω¯≥Ã «∑Ò’˝‘⁄Ω¯–– */
+ 704   1          if (UART_HANDLE->RxState == UART0_STATE_BUSY)
+ 705   1          {
+ 706   2              /* ¥¶”⁄Ω” ’œﬂ≥Ã£¨ºÏ≤È¥˝Ω” ’ ˝æ›¡ø «∑ÒŒ™0 */
+ 707   2              if (UART_HANDLE->RxXferCount < UART_HANDLE->RxXferSize)
+ 708   2              {
+ 709   3                  if (SCON & 0xC0 == UART0_Mode_11B)
+ 710   3                  {
+ 711   4                      *(UART_HANDLE->pRxBuffPtr.Size_u16 + UART_HANDLE->RxXferCount) = SBUF + ((uint16_t)(SCON &
+             - 0X04) << 6); //Ω” ’ ˝æ›
+ 712   4                  }
+ 713   3                  else
+ 714   3                  {
+ 715   4                      *(UART_HANDLE->pRxBuffPtr.Size_u8 + UART_HANDLE->RxXferCount) = SBUF;     //Ω” ’ ˝æ›
+ 716   4                  }
+ 717   3                  UART_HANDLE->RxXferCount++;
+ 718   3                  /* ≈–∂œ…œ“ª¥Œ∑¢ÀÕ «∑Ò «◊Ó∫Û“ª¥Œ */
+ 719   3                  if (UART_HANDLE->RxXferCount == UART_HANDLE->RxXferSize)
+ 720   3                  {
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 13  
+
+ 721   4                      /* Ω” ’ÕÍ≥… */
+ 722   4                      UART_HANDLE->RxState = UART0_STATE_READY;
+ 723   4                      return Status_OK;
+ 724   4                  }
+ 725   3                  return Status_BUSY;
+ 726   3              }
+ 727   2              else
+ 728   2              {
+ 729   3                  /* Ω” ’ ˝æ›¡øŒ™0 ±ªπΩ” ’ ˝æ›£¨∑µªÿ¥ÌŒÛ */
+ 730   3                  UART_HANDLE->RxState = UART0_STATE_ERROR;
+ 731   3                  return Status_ERROR;
+ 732   3              }
+ 733   2          }
+ 734   1          else
+ 735   1          {
+ 736   2              return Status_BUSY;
+ 737   2          }
+ 738   1      }
+ 739          /**
+ 740           * @}
+ 741           */
+ 742          /* End of UART0_Group2. */
+ 743          
+ 744          /** @defgroup UART0_Group3 Interrupts and flags management functions
+ 745           *  @brief   Interrupts and flags management functions
+ 746           *
+ 747          @verbatim
+ 748           ===============================================================================
+ 749                               ##### Interrupts and flags management functions #####
+ 750           ===============================================================================
+ 751          @endverbatim
+ 752            * @{
+ 753            */
+ 754          
+ 755          /**
+ 756           * @brief  UART0÷–∂œ≥ı ºªØ
+ 757           * @param  NewState[in]: ∂œ πƒ‹/πÿ±’—°‘Ò
+ 758           *              - DISABLE:πÿ±’
+ 759           *              - ENABLE: πƒ‹
+ 760           * @param  Priority[in]: ÷–∂œ”≈œ»º∂—°‘Ò
+ 761           *              - LOW:µÕ
+ 762           *              - HIGH:∏ﬂ
+ 763           * @retval None
+ 764           */ 
+ 765          void UART0_ITConfig(FunctionalState NewState,
+ 766                              PriorityStatus Priority)
+ 767          {
+ 768   1        if(NewState == DISABLE)
+ 769   1        {
+ 770   2          EUART = 0;
+ 771   2        }
+ 772   1        else
+ 773   1        {
+ 774   2          EUART = 1;
+ 775   2        }
+ 776   1      
+ 777   1        //…Ë÷√÷–∂œ”≈œ»º∂
+ 778   1        if(Priority == LOW)
+ 779   1        {
+ 780   2          IPUART = 0;
+ 781   2        }
+ 782   1        else
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 14  
+
+ 783   1        {
+ 784   2          IPUART = 1;
+ 785   2        }
+ 786   1      }
+ 787          /**
+ 788           * @}
+ 789           */
+ 790          /* End of UART0_Group3. */
+ 791          
+ 792          #else
+              
+              /** @defgroup UART0_Group1 Configuration of the UART0 computation unit functions
+               *  @brief   Configuration of the UART0 computation unit functions
+               *
+               
+              @verbatim
+               ===============================================================================
+                                   ##### UART0 configuration functions #####
+               ===============================================================================
+              
+              
+              @endverbatim
+                * @{
+                */
+               
+               /**
+               * @brief  UART0œ‡πÿºƒ¥Ê∆˜∏¥Œª÷¡»± °÷µ
+               * @param  None
+               * @retval None
+               */ 
+              //#define UART0_GetFlagStatus(UART0_Flag) ((UART0_Flag == UART0_FLAG_TI) ? (TI):(RI))
+              //#define UART0_ClearFlag(UART0_Flag) CLEAR_BIT(U0SCON,UART0_Flag)
+              
+              void UART0_DeInit(void)
+              {
+                U0SCON = 0X00;
+                PCON &= 0X7F;
+                IE &= 0XEF;
+                IP &= 0XEF;
+              }
+              
+              /**
+               * @brief  UART0≥ı ºªØ≈‰÷√∫Ø ˝
+               * @param  Uart0Fsys[in]:œµÕ≥ ±÷”∆µ¬ 
+               * @param  BaudRate[in]:≤®Ãÿ¬ 
+               * @param  Mode[in]:œµÕ≥ ±÷”∆µ¬ 
+               *          - UART0_Mode_8B:UART0π§◊˜ƒ£ Ω:8Œª∞ÎÀ´π§
+               *          - UART0_Mode_10B:UART0π§◊˜ƒ£ Ω:10Œª»´À´π§
+               *          - UART0_Mode_11B:UART0π§◊˜ƒ£ Ω:11Œª»´À´π§
+               * @param  ClockMode[in]:≤®Ãÿ¬  ±÷”‘¥£®TIMER1/TIMER2£©
+               *          - UART0_CLOCK_TIMER1:TIMER1◊ˆ≤®Ãÿ¬ ∑¢…˙∆˜
+               *          - UART0_CLOCK_TIMER2:TIMER2◊ˆ≤®Ãÿ¬ ∑¢…˙∆˜
+               * @param  RxMode[in]:Ω” ’‘ –Ì—°‘Ò
+               *          - UART0_RX_ENABLE:‘ –ÌΩ” ’ ˝æ›
+               *          - UART0_RX_DISABLE:≤ª‘ –ÌΩ” ’ ˝æ›
+               * @retval None
+               */
+              void UART0_Init(uint32_t Uart0Fsys, uint32_t BaudRate,
+                              UART0_Mode_Typedef Mode, UART0_Clock_Typedef ClockMode,
+                              UART0_RX_Typedef RxMode)
+              {
+                U0SCON  = (U0SCON & 0X2F) | Mode | RxMode;  //…Ë÷√UARTπ§◊˜ƒ£ Ω,…Ë÷√Ω” ’‘ –ÌŒª
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 15  
+
+              //  TMCON |= 0X02;
+              //  TMOD  |= 0X20;
+                /* »Áπ˚UART0—°‘ÒŒ™8Œª∞ÎÀ´π§Õ¨≤ΩÕ®–≈ƒ£ Ω£¨¥Æ––∂Àø⁄‘⁄œµÕ≥ ±÷”µƒ12∑÷∆µªÚ4∑÷∆µœ¬‘À––*/
+                if(Mode == UART0_Mode_8B)
+                {
+                  if(BaudRate == UART0_BaudRate_FsysDIV12)
+                  {
+                    PCON &= 0X7F;
+                  }
+                  else if(BaudRate == UART0_BaudRate_FsysDIV4)
+                  {     
+                    PCON |= 0X80;
+                  }
+                }
+                /* UART0—°‘Òƒ£ Ω1/3£¨≤®Ãÿ¬ Œ™ø…±‰ */
+                else
+                {
+                  /* ƒ£ Ω1/3ø…“‘‘⁄œµÕ≥ ±÷”µƒ1∑÷∆µªÚ16∑÷∆µœ¬‘À–– */
+                  if(ClockMode & 0x80)
+                  {
+                    PCON |= 0x80;
+                    Uart0Fsys = Uart0Fsys / 16;
+                  }
+                  else
+                  {
+                    PCON &= 0x7F;
+                  }
+              
+                  /* ≈‰÷√UART0 ±÷”‘¥ */
+                  if((ClockMode & 0x7F)  == UART0_CLOCK_TIMER1)//UART0 ±÷”‘¥Œ™TIMER1
+                  {
+                    TH1 = (Uart0Fsys / BaudRate) / 256;
+                    TL1 = (Uart0Fsys / BaudRate) % 256;
+                    TR1 = 0;
+                  }
+                  else if((ClockMode & 0x7F)  == UART0_CLOCK_TIMER2)//UART0 ±÷”‘¥Œ™TIMER2
+                  {
+                    TXINX = 0X02;
+                    RCAPXH = (Uart0Fsys / BaudRate) / 256;
+                    RCAPXL = (Uart0Fsys / BaudRate) % 256;
+                    TRX = 1;
+                  }
+                  TXCON = (TXCON & 0xCF) | ClockMode;   //…Ë÷√≤®Ãÿ¬  ±÷”‘¥
+                }
+              }
+              
+              #if defined (SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x)|| defined (SC92F531x)
+              #if defined (SC92F531x)
+              uint8_t xdata SPOS_TX0 _at_ 0x120;
+              uint8_t xdata SPOS_RX0 _at_ 0x121;
+              #else
+              uint8_t xdata SPOS_TX0 _at_ 0x1030;
+              uint8_t xdata SPOS_RX0 _at_ 0x1031;
+              #endif
+              /**
+               * @brief  UART0∂Àø⁄”≥…‰∫Ø ˝
+               * @param  UART0_TX0_MappingPin[in]: UART0_TX0”≥…‰π‹Ω≈—°‘Ò
+               * @param  UART0_RX0_MappingPin[in]: UART0_RX0”≥…‰π‹Ω≈—°‘Ò
+               *          - UART0_Mapped_to_P50:UART0_XX”≥…‰µΩP50
+               *          - UART0_Mapped_to_P51:UART0_XX”≥…‰µΩP51
+               *          - UART0_Mapped_to_P52:UART0_XX”≥…‰µΩP52
+               *          - UART0_Mapped_to_P53:UART0_XX”≥…‰µΩP53
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 16  
+
+               *          - UART0_Mapped_to_P54:UART0_XX”≥…‰µΩP54
+               *          - UART0_Mapped_to_P56:UART0_XX”≥…‰µΩP50
+               *          - UART0_Mapped_to_P57:UART0_XX”≥…‰µΩP51
+               *          - UART0_Mapped_to_P10:UART0_XX”≥…‰µΩP10
+               *          - UART0_Mapped_to_P11:UART0_XX”≥…‰µΩP11
+               *          - UART0_Mapped_to_P14:UART0_XX”≥…‰µΩP14
+               *          - UART0_Mapped_to_P15:UART0_XX”≥…‰µΩP15
+               *          - UART0_Mapped_to_P16:UART0_XX”≥…‰µΩP16
+               *          - UART0_Mapped_to_P17:UART0_XX”≥…‰µΩP17
+               *          - UART0_Mapped_to_P27:UART0_XX”≥…‰µΩP27
+               *          - UART0_Mapped_to_P26:UART0_XX”≥…‰µΩP26
+               *          - UART0_Mapped_to_P25:UART0_XX”≥…‰µΩP25
+               *          - UART0_Mapped_to_P24:UART0_XX”≥…‰µΩP24
+               *          - UART0_Mapped_to_P23:UART0_XX”≥…‰µΩP23
+               *          - UART0_Mapped_to_P22:UART0_XX”≥…‰µΩP22
+               *          - UART0_Mapped_to_P21:UART0_XX”≥…‰µΩP21
+               *          - UART0_Mapped_to_P20:UART0_XX”≥…‰µΩP20
+               *          - UART0_Mapped_to_P07:UART0_XX”≥…‰µΩP07
+               *          - UART0_Mapped_to_P06:UART0_XX”≥…‰µΩP06
+               *          - UART0_Mapped_to_P05:UART0_XX”≥…‰µΩP05
+               *          - UART0_Mapped_to_P04:UART0_XX”≥…‰µΩP04
+               *          - UART0_Mapped_to_P03:UART0_XX”≥…‰µΩP03
+               *          - UART0_Mapped_to_P02:UART0_XX”≥…‰µΩP02
+               *          - UART0_Mapped_to_P01:UART0_XX”≥…‰µΩP01
+               *          - UART0_Mapped_to_P00:UART0_XX”≥…‰µΩP00
+               * @retval None
+               */
+              void UART0_PortMapping(UART0_PortMappingPin_TypeDef UART0_TX0_MappingPin,
+                                     UART0_PortMappingPin_TypeDef UART0_RX0_MappingPin)
+              {
+                SPOS_TX0 = SPOS_TX0 & 0xE0 | UART0_TX0_MappingPin;
+                SPOS_RX0 = SPOS_RX0 & 0xE0 | UART0_RX0_MappingPin;
+              }
+              #endif
+              
+              /**
+               * @}
+               */
+              /* End of UART0_Group1. */
+              
+              /** @defgroup UART0_Group2 Base functions
+               *  @brief   UART0 functions
+               *
+              @verbatim
+               ===============================================================================
+                                   ##### Base functions #####
+               ===============================================================================
+              @endverbatim
+                * @{
+                */
+              
+              
+              /**
+               * @brief  UART0∑¢ÀÕ8Œª ˝æ›
+               * @param  Data[in]:UART0∑¢ÀÕ8Œª ˝æ›
+               * @retval None
+               */
+              void UART0_SendData8(uint8_t Data)
+              {
+                U0SBUF = Data;
+              }
+              
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 17  
+
+              /**
+               * @brief  ªÒµ√SBUF÷–µƒ÷µ
+               * @param  None
+               * @retval UARTΩ” ’µΩµƒ8Œª ˝æ›
+               */
+              uint8_t UART0_ReceiveData8(void)
+              {
+                return U0SBUF;
+              }
+              
+              /**
+               * @brief  UART0∑¢ÀÕ9Œª ˝æ›
+               * @param  Data[in]:∑¢ÀÕµƒ ˝æ›
+               * @retval None
+               */
+              void UART0_SendData9(uint16_t Data)
+              {
+                uint8_t Data_9Bit;
+                Data_9Bit = (Data >> 8);
+              
+                if(Data_9Bit)
+                {
+                  U0SCON |= 0X08;
+                }
+                else
+                {
+                  U0SCON &= 0XF7;
+                }
+              
+                U0SBUF = (uint8_t)Data;
+              }
+              
+              /**
+               * @brief  ªÒµ√SBUF÷–µƒ÷µº∞µ⁄æ≈Œªµƒ÷µ
+               * @param  None
+               * @retval UARTΩ” ’µΩµƒ ˝æ›
+               */
+              uint16_t UART0_ReceiveData9(void)
+              {
+                uint16_t Data9;
+                Data9 =  U0SBUF + ((uint16_t)(U0SCON & 0X04) << 6);
+                U0SCON &= 0XFB;
+                return Data9;
+              }
+              
+              /**
+               * @brief  UART‘⁄¬÷—Øƒ£ Ωœ¬∑¢ÀÕ¥Û¡ø ˝æ›
+               * @param  UART_HANDLE[out]:÷∏œÚ∞¸∫¨÷∏∂®UARTƒ£øÈµƒ≈‰÷√–≈œ¢Ω·ππÃÂµƒ÷∏’Î
+               * @param  pData[out]:Ω” ’ ˝æ›µƒ¥Ê∑≈«¯
+               * @param  Size[in]:¥˝Ω” ’µƒ ˝æ›¡ø
+               * @param  timeout[in]:≥¨ ± ±º‰…Ë÷√
+               * @retval SSI ◊¥Ã¨
+               *          - Status_ERROR:¥ÌŒÛ
+               *          - Status_OK:’˝≥£
+               *          - Status_BUSY:’˝√¶
+               *          - Status_TIMEOUT:≥¨ ±
+               */
+              StatusTypeDef UART0_Transmit(UART0_HandleInfoDef* UART_HANDLE, uint8_t* pData, uint8_t Size, uint32_t Time
+             -out)
+              {
+                  uint32_t TimeoutCnt;
+                  /* ºÏ≤È“ª∏ˆ∑¢ÀÕΩ¯≥Ã «∑Ò’˝‘⁄Ω¯–– */
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 18  
+
+                  if (UART_HANDLE->TxState == UART0_STATE_READY)
+                  {
+                      /* ¥˝∑¢ÀÕ ˝æ›≥§∂»±ÿ–Î¥Û”⁄0£¨∑Ò‘Ú∑µªÿ¥ÌŒÛ◊¥Ã¨ */
+                      if (Size == 0U)
+                      {
+                          return  Status_ERROR;
+                      }
+              
+                      UART_HANDLE->TxState = UART0_STATE_BUSY;      //∑¢ÀÕΩ¯≥Ã√¶¬µ÷–
+                      TI = 0; //∑¢ÀÕ«∞«Â≥˝∑¢ÀÕ±Í÷æ
+                      UART_HANDLE->pTxBuffPtr.Size_u8 = pData;      //÷∏œÚ¥˝∑¢ÀÕ ˝æ›µƒµÿ÷∑
+                      UART_HANDLE->TxXferSize = Size;     //∏¸–¬¥˝∑¢ÀÕµƒ ˝æ›¡ø
+                      UART_HANDLE->TxXferCount = 0;     //∑¢ÀÕº∆ ˝∆˜«Â¡„
+              
+                      while (UART_HANDLE->TxXferCount < UART_HANDLE->TxXferSize)//≈–∂œ «∑ÒΩ” ’À˘”– ˝æ›
+                      {
+                          if (U0SCON & 0xC0 == UART0_Mode_11B)
+                          {
+                              U0SCON &= ~0x08;
+                              U0SCON |= (*(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount) >> 5);//…Ë÷√µ⁄9Œ
+             -ª–£—ÈŒª
+                              U0SBUF = *(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount);
+                          }
+                          else
+                          {
+                              U0SBUF = *(UART_HANDLE->pTxBuffPtr.Size_u8 + UART_HANDLE->TxXferCount);
+                          }
+              
+                          while (!TI) //µ»¥˝∑¢ÀÕÕÍ≥…
+                          {
+                              if (TimeoutCnt++ > Timeout)
+                              {
+                                  UART_HANDLE->TxState = UART0_STATE_TIMEOUT;//∑¢ÀÕ≥¨ ±
+                                  return Status_TIMEOUT;
+                              }
+                              WDTCON |= 0x10;;          //Œππ∑∫Ø ˝£¨∑¿÷πø¥√≈π∑∏¥Œª
+                          }
+              
+                          UART0_ClearFlag(UART0_FLAG_TI); //∑¢ÀÕ÷–∂œ±Í÷æ«Â≥˝£¨–¥1/–¥0«Â¡„
+                          TimeoutCnt = 0;
+                          UART_HANDLE->TxXferCount++; //∑¢ÀÕ ˝æ›¡øº∆ ˝
+                      }
+              
+                      if (UART_HANDLE->TxXferCount == UART_HANDLE->TxXferSize)
+                      {
+                          UART_HANDLE->TxState = UART0_STATE_READY; //∑¢ÀÕÕÍ≥…
+                          return Status_OK;
+                      }
+                      else
+                      {
+                          UART_HANDLE->TxState = UART0_STATE_ERROR;//∑¢…˙∑¢ÀÕ¥ÌŒÛ
+                          return Status_ERROR;
+                      }
+                  }
+                  else
+                  {
+                      return Status_BUSY;//∑µªÿ√¶¬µ◊¥Ã¨
+                  }
+              }
+              
+              /**
+               * @brief  UART‘⁄÷–∂œƒ£ Ωœ¬∑¢ÀÕ¥Û¡ø ˝æ› ±£¨œ»‘⁄main∫Ø ˝÷–µ˜”√¥À∫Ø ˝
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 19  
+
+               * @param  UART_HANDLE[out]:÷∏’Î÷∏œÚUART ˝æ›–≈œ¢¥Ê∑≈«¯
+               * @param  pData[out]:Ω” ’ ˝æ›µƒ¥Ê∑≈«¯
+               * @param  Size[in]:¥˝Ω” ’µƒ ˝æ›¡ø
+               * @param  timeout[in]:≥¨ ± ±º‰…Ë÷√
+               * @retval ∫Ø ˝÷¥––◊¥Ã¨
+               *          - Status_ERROR:¥ÌŒÛ
+               *          - Status_OK:’˝≥£
+               *          - Status_BUSY:’˝√¶
+               *          - Status_TIMEOUT:≥¨ ±
+               */
+              StatusTypeDef UART0_Transmit_IT(UART0_HandleInfoDef* UART_HANDLE, uint8_t* pData, uint8_t Size)
+              {
+                  /* ºÏ≤È“ª∏ˆ∑¢ÀÕΩ¯≥Ã «∑Ò’˝‘⁄Ω¯–– */
+                  if (UART_HANDLE->TxState == UART0_STATE_READY)
+                  {
+                      /* √ª”–ø™∆ÙUART0÷–∂œªÚ∑¢ÀÕ ˝æ›¡ø¥Û–°Œ™0£¨∑µªÿ¥ÌŒÛ */
+                      if ((EUART0 == 0) || (UART_HANDLE->TxXferSize == 0U))
+                      {
+                          return Status_ERROR;
+                      }
+              
+                      UART_HANDLE->TxState = UART0_STATE_BUSY;      //∑¢ÀÕΩ¯≥Ã√¶¬µ÷–
+                      TI = 0; //∑¢ÀÕ«∞«Â≥˝∑¢ÀÕ±Í÷æ
+                      UART_HANDLE->pTxBuffPtr.Size_u8 = pData;      //÷∏œÚ¥˝∑¢ÀÕ ˝æ›µƒµÿ÷∑
+                      UART_HANDLE->TxXferSize = Size;     //∏¸–¬¥˝∑¢ÀÕµƒ ˝æ›¡ø
+                      UART_HANDLE->TxXferCount = 0;     //∑¢ÀÕº∆ ˝∆˜«Â¡„
+              
+              
+                      /* ∑¢ÀÕµ⁄1÷° ˝æ› */
+                      if (U0SCON & 0xC0 == UART0_Mode_11B)
+                      {
+                          U0SCON |= (*(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount) >> 5) & 0x08;//…Ë÷√µ
+             -⁄9Œª–£—ÈŒª
+                          U0SBUF = *(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount);
+                      }
+                      else
+                      {
+                          U0SBUF = *(UART_HANDLE->pTxBuffPtr.Size_u8 + UART_HANDLE->TxXferCount);
+                      }
+                      return Status_OK;
+                  }
+                  else
+                  {
+                      return Status_BUSY;//∑µªÿ±Í÷æŒª
+                  }
+              }
+              
+              /**
+               * @brief  UART‘⁄÷–∂œƒ£ Ωœ¬∑¢ÀÕ¥Û¡ø ˝æ› ±£¨‘⁄÷–∂œ∑˛ŒÒ∫Ø ˝÷–µ˜”√
+               * @param  UART_HANDLE[out]:÷∏œÚ∞¸∫¨÷∏∂®UARTƒ£øÈµƒ≈‰÷√–≈œ¢Ω·ππÃÂµƒ÷∏’Î
+               * @retval ∫Ø ˝÷¥––◊¥Ã¨
+               *          - Status_ERROR:¥ÌŒÛ
+               *          - Status_OK:’˝≥£
+               *          - Status_BUSY:’˝√¶
+               *          - Status_TIMEOUT:≥¨ ±
+               */
+              StatusTypeDef UART0_Transmit_IRQHandler(UART0_HandleInfoDef* UART_HANDLE)
+              {
+                  /* ¥¶”⁄∑¢ÀÕœﬂ≥Ã */
+                  if (UART_HANDLE->TxState == UART0_STATE_BUSY)
+                  {
+                      UART_HANDLE->TxXferCount++;
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 20  
+
+                      /* ≈–∂œ…œ“ª¥Œ∑¢ÀÕ «∑Ò «◊Ó∫Û“ª¥Œ */
+                      if (UART_HANDLE->TxXferCount < UART_HANDLE->TxXferSize)
+                      {
+                          /* ¥˝∑¢ÀÕ ˝æ›¡øŒ¥Œ™0£¨ºÃ–¯∑¢ÀÕ */
+                          if (U0SCON & 0xC0 == UART0_Mode_11B)
+                          {
+                              U0SCON |= (*(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount) >> 5) & 0x08;//…
+             -Ë÷√µ⁄9Œª–£—ÈŒª
+                              U0SBUF = *(UART_HANDLE->pTxBuffPtr.Size_u16 + UART_HANDLE->TxXferCount);
+                          }
+                          else
+                          {
+                              U0SBUF = *(UART_HANDLE->pTxBuffPtr.Size_u8 + UART_HANDLE->TxXferCount);
+                          }
+                          return Status_BUSY;
+                      }
+                      else if (UART_HANDLE->TxXferCount == UART_HANDLE->TxXferSize)
+                      {
+                          /* ∑¢ÀÕÕÍ≥… */
+                          UART_HANDLE->TxState = UART0_STATE_READY;
+                          return Status_OK;
+                      }
+                      else
+                      {
+                          /* ∑¢ÀÕ ˝æ›¡øŒ™0 ±ªπ∑¢ÀÕ ˝æ›£¨∑µªÿ¥ÌŒÛ */
+                          UART_HANDLE->TxState = UART0_STATE_ERROR;
+                          return Status_ERROR;
+                      }
+                  }
+                  else
+                  {
+                      return Status_ERROR;
+                  }
+              }
+              
+              /**
+               * @brief  UART‘⁄¬÷—Øƒ£ Ωœ¬Ω” ’¥Û¡ø ˝æ›
+               * @param  UART_HANDLE[out]:÷∏’Î÷∏œÚUART ˝æ›–≈œ¢¥Ê∑≈«¯
+               * @param  pData[out]:Ω” ’ ˝æ›µƒ¥Ê∑≈«¯
+               * @param  Size[in]:¥˝Ω” ’µƒ ˝æ›¡ø
+               * @param  timeout[in]:≥¨ ± ±º‰…Ë÷√
+               * @retval ∫Ø ˝÷¥––◊¥Ã¨
+               *          - Status_ERROR:¥ÌŒÛ
+               *          - Status_OK:’˝≥£
+               *          - Status_BUSY:’˝√¶
+               *          - Status_TIMEOUT:≥¨ ±
+               */
+              StatusTypeDef UART0_Receive(UART0_HandleInfoDef* UART_HANDLE, uint8_t* pData, uint8_t Size, uint32_t Timeo
+             -ut)
+              {
+                  uint32_t TimeoutCnt = 0;
+                  /* ºÏ≤ÈΩ” ’Ω¯≥Ã’˝‘⁄‘À–– */
+                  if (UART_HANDLE->RxState == UART0_STATE_READY)
+                  {
+                      /* ºÏ≤ÈΩ” ’ ˝æ›¡ø¥Û–°∫Õ «∑Òø™∆ÙΩ” ’ πƒ‹ */
+                      if ((UART_HANDLE->RxXferSize == 0U) || ((U0SCON & 0x10) == UART0_RX_ENABLE))
+                      {
+                          return  Status_ERROR;
+                      }
+              
+                      UART_HANDLE->RxState = UART0_STATE_BUSY;      //◊¥Ã¨∏¸–¬Œ™Ω” ’√¶¬µ÷–
+                      RI = 0;      //Ω” ’«∞«Â≥˝Ω” ’÷–∂œ±Í÷æ
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 21  
+
+                      UART_HANDLE->pRxBuffPtr.Size_u8 = pData;      //÷∏œÚ¥˝∑¢ÀÕ ˝æ›µƒµÿ÷∑
+                      UART_HANDLE->RxXferSize = Size;     //∏¸–¬¥˝∑¢ÀÕµƒ ˝æ›¡ø
+                      UART_HANDLE->RxXferCount = 0;     //∑¢ÀÕº∆ ˝∆˜«Â¡„
+              
+                      while (UART_HANDLE->RxXferCount < UART_HANDLE->RxXferSize) //≈–∂œ «∑ÒΩ” ’À˘”– ˝æ›
+                      {
+                          if (RI) //≈–∂œΩ” ’±Í÷æŒª
+                          {
+                              if (U0SCON & 0xC0 == UART0_Mode_11B)
+                              {
+                                  *(UART_HANDLE->pRxBuffPtr.Size_u16 + UART_HANDLE->RxXferCount) = U0SBUF + ((uint16_t)(
+             -U0SCON & 0X04) << 6); //Ω” ’ ˝æ›
+                              }
+                              else
+                              {
+                                  *(UART_HANDLE->pRxBuffPtr.Size_u8 + UART_HANDLE->RxXferCount) = U0SBUF;     //Ω” ’ ˝æ›
+                              }
+                              RI = 0;     //Ω” ’±Í÷æŒª«Â¡„
+                              UART_HANDLE->RxXferCount++; //Ω” ’ ˝æ›¡øº∆ ˝º”1
+                              TimeoutCnt = 0;// ’µΩ ˝æ›£¨≥¨ ±º∆ ˝«Â¡„
+                          }
+                          else
+                          {
+                              if (TimeoutCnt++ > Timeout)//º∆ ±“Á≥ˆ
+                              {
+                                  UART_HANDLE->RxState = UART0_STATE_TIMEOUT;//∑¢ÀÕ≥¨ ±
+                                  return Status_TIMEOUT;
+                              }
+                              WDTCON |= 0x10;;      //Œππ∑£¨∑¿÷πµ»¥˝ ±º‰π˝≥§£¨µº÷¬WDT∏¥Œª
+                          }
+                      }
+              
+                      if (UART_HANDLE->RxXferCount == UART_HANDLE->RxXferSize)
+                      {
+                          UART_HANDLE->RxState = UART0_STATE_READY; //Ω” ’ÕÍ≥…
+                          return Status_OK;
+                      }
+                      else
+                      {
+                          UART_HANDLE->RxState = UART0_STATE_ERROR;//Ω” ’¥ÌŒÛ
+                          return Status_ERROR;
+                      }
+                  }
+                  else
+                  {
+                      return Status_BUSY;//∑µªÿ±Í÷æŒª
+                  }
+              }
+              
+              /**
+               * @brief  UART‘⁄÷–∂œƒ£ Ωœ¬Ω” ’¥Û¡ø ˝æ› ±£¨œ»‘⁄main∫Ø ˝÷–µ˜”√¥À∫Ø ˝
+               * @param  UART_HANDLE[out]:÷∏’Î÷∏œÚUART ˝æ›–≈œ¢¥Ê∑≈«¯
+               * @param  pData[out]:Ω” ’ ˝æ›µƒ¥Ê∑≈«¯
+               * @param  Size[in]:¥˝Ω” ’µƒ ˝æ›¡ø
+               * @retval ∫Ø ˝÷¥––◊¥Ã¨
+               *          - Status_ERROR:¥ÌŒÛ
+               *          - Status_OK:’˝≥£
+               *          - Status_BUSY:’˝√¶
+               *          - Status_TIMEOUT:≥¨ ±
+               */
+              StatusTypeDef UART0_Receive_IT(UART0_HandleInfoDef* UART_HANDLE, uint8_t* pData, uint8_t Size)
+              {
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 22  
+
+                  /* ºÏ≤È“ª∏ˆΩ” ’Ω¯≥Ã «∑Ò’˝‘⁄Ω¯–– */
+                  if (UART_HANDLE->RxState == UART0_STATE_READY)
+                  {
+                      /* ºÏ≤È «∑Òø™∆ÙUART0÷–∂œªÚ∑¢ÀÕ ˝æ›¡ø¥Û–°Œ™0ªÚ «∑Òø™∆ÙΩ” ’ πƒ‹£¨∑µªÿ¥ÌŒÛ */
+                      if ((EUART0 == 0) || (Size == 0U) || ((U0SCON & 0x10) == UART0_RX_ENABLE))
+                      {
+                          return UART0_STATE_ERROR;
+                      }
+              
+                      UART_HANDLE->RxState = UART0_STATE_BUSY;
+                      UART_HANDLE->pRxBuffPtr.Size_u8 = pData;      //÷∏œÚΩ” ’ ˝æ›µƒ¥Ê∑≈µÿ÷∑
+                      UART_HANDLE->RxXferSize = Size;     //∏¸–¬¥˝Ω” ’µƒ ˝æ›¡ø
+                      UART_HANDLE->RxXferCount = 0;     //∑¢ÀÕº∆ ˝∆˜«Â¡„
+              
+                      return Status_OK;
+                  }
+                  else
+                  {
+                      return Status_BUSY;//∑µªÿ±Í÷æŒª
+                  }
+              }
+              
+              /**
+               * @brief  UART‘⁄÷–∂œƒ£ Ωœ¬Ω” ’¥Û¡ø ˝æ› ±£¨‘⁄÷–∂œ∑˛ŒÒ∫Ø ˝÷–µ˜”√ ◊¢£∫∏√∫Ø ˝µ˜”√–Ë“™≈–∂œ÷–∂œ±Í÷æŒª «∑Ò÷√∆
+               * @param  UART_HANDLE[out]:÷∏’Î÷∏œÚSSI ˝æ›–≈œ¢¥Ê∑≈«¯
+               * @retval ∫Ø ˝÷¥––◊¥Ã¨
+               *          - Status_ERROR:¥ÌŒÛ
+               *          - Status_OK:’˝≥£
+               *          - Status_BUSY:’˝√¶
+               *          - Status_TIMEOUT:≥¨ ±
+               */
+              StatusTypeDef UART0_Receive_IRQHandler(UART0_HandleInfoDef* UART_HANDLE)
+              {
+                  /* ºÏ≤È“ª∏ˆΩ” ’Ω¯≥Ã «∑Ò’˝‘⁄Ω¯–– */
+                  if (UART_HANDLE->RxState == UART0_STATE_BUSY)
+                  {
+                      /* ¥¶”⁄Ω” ’œﬂ≥Ã£¨ºÏ≤È¥˝Ω” ’ ˝æ›¡ø «∑ÒŒ™0 */
+                      if (UART_HANDLE->RxXferCount < UART_HANDLE->RxXferSize)
+                      {
+                          if (U0SCON & 0xC0 == UART0_Mode_11B)
+                          {
+                              *(UART_HANDLE->pRxBuffPtr.Size_u16 + UART_HANDLE->RxXferCount) = U0SBUF + ((uint16_t)(U0SC
+             -ON & 0X04) << 6); //Ω” ’ ˝æ›
+                          }
+                          else
+                          {
+                              *(UART_HANDLE->pRxBuffPtr.Size_u8 + UART_HANDLE->RxXferCount) = U0SBUF;     //Ω” ’ ˝æ›
+                          }
+                          UART_HANDLE->RxXferCount++;
+                          /* ≈–∂œ…œ“ª¥Œ∑¢ÀÕ «∑Ò «◊Ó∫Û“ª¥Œ */
+                          if (UART_HANDLE->RxXferCount == UART_HANDLE->RxXferSize)
+                          {
+                              /* Ω” ’ÕÍ≥… */
+                              UART_HANDLE->RxState = UART0_STATE_READY;
+                              return Status_OK;
+                          }
+                          return Status_BUSY;
+                      }
+                      else
+                      {
+                          /* Ω” ’ ˝æ›¡øŒ™0 ±ªπΩ” ’ ˝æ›£¨∑µªÿ¥ÌŒÛ */
+                          UART_HANDLE->RxState = UART0_STATE_ERROR;
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 23  
+
+                          return Status_ERROR;
+                      }
+                  }
+                  else
+                  {
+                      return Status_BUSY;
+                  }
+              }
+              /**
+               * @}
+               */
+              /* End of UART0_Group2. */
+              
+              /** @defgroup UART0_Group3 Interrupts and flags management functions
+               *  @brief   Interrupts and flags management functions
+               *
+              @verbatim
+               ===============================================================================
+                                   ##### Interrupts and flags management functions #####
+               ===============================================================================
+              @endverbatim
+                * @{
+                */
+              
+              /**
+               * @brief  UART0÷–∂œ≥ı ºªØ
+               * @param  NewState[in]: ∂œ πƒ‹/πÿ±’—°‘Ò
+               *              - DISABLE:πÿ±’
+               *              - ENABLE: πƒ‹
+               * @param  Priority[in]: ÷–∂œ”≈œ»º∂—°‘Ò
+               *              - LOW:µÕ
+               *              - HIGH:∏ﬂ
+               * @retval None
+               */ 
+              void UART0_ITConfig(FunctionalState NewState,
+                                  PriorityStatus Priority)
+              {
+                if(NewState == DISABLE)
+                {
+                  EUART0 = 0;
+                }
+                else
+                {
+                  EUART0 = 1;
+                }
+              
+                //…Ë÷√÷–∂œ”≈œ»º∂
+                if(Priority == LOW)
+                {
+                  IPUART0 = 0;
+                }
+                else
+                {
+                  IPUART0 = 1;
+                }
+              }
+              /**
+               * @}
+               */
+              /* End of UART0_Group3. */
+              #endif
+1395          
+C51 COMPILER V9.60.7.0   SC92F_UART0                                                       10/13/2026 10:46:34 PAGE 24  
+
+1396          #endif
+1397          /**
+1398           * @}
+1399           */
+1400          
+1401          /**
+1402           * @}
+1403           */
+1404          
+1405          /**
+1406           * @}
+1407           */
+1408          /******************* (C) COPYRIGHT 2025 SinOne Microelectronics *****END OF FILE****/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1754    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----      61
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,50 @@
+C51 COMPILER V9.60.7.0   HAL_LPD                                                           10/13/2026 10:46:39 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE HAL_LPD
+OBJECT MODULE PLACED IN ..\Output\hal_lpd.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\Hardware\hal_lpd.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE INCDIR(..\FWLib
+                    -\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753x) DEBUG PRINT
+                    -(..\List\hal_lpd.lst) TABS(2) OBJECT(..\Output\hal_lpd.obj)
+
+line level    source
+
+   1          #include "sc92f_lpd.h"
+   2          #include "hal_eeprom.h"
+   3          #include "hal_lpd.h"
+   4          
+   5          /**
+   6           * @brief LPD掉电检测初始化
+   7           */
+   8          void HAL_LPD_Init(void)
+   9          {
+  10   1          LPD_DeInit(); // 复位寄存器
+  11   1          
+  12   1          // 1. 设置门限阈值：当 VDD 跌破 2.85V 时触发
+  13   1          // 注意：如果你的系统是电池直供且电压会低于2.85V，这里必须调低！
+  14   1          LPD_VtripConfig(LPD_VTRIP_2_85V); 
+  15   1          
+  16   1          // 2. 开启 LPD 中断，并设置为高优先级 (抢占所有普通业务)
+  17   1          LPD_ITConfig(ENABLE, HIGH);
+  18   1          
+  19   1          // 3. 使能 LPD 模块
+  20   1          LPD_Cmd(ENABLE);
+  21   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     20    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,831 @@
+C51 COMPILER V9.60.7.0   SC92F_TIMER2                                                      10/13/2026 10:46:34 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SC92F_TIMER2
+OBJECT MODULE PLACED IN ..\Output\sc92f_timer2.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\FWLib\SC92F_Lib\src\sc92f_timer2.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE
+                    - INCDIR(..\FWLib\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L7
+                    -53x) DEBUG PRINT(..\List\sc92f_timer2.lst) TABS(2) OBJECT(..\Output\sc92f_timer2.obj)
+
+line level    source
+
+   1          /**
+   2           ******************************************************************************
+   3           * @file    sc92f_timer2.c
+   4           * @author  SOC AE Team
+   5           * @version V1.2.4
+   6           * @date    2026-2-28
+   7           * @brief   TIM0 function module
+   8           *******************************************************************************
+   9           * @attention
+  10           *
+  11           *1.This software is supplied by SinOne Microelectronics Co.,Ltd. and is only 
+  12           *intended for use with SinOne products. No other uses are authorized. This 
+  13           *software is owned by SinOne Microelectronics Co.,Ltd. and is protected under 
+  14           *all applicable laws, including copyright laws. 
+  15           *2.The software which is for guidance only aims at providing customers with 
+  16           *coding information regarding their products in order for them to save time. 
+  17           *As a result, SinOne shall not be held liable for any direct, indirect or 
+  18           *consequential damages with respect to any claims arising from the content of 
+  19           *such software and/or the use made by customers of the coding information 
+  20           *contained herein in connection with their products.
+  21           *
+  22           *  COPYRIGHT 2025 SinOne Microelectronics
+  23           ******************************************************************************
+  24           */
+  25           
+  26          /* Includes ------------------------------------------------------------------*/
+  27          #include "sc92f_timer2.h"
+  28          
+  29          #if !defined (SC92L853x) && !defined(SC92L753x) && !defined(SC92F84Hx) && !defined(SC92F83Hx) && !defined(
+             -SC92F646x) && !defined(SC92F546x) && !defined(SC92F542x)\
+  30              && !defined (SC92F652x) && !defined(SC92R51x_R52x) && !defined(SC92F552x) && !defined(SC92F637x) && !def
+             -ined(SC92F663x)
+              /** @addtogroup sc92f_StdPeriph_Driver
+               * @{
+               */
+              
+              /** @defgroup TIM2
+               * @brief TIM2 driver modules
+               * @{
+               */
+              
+              /** @defgroup TIM2_Functions
+               * @{
+               */
+              
+              /** @defgroup TIM2_Group1 Configuration of the TIM2 computation unit functions
+               *  @brief   Configuration of the TIM2 computation unit functions
+               *
+               
+              @verbatim
+               ===============================================================================
+                                   ##### TIM2 configuration functions #####
+               ===============================================================================
+C51 COMPILER V9.60.7.0   SC92F_TIMER2                                                      10/13/2026 10:46:34 PAGE 2   
+
+              @endverbatim
+                * @{
+                */
+                
+              /**
+               * @brief  TIMER2相关寄存器复位至缺省值
+               * @param  None
+               * @retval None
+               */ 
+              void TIM2_DeInit(void)
+              {
+                T2CON = 0X00;
+              #if !defined (SC92F730x) && !defined (SC92F827X) && !defined (SC92F837X) && !defined (SC92F725X) && !defin
+             -ed (SC92F735X) && !defined (SC92F730x_2) \
+                  && !defined (SC92F720x) &&!defined(SC92F7308B)
+                T2MOD = 0X00;
+              #endif
+              #if !defined (SC92F5x5x) || !defined (SC92F531x)
+                TMCON &= 0XFB;
+              #endif
+                TH2 = 0X00;
+                TL2 = 0X00;
+                RCAP2H = 0X00;
+                RCAP2L = 0X00;
+                ET2 = 0;
+                IPT2 = 0;
+              }
+              
+              /**
+               * @brief  TIMER2基本设置配置函数
+               * @param  TIM2_PrescalerSelection[in]:预分频选择
+               *          - TIM2_PRESSEL_FSYS_D12:TIMER2计数源来自系统时钟12分频
+               *          - TIM2_PRESSEL_FSYS_D1:TIMER2计数源来自系统时钟
+               * @param  TIM2_CountMode[in]:计数/定时模式选择
+               *          - TIM2_MODE_TIMER:TIMER2做定时器
+               *          - TIM2_MODE_COUNTER:TIMER2做计数器
+               * @param  TIM2_CountDirection[in]:计数/定时模式选择
+               *          - TIM2_COUNTDIRECTION_UP:向上计数模式
+               *          - TIM2_COUNTDIRECTION_DOWN_UP:向上/向下计数模式
+               * @retval None
+               */ 
+              void TIM2_TimeBaseInit(TIM2_PresSel_TypeDef
+                                     TIM2_PrescalerSelection,
+                                     TIM2_CountMode_TypeDef TIM2_CountMode,
+                                     TIM2_CountDirection_TypeDef TIM2_CountDirection)
+              {
+              #if !defined (SC92F6x1x) && !defined (SC92F5x1x) && !defined (SC92R436)&& !defined (SC92R438)&& !defined (
+             -SC92R439)&& !defined (SC92R422A)\
+                  && !defined (SC92F5x5x) && !defined (SC92F531x)
+                if(TIM2_PrescalerSelection == TIM2_PRESSEL_FSYS_D12)
+                {
+                  TMCON &= 0XFB;
+                }
+                else if(TIM2_PrescalerSelection == TIM2_PRESSEL_FSYS_D1)
+                {
+                  TMCON |= 0X04;
+                }
+              #else
+                if(TIM2_PrescalerSelection == TIM2_PRESSEL_FSYS_D12)
+                {
+                  T2MOD &=~0x80;
+                }
+C51 COMPILER V9.60.7.0   SC92F_TIMER2                                                      10/13/2026 10:46:34 PAGE 3   
+
+                else 
+                {
+                  T2MOD |= 0x80;
+                }
+              #endif  
+              
+              
+              #if !defined (SC92F730x) && !defined (SC92F827X) && !defined (SC92F837X) && !defined (SC92F725X) && !defin
+             -ed (SC92F735X)\
+                  && !defined (SC92F825X) && !defined (SC92F835X) && !defined (SC92F730x_2) && !defined (SC92F720x) && !de
+             -fined (SC92F7308B)
+              
+                if(TIM2_CountDirection == TIM2_COUNTDIRECTION_UP)
+                {
+                  T2MOD &= 0XFE;
+                }
+                else if(TIM2_CountDirection ==
+                        TIM2_COUNTDIRECTION_DOWN_UP)
+                {
+                  T2MOD |= 0X01;
+                }
+              #if !defined (SC92F5x5x)
+                if(TIM2_CountMode == TIM2_MODE_TIMER)
+                {
+                  T2CON &= 0XFD;
+                }
+                else if(TIM2_CountMode == TIM2_MODE_COUNTER)
+                {
+                  T2CON |= 0X02;
+                }
+              #else
+                TIM2_CountMode = 1;
+              #endif
+                
+              
+                
+              
+              #else
+                TIM2_CountMode = 1;
+                TIM2_CountDidrection = 0;
+              #endif
+              
+              }
+              
+              
+              /**
+               * @brief  TIMER2工作模式1配置函数
+               * @param  TIM2_SetCounter[in]:配置计数初值
+               * @retval None
+               */
+              void TIM2_WorkMode1Config(uint16_t TIM2_SetCounter)
+              {
+                RCAP2L = TIM2_SetCounter % 256;
+                RCAP2H = TIM2_SetCounter / 256;
+                TL2 = RCAP2L;
+                TH2 = RCAP2H;
+              }
+              
+              /**
+               * @brief  TIMER2工作模式配置函数
+               * @param  TIM2_WorkMode_TypeDef[in]:TIMER2工作模式选择
+               *          - TIM2_WORK_MODE0:TIMER2选择工作模式0
+C51 COMPILER V9.60.7.0   SC92F_TIMER2                                                      10/13/2026 10:46:34 PAGE 4   
+
+               *          - TIM2_WORK_MODE1:TIMER2选择工作模式1
+               *          - TIM2_WORK_MODE3:TIMER2选择工作模式3
+               * @param  TIM2_SetCounter[in]:TIMER2计数初值配置
+               * @retval None
+               */
+              void TIM2_WorkModeConfig(TIM2_WorkMode_TypeDef
+                                       TIM2_WorkMode, uint16_t TIM2_SetCounter)
+              {
+                switch(TIM2_WorkMode)
+                {
+                  case TIM2_WORK_MODE1:
+                    TIM2_WorkMode1Config(TIM2_SetCounter);
+                    break;
+              #if !defined (SC92F730x) && !defined (SC92F827X) && !defined (SC92F837X) && !defined (SC92F725X) && !defin
+             -ed (SC92F735X) && !defined (SC92F725X) && !defined (SC92F730x_2)\
+                  && !defined (SC92F720x)  && !defined (SC92F7308B)
+                  case TIM2_WORK_MODE0:
+                    TIM2_WorkMode0Config(TIM2_SetCounter);
+                    break;
+              #if !defined (SC92F5x5x)
+                  case TIM2_WORK_MODE3:
+                    TIM2_WorkMode3Config(TIM2_SetCounter);
+                    break;
+              #endif
+              #endif
+                  default:
+                    break;
+                }
+              }
+              
+              #if !defined (SC92F730x) && !defined (SC92F827X) && !defined (SC92F837X) && !defined (SC92F725X) && !defin
+             -ed (SC92F735X) && !defined (SC92F730x_2) && !defined (SC92F720x)\
+               && !defined (SC92F7308B)
+              /**
+               * @brief  TIMER2工作模式0配置函数
+               * @param  TIM2_SetCounter[in]:配置计数初值
+               * @retval None
+               */
+              void TIM2_WorkMode0Config(uint16_t TIM2_SetCounter)
+              {
+                T2CON |= 0x09;
+                TL2 = TIM2_SetCounter % 256;
+                TH2 = TIM2_SetCounter / 256;
+              }
+              
+              #if !defined (SC92F5x5x)
+              /**
+               * @brief  TIMER2工作模式3配置函数
+               * @param  TIM2_SetCounter[in]:配置计数初值
+               * @retval None
+               */
+              void TIM2_WorkMode3Config(uint16_t TIM2_SetCounter)
+              {
+                RCAP2L = TIM2_SetCounter % 256;
+                RCAP2H = TIM2_SetCounter / 256;
+                T2MOD |= 0X02;
+              }
+              #endif
+              
+              /**
+               * @brief  TIMER2_EXEN2配置函数
+               * @param  NewState[in]:EXEN2使能选择
+C51 COMPILER V9.60.7.0   SC92F_TIMER2                                                      10/13/2026 10:46:34 PAGE 5   
+
+               *              - DISABLE:关闭
+               *              - ENABLE:使能
+               * @retval None
+               */
+              void TIM2_SetEXEN2(FunctionalState NewState)
+              {
+                if(NewState == DISABLE)
+                {
+                  EXEN2 = 0;
+                }
+                else
+                {
+                  EXEN2 = 1;
+                }
+              }
+              #endif
+              
+              /**
+               * @brief  TIMER2功能开关函数
+               * @param  NewState[in]:功能启动/关闭选择
+               *              - DISABLE:关闭
+               *              - ENABLE:使能
+               * @retval None
+               */
+              void TIM2_Cmd(FunctionalState NewState)
+              {
+                if(NewState == DISABLE)
+                {
+                  TR2 = 0;
+                }
+                else
+                {
+                  TR2 = 1;
+                }
+              }
+              
+              /**
+               * @}
+               */
+              /* End of TIM2_Group1.  */
+              
+              /** @defgroup TIM2_Group2 Interrupts and flags management functions
+               *  @brief   Interrupts and flags management functions
+               *
+              @verbatim
+               ===============================================================================
+                                   ##### Interrupts and flags management functions #####
+               ===============================================================================
+              @endverbatim
+                * @{
+                */
+              
+              /**
+               * @brief  TIMER2中断初始化
+               * @param  NewState[in]: 断使能/关闭选择
+               *              - DISABLE:关闭
+               *              - ENABLE:使能
+               * @param  Priority[in]: 中断优先级选择
+               *              - LOW:低
+               *              - HIGH:高
+               * @retval None
+               */
+C51 COMPILER V9.60.7.0   SC92F_TIMER2                                                      10/13/2026 10:46:34 PAGE 6   
+
+              void TIM2_ITConfig(FunctionalState NewState,
+                                 PriorityStatus Priority)
+              {
+                if(NewState == DISABLE)
+                {
+                  ET2 = 0;
+                }
+                else
+                {
+                  ET2 = 1;
+                }
+              
+                /************************************************************/
+                if(Priority == LOW)
+                {
+                  IPT2 = 0;
+                }
+                else
+                {
+                  IPT2 = 1;
+                }
+              }
+              
+              /**
+               * @brief  获得TIMER2中断标志状态
+               * @param  TIM2_Flag[in]:待读取的FLAG标志
+               * @retval TIMER2中断标志状态
+               *                  - RESET:置零
+               *                  - SET:置起
+               */ 
+              FlagStatus TIM2_GetFlagStatus(TIM2_Flag_TypeDef TIM2_Flag)
+              {
+                FlagStatus status = RESET;
+              
+                if((TIM2_Flag & T2CON) != (uint8_t)RESET)
+                {
+                  status = SET;
+                }
+                else
+                {
+                  status = RESET;
+                }
+              
+                return status;
+              }
+              
+              /**
+               * @brief  清除TIMER2中断标志状态
+               * @param  None
+               * @retval None
+               */
+              void TIM2_ClearFlag(TIM2_Flag_TypeDef TIM2_Flag)
+              {
+                T2CON &= (~TIM2_Flag);
+              }
+              
+              
+              /**
+               * @}
+               */
+              /* End of TIM2_Group2.  */
+              #else
+C51 COMPILER V9.60.7.0   SC92F_TIMER2                                                      10/13/2026 10:46:34 PAGE 7   
+
+ 356          /** @defgroup TIM2_Group1 Configuration of the TIM2 computation unit functions
+ 357           *  @brief   Configuration of the TIM2 computation unit functions
+ 358           *
+ 359          @verbatim
+ 360           ===============================================================================
+ 361                               ##### TIM2 configuration functions #####
+ 362           ===============================================================================
+ 363          @endverbatim
+ 364            * @{
+ 365            */
+ 366          
+ 367          /**
+ 368           * @brief  TIMER2相关寄存器复位至缺省值
+ 369           * @param  None
+ 370           * @retval None
+ 371           */ 
+ 372          void TIM2_DeInit()
+ 373          {
+ 374   1        TXINX = 0x02; //TIMER2选择
+ 375   1        TXCON = 0X00;
+ 376   1        TXMOD = 0X00;
+ 377   1        RCAPXH = 0X00;
+ 378   1        RCAPXL = 0X00;
+ 379   1        THX = 0X00;
+ 380   1        TLX = 0X00;
+ 381   1        IE1 &= 0X3F;
+ 382   1        IP1 &= 0X3F;
+ 383   1        ET2 = 0;
+ 384   1        IPT2 = 0;
+ 385   1      }
+ 386          
+ 387          #if defined(SC92F84Hx) || defined(SC92F83Hx)
+              /**
+               * @brief  TIM2引脚选择
+               * @param  PinSeletion[in]:TIMER1工作模式选择
+               *          - TIM2_PinRemap_Default:TIM2引脚为默认引脚
+               *          - TIM2_PinRemap_A:TIM2引脚为A组引脚
+               * @retval None
+               */ 
+              void TIM2_PinSelection(TIM2_PinSelection_TypeDef PinSeletion)
+              {
+                TMCON = TMCON & 0XFB | PinSeletion;
+              }
+              #endif
+ 400          /**
+ 401           * @brief  TIMER2 预分频选择
+ 402           * @param  TIM2_PrescalerSelection[in]:预分频选择
+ 403           *          - TIM2_PRESSEL_FSYS_D12:TIMER2计数源来自系统时钟12分频
+ 404           *          - TIM2_PRESSEL_FSYS_D1:TIMER2计数源来自系统时钟
+ 405           * @retval None
+ 406           */
+ 407          void TIM2_PrescalerSelection(TIM2_PresSel_TypeDef TIM2_PrescalerSelection)
+ 408          {
+ 409   1        TXINX = 0x02;
+ 410   1      
+ 411   1        if (TIM2_PrescalerSelection == TIM2_PRESSEL_FSYS_D12)
+ 412   1        {
+ 413   2          TXMOD &= 0X7F;
+ 414   2        }
+ 415   1        else if (TIM2_PrescalerSelection == TIM2_PRESSEL_FSYS_D1)
+ 416   1        {
+ 417   2          TXMOD |= 0X80;
+C51 COMPILER V9.60.7.0   SC92F_TIMER2                                                      10/13/2026 10:46:34 PAGE 8   
+
+ 418   2        }
+ 419   1      }
+ 420          
+ 421          /**
+ 422           * @brief  TIM2基本设置配置函数
+ 423           * @param  TIM2_PrescalerSelection[in]:预分频选择
+ 424           *          - TIM2_PRESSEL_FSYS_D12:TIMER2计数源来自系统时钟12分频
+ 425           *          - TIM2_PRESSEL_FSYS_D1:TIMER2计数源来自系统时钟
+ 426           * @param  TIM2_CountMode[in]:计数/定时模式选择
+ 427           *          - TIM2_MODE_TIMER:TIMER2做定时器
+ 428           *          - TIM2_MODE_COUNTER:TIMER2做计数器
+ 429           * @param  TIM2_CountDirection[in]:计数/定时模式选择
+ 430           *          - TIM2_COUNTDIRECTION_UP:向上计数模式
+ 431           *          - TIM2_COUNTDIRECTION_DOWN_UP:向上/向下计数模式
+ 432           * @retval None
+ 433           */
+ 434          void TIM2_TimeBaseInit(TIM2_PresSel_TypeDef TIM2_PrescalerSelection,
+ 435                                 TIM2_CountMode_TypeDef TIM2_CountMode,
+ 436                                 TIM2_CountDirection_TypeDef TIM2_CountDirection)
+ 437          {
+ 438   1        TXINX = 0x02;
+ 439   1        
+ 440   1        if (TIM2_PrescalerSelection == TIM2_PRESSEL_FSYS_D12)
+ 441   1        {
+ 442   2          TXMOD &= 0X7F;
+ 443   2        }
+ 444   1        else if (TIM2_PrescalerSelection == TIM2_PRESSEL_FSYS_D1)
+ 445   1        {
+ 446   2          TXMOD |= 0X80;
+ 447   2        }
+ 448   1        
+ 449   1        if (TIM2_CountMode == TIM2_MODE_TIMER)
+ 450   1        {
+ 451   2          TXCON &= 0XFD;
+ 452   2        }
+ 453   1        else if (TIM2_CountMode == TIM2_MODE_COUNTER)
+ 454   1        {
+ 455   2          TXCON |= 0X02;
+ 456   2        }
+ 457   1      
+ 458   1        if (TIM2_CountDirection == TIM2_COUNTDIRECTION_UP)
+ 459   1        {
+ 460   2          TXMOD &= 0XFE;
+ 461   2        }
+ 462   1        else if (TIM2_CountDirection == TIM2_COUNTDIRECTION_DOWN_UP)
+ 463   1        {
+ 464   2          TXMOD |= 0X01;
+ 465   2        }
+ 466   1      }
+ 467          
+ 468          /**
+ 469           * @brief  TIMER2工作模式0配置函数
+ 470           * @param  TIM2_SetCounter[in]:配置计数初值
+ 471           * @retval None
+ 472           */ 
+ 473          void TIM2_WorkMode0Config(uint16_t TIM2_SetCounter)
+ 474          {
+ 475   1      
+ 476   1        TXINX = 0x02;
+ 477   1      
+ 478   1        CP = 1;
+ 479   1        TLX = TIM2_SetCounter % 256;
+C51 COMPILER V9.60.7.0   SC92F_TIMER2                                                      10/13/2026 10:46:34 PAGE 9   
+
+ 480   1        THX = TIM2_SetCounter / 256;
+ 481   1      }
+ 482          
+ 483          /**
+ 484           * @brief  TIMER2工作模式1配置函数
+ 485           * @param  TIM2_SetCounter[in]:配置计数初值
+ 486           * @retval None
+ 487           */
+ 488          void TIM2_WorkMode1Config(uint16_t TIM2_SetCounter)
+ 489          {
+ 490   1      
+ 491   1        TXINX = 0x02;
+ 492   1      
+ 493   1        RCAPXL = TIM2_SetCounter % 256;
+ 494   1        RCAPXH = TIM2_SetCounter / 256;
+ 495   1      
+ 496   1        TLX = RCAPXL;
+ 497   1        THX = RCAPXH;
+ 498   1      }
+ 499          
+ 500          /**
+ 501           * @brief  TIMER2工作模式3配置函数
+ 502           * @param  TIM1_SetCounter[in]:配置计数初值
+ 503           * @retval None
+ 504           */ 
+ 505          void TIM2_WorkMode3Config(uint16_t TIM2_SetCounter)
+ 506          {
+ 507   1      
+ 508   1        TXINX = 0x02;
+ 509   1      
+ 510   1        RCAPXL = TIM2_SetCounter % 256;
+ 511   1        RCAPXH = TIM2_SetCounter / 256;
+ 512   1        TXMOD |= 0X02;
+ 513   1      }
+ 514          /**
+ 515           * @brief  TIMER2工作模式配置函数
+ 516           * @param  TIM2_WorkMode[in]:TIMER1工作模式选择
+ 517           *          - TIM2_WORK_MODE0:TIMER2选择工作模式0
+ 518           *          - TIM2_WORK_MODE1:TIMER2选择工作模式1
+ 519           *          - TIM2_WORK_MODE3:TIMER2选择工作模式3
+ 520           * @param  TIM2_SetCounter[in]:TIMER2计数初值配置
+ 521           * @retval None
+ 522           */ 
+ 523          void TIM2_WorkModeConfig(TIM2_WorkMode_TypeDef TIM2_WorkMode, uint16_t TIM2_SetCounter)
+ 524          {
+ 525   1        switch (TIM2_WorkMode)
+ 526   1        {
+ 527   2        case TIM2_WORK_MODE0:
+ 528   2          TIM2_WorkMode0Config(TIM2_SetCounter);
+ 529   2          break;
+ 530   2      
+ 531   2        case TIM2_WORK_MODE1:
+ 532   2          TIM2_WorkMode1Config(TIM2_SetCounter);
+ 533   2          break;
+ 534   2      
+ 535   2        case TIM2_WORK_MODE3:
+ 536   2          TIM2_WorkMode3Config(TIM2_SetCounter);
+ 537   2          break;
+ 538   2      
+ 539   2        default:
+ 540   2          break;
+ 541   2        }
+C51 COMPILER V9.60.7.0   SC92F_TIMER2                                                      10/13/2026 10:46:34 PAGE 10  
+
+ 542   1      }
+ 543          /**
+ 544           * @brief  TIMER2_EXEN2配置函数
+ 545           * @param  NewState[in]:EXEN2使能选择
+ 546           *              - DISABLE:关闭
+ 547           *              - ENABLE:使能
+ 548           * @retval None
+ 549           */
+ 550          void TIM2_SetEXEN2(FunctionalState NewState)
+ 551          {
+ 552   1        TXINX = 0x02;
+ 553   1      
+ 554   1        if (NewState == DISABLE)
+ 555   1        {
+ 556   2          EXENX = 0;
+ 557   2        }
+ 558   1        else
+ 559   1        {
+ 560   2          EXENX = 1;
+ 561   2        }
+ 562   1      }
+ 563          
+ 564          /**
+ 565           * @brief  TIMER2功能开关函数
+ 566           * @param  NewState[in]:功能启动/关闭选择
+ 567           *              - DISABLE:关闭
+ 568           *              - ENABLE:使能
+ 569           * @retval None
+ 570           */
+ 571          void TIM2_Cmd(FunctionalState NewState)
+ 572          {
+ 573   1        TXINX = 0x02;
+ 574   1      
+ 575   1        if (NewState == DISABLE)
+ 576   1        {
+ 577   2          TRX = 0;
+ 578   2        }
+ 579   1        else
+ 580   1        {
+ 581   2          TRX = 1;
+ 582   2        }
+ 583   1      }
+ 584          
+ 585          /**
+ 586           * @}
+ 587           */
+ 588          /* End of TIM2_Group1.  */
+ 589          
+ 590          /** @defgroup TIM2_Group2 Interrupts and flags management functions
+ 591           *  @brief   Interrupts and flags management functions
+ 592           *
+ 593          @verbatim
+ 594           ===============================================================================
+ 595                               ##### Interrupts and flags management functions #####
+ 596           ===============================================================================
+ 597          @endverbatim
+ 598            * @{
+ 599            */
+ 600          
+ 601          /**
+ 602           * @brief  TIMER2中断初始化
+ 603           * @param  NewState[in]: 断使能/关闭选择
+C51 COMPILER V9.60.7.0   SC92F_TIMER2                                                      10/13/2026 10:46:34 PAGE 11  
+
+ 604           *              - DISABLE:关闭
+ 605           *              - ENABLE:使能
+ 606           * @param  Priority[in]: 中断优先级选择
+ 607           *              - LOW:低
+ 608           *              - HIGH:高
+ 609           * @retval None
+ 610           */
+ 611          void TIM2_ITConfig(FunctionalState NewState, PriorityStatus Priority)
+ 612          {
+ 613   1        TXINX = 0x02;
+ 614   1      
+ 615   1        if (NewState == DISABLE)
+ 616   1        {
+ 617   2          ET2 = 0;
+ 618   2        }
+ 619   1        else
+ 620   1        {
+ 621   2          ET2 = 1;
+ 622   2        }
+ 623   1      
+ 624   1        if (Priority == LOW)
+ 625   1        {
+ 626   2          IPT2 = 0;
+ 627   2        }
+ 628   1        else
+ 629   1        {
+ 630   2          IPT2 = 1;
+ 631   2        }
+ 632   1      }
+ 633          
+ 634          /**
+ 635           * @brief  获得TIMER2中断标志状态
+ 636           * @param  TIM2_Flag[in]:TIMER2标志选择
+ 637           *          - TIM2_FLAG_TF2:中断标志位TF2，计数溢出
+ 638           *          - TIM2_FLAG_EXF2:中断标志位EXF2，外部触发
+ 639           * @retval TIMER2中断标志状态
+ 640           *                  - RESET:置零
+ 641           *                  - SET:置起
+ 642           */ 
+ 643          FlagStatus TIM2_GetFlagStatus(TIM2_Flag_TypeDef TIM2_Flag)
+ 644          {
+ 645   1        unsigned char TXINX_Stack = TXINX;
+ 646   1        FlagStatus status = RESET;
+ 647   1        TXINX = 0x02;
+ 648   1      
+ 649   1        if ((TIM2_Flag & TXCON) != (uint8_t)RESET)
+ 650   1        {
+ 651   2          status = SET;
+ 652   2        }
+ 653   1        else
+ 654   1        {
+ 655   2          status = RESET;
+ 656   2        }
+ 657   1        TXINX = TXINX_Stack;
+ 658   1        return status;
+ 659   1      }
+ 660          
+ 661          /**
+ 662           * @brief  清除TIMER2中断标志状态
+ 663           * @param  TIM2_Flag[in]:TIMER2标志选择
+ 664           *          - TIM2_FLAG_TF2:中断标志位TF2，计数溢出
+ 665           *          - TIM2_FLAG_EXF2:中断标志位EXF2，外部触发
+C51 COMPILER V9.60.7.0   SC92F_TIMER2                                                      10/13/2026 10:46:34 PAGE 12  
+
+ 666           * @retval TIMER2中断标志状态
+ 667           *                  - RESET:置零
+ 668           *                  - SET:置起
+ 669           */
+ 670          void TIM2_ClearFlag(TIM2_Flag_TypeDef TIM2_Flag)
+ 671          {
+ 672   1        unsigned char TXINX_Stack = TXINX;
+ 673   1        TXINX = 0x02;
+ 674   1        TXCON &= (~TIM2_Flag);
+ 675   1        TXINX = TXINX_Stack;
+ 676   1      }
+ 677          
+ 678          #if defined (SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x)|| defined (SC92F5x5x) || defined 
+             -(SC92F531x)
+              #if defined (SC92F5x5x) || defined (SC92F531x)
+              uint8_t xdata SPOS_T2EX _at_ 0x122;
+              #else
+              uint8_t xdata SPOS_T2EX _at_ 0x1032;
+              #endif
+              /**
+               * @brief  T2EX端口映射函数
+               * @param  T2EX_MappingPin[in]: T2EX端口映射管脚选择
+               *          SC92F5x5x:
+               *          - T2EXMapped_to_P00:T2EX映射到P00
+               *          - T2EXMapped_to_P01:T2EX映射到P01
+               *          - T2EXMapped_to_P05:T2EX映射到P05
+               *          - T2EXMapped_to_P20:T2EX映射到P20
+               *          - T2EXMapped_to_P21:T2EX映射到P21
+               *          - T2EXMapped_to_P22:T2EX映射到P22
+               *          - T2EXMapped_to_P23:T2EX映射到P23
+               *          - T2EXMapped_to_P24:T2EX映射到P24
+               *          - T2EXMapped_to_P25:T2EX映射到P25
+               *          - T2EXMapped_to_P26:T2EX映射到P26
+               *          - T2EXMapped_to_P13:T2EX映射到P13
+               *          - T2EXMapped_to_P11:T2EX映射到P11
+               *          - T2EXMapped_to_P10:T2EX映射到P10
+               * @retval None
+               */ 
+              void T2EX_PortMapping(T2EX_PortMappingPin_TypeDef T2EX_MappingPin)
+              {
+                SPOS_T2EX = SPOS_T2EX & 0xE0 | T2EX_MappingPin;
+              }
+              #endif
+ 708          
+ 709          #if defined (SC92F663x)
+              /**
+               * @brief  T2端口映射函数
+               * @param  T2_MappingPin[in]: T2端口映射管脚选择
+               *          SC92F663x:
+               *          - T2Mapped_to_P51:T2映射到P51
+               *          - T2Mapped_to_P44:T2映射到P44
+               *          - T2Mapped_to_P43:T2映射到P43
+               *          - T2Mapped_to_P42:T2映射到P42
+               *          - T2Mapped_to_P41:T2映射到P41
+               *          - T2Mapped_to_P40:T2映射到P40
+               *          - T2Mapped_to_P37:T2映射到P37
+               *          - T2Mapped_to_P36:T2映射到P36
+               * @retval None
+               */ 
+              void T2_PortMapping(T2_PortMappingPin_TypeDef T2_MappingPin)
+              {
+                SPOS_T2 = SPOS_T2 & 0xF8 | T2_MappingPin;
+C51 COMPILER V9.60.7.0   SC92F_TIMER2                                                      10/13/2026 10:46:34 PAGE 13  
+
+              }
+              
+              /**
+               * @brief  T2EX端口映射函数
+               * @param  T2EX_MappingPin[in]: T2EX端口映射管脚选择
+               *          SC92F663x:
+               *          - T2EXMapped_to_P45:T2EX映射到P45
+               *          - T2EXMapped_to_P44:T2EX映射到P44
+               *          - T2EXMapped_to_P42:T2EX映射到P42
+               *          - T2EXMapped_to_P41:T2EX映射到P41
+               *          - T2EXMapped_to_P37:T2EX映射到P37
+               *          - T2EXMapped_to_P36:T2EX映射到P36
+               *          - T2EXMapped_to_P35:T2EX映射到P35
+               *          - T2EXMapped_to_P34:T2EX映射到P34
+               *          - T2EXMapped_to_P33:T2EX映射到P33
+               *          - T2EXMapped_to_P32:T2EX映射到P32
+               *          - T2EXMapped_to_P31:T2EX映射到P31
+               *          - T2EXMapped_to_P30:T2EX映射到P30
+               * @retval None
+               */ 
+              void T2EX_PortMapping(T2EX_PortMappingPin_TypeDef T2EX_MappingPin)
+              {
+                SPOS_TEX = SPOS_TEX & 0xF0 | T2EX_MappingPin;
+              }
+              #endif
+ 752          
+ 753          /**
+ 754           * @}
+ 755           */
+ 756          /* End of TIM2_Group2.  */
+ 757          #endif
+ 758          /**
+ 759           * @}
+ 760           */
+ 761          
+ 762          /**
+ 763           * @}
+ 764           */
+ 765          
+ 766          /**
+ 767           * @}
+ 768           */
+ 769          /******************* (C) COPYRIGHT 2025 SinOne Microelectronics *****END OF FILE****/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    255    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

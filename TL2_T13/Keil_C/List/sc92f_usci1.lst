@@ -1,0 +1,725 @@
+C51 COMPILER V9.60.7.0   SC92F_USCI1                                                       10/13/2026 10:46:35 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SC92F_USCI1
+OBJECT MODULE PLACED IN ..\Output\sc92f_usci1.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\FWLib\SC92F_Lib\src\sc92f_usci1.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE 
+                    -INCDIR(..\FWLib\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L75
+                    -3x) DEBUG PRINT(..\List\sc92f_usci1.lst) TABS(2) OBJECT(..\Output\sc92f_usci1.obj)
+
+line level    source
+
+   1          /**
+   2           ******************************************************************************
+   3           * @file    sc92F_usci1.c
+   4           * @author  SOC AE Team
+   5           * @version V1.2.4
+   6           * @date    2026-2-28
+   7           * @brief   USCI1 function module
+   8           ******************************************************************************
+   9           * @attention
+  10           *
+  11           *1.This software is supplied by SinOne Microelectronics Co.,Ltd. and is only 
+  12           *intended for use with SinOne products. No other uses are authorized. This 
+  13           *software is owned by SinOne Microelectronics Co.,Ltd. and is protected under 
+  14           *all applicable laws, including copyright laws. 
+  15           *2.The software which is for guidance only aims at providing customers with 
+  16           *coding information regarding their products in order for them to save time. 
+  17           *As a result, SinOne shall not be held liable for any direct, indirect or 
+  18           *consequential damages with respect to any claims arising from the content of 
+  19           *such software and/or the use made by customers of the coding information 
+  20           *contained herein in connection with their products.
+  21           *
+  22           *  COPYRIGHT 2025 SinOne Microelectronics
+  23           ******************************************************************************
+  24           */
+  25           
+  26          /* Includes ------------------------------------------------------------------*/
+  27          #include "sc92f_usci1.h"
+  28          
+  29          #if defined (SC92L853x) || defined (SC92L753x) || defined(SC92F646x) || defined(SC92F546x) || defined(SC92
+             -F542x) || defined(SC92L840x)
+  30          /** @addtogroup sc92f_StdPeriph_Driver
+  31           * @{
+  32           */
+  33           
+  34          /** @defgroup USCI1
+  35           * @brief USCI1 driver modules
+  36           * @{
+  37           */
+  38          
+  39          /** @defgroup USCI1_Functions
+  40           * @{
+  41           */
+  42           
+  43           /** @defgroup USCI1_Group1 Initialization and Configuration functions
+  44           *  @brief Initialization and Configuration functions
+  45           *
+  46           
+  47          @verbatim
+  48           ====================================================================================================
+  49                               ##### USCI1 SPI Initialization and Configuration functions #####
+  50           ====================================================================================================
+  51          @endverbatim
+  52            * @{
+C51 COMPILER V9.60.7.0   SC92F_USCI1                                                       10/13/2026 10:46:35 PAGE 2   
+
+  53            */
+  54          
+  55          /**
+  56           * @brief  USCI1相关寄存器复位至缺省值
+  57           * @param  None
+  58           * @retval None
+  59           */ 
+  60          void USCI1_DeInit(void)
+  61          {
+  62   1        OTCON &= 0X3F;
+  63   1        US1CON0 = 0X00;
+  64   1        US1CON1 = 0X00;
+  65   1        US1CON2 = 0X00;
+  66   1        US1CON3 = 0X00;
+  67   1        IE2 &= (~0X01);
+  68   1        IP2 &= (~0X01);
+  69   1      }
+  70          
+  71          /**
+  72           * @brief  SPI初始化配置函数
+  73           * @param  FirstBit[in]:优先传送位选择（MSB/LSB）
+  74           *          - USCI1_SPI_FIRSTBIT_MSB:MSB优先发送
+  75           *          - USCI1_SPI_FIRSTBIT_LSB:LSB优先发送
+  76           * @param  BaudRatePrescaler[in]:SPI时钟频率选择
+  77           *          - USCI1_SPI_BAUDRATEPRESCALER_1:SPI时钟速率为系统时钟除以1
+  78           *          - USCI1_SPI_BAUDRATEPRESCALER_2:SPI时钟速率为系统时钟除以2
+  79           *          - USCI1_SPI_BAUDRATEPRESCALER_4:SPI时钟速率为系统时钟除以4
+  80           *          - USCI1_SPI_BAUDRATEPRESCALER_8:SPI时钟速率为系统时钟除以8
+  81           *          - USCI1_SPI_BAUDRATEPRESCALER_16:SPI时钟速率为系统时钟除以16
+  82           *          - USCI1_SPI_BAUDRATEPRESCALER_32:SPI时钟速率为系统时钟除以32
+  83           *          - USCI1_SPI_BAUDRATEPRESCALER_64:SPI时钟速率为系统时钟除以64
+  84           *          - USCI1_SPI_BAUDRATEPRESCALER_128:SPI时钟速率为系统时钟除以128
+  85           * @param  Mode[in]:SPI工作模式选择
+  86           *          - USCI1_SPI_MODE_MASTER:SPI为主设备
+  87           *          - USCI1_SPI_MODE_SLAVE:SPI为从设备
+  88           * @param  ClockPolarity[in]:SPI时钟极性选择
+  89           *          - USCI1_SPI_CLOCKPOLARITY_LOW:SCK在空闲状态下为低电平
+  90           *          - USCI1_SPI_CLOCKPOLARITY_HIGH:SCK在空闲状态下为高电平
+  91           * @param  ClockPhase[in]:SPI时钟相位选择
+  92           *          - USCI1_SPI_CLOCKPHASE_1EDGE:SCK的第一沿采集数据
+  93           *          - USCI1_SPI_CLOCKPHASE_2EDGE:SCK的第二沿采集数据
+  94           * @param  SPI_TXE_INT[in]:发送缓存器中断允许选择
+  95           *          - USCI1_SPI_TXE_DISINT:不允许发送中断
+  96           *          - USCI1_SPI_TXE_ENINT:允许发送中断
+  97           * @param  TransmissionMode[in]:TransmissionMode
+  98           *          - USCI1_SPI_DATA8:SPI 8位传输模式
+  99           *          - USCI1_SPI_DATA16:SPI 16位传输模式
+ 100           * @retval None
+ 101           */
+ 102          void USCI1_SPI_Init(USCI1_SPI_FirstBit_TypeDef FirstBit,
+ 103                              USCI1_SPI_BaudRatePrescaler_TypeDef BaudRatePrescaler, USCI1_SPI_Mode_TypeDef Mode,
+ 104                              USCI1_SPI_ClockPolarity_TypeDef ClockPolarity, USCI1_SPI_ClockPhase_TypeDef ClockPhase
+             -,
+ 105                              USCI1_SPI_TXE_INT_TypeDef SPI_TXE_INT, USCI1_TransmissionMode_TypeDef TransmissionMode
+             -)
+ 106          {
+ 107   1      
+ 108   1        OTCON = (OTCON & 0X3F) | 0X40;
+ 109   1      #if defined(SC92L853x) || defined(SC92L753x) || defined(SC92F646x) || defined(SC92F546x) || defined(SC92F5
+             -42x) || defined(SC92L840x)
+ 110   1        SPI_TXE_INT = USCI1_SPI_TXE_DISINT; //SPI_TXE_INT该功能无效
+ 111   1        US1CON1 = US1CON1 & (~0X06) | FirstBit | TransmissionMode;
+C51 COMPILER V9.60.7.0   SC92F_USCI1                                                       10/13/2026 10:46:35 PAGE 3   
+
+ 112   1      #endif
+ 113   1        US1CON0 = US1CON0 & 0X80 | BaudRatePrescaler | Mode | ClockPolarity | ClockPhase;
+ 114   1      }
+ 115          /**
+ 116           * @}
+ 117           */
+ 118          /* End of USCI1_Group1. */
+ 119          
+ 120          /** @defgroup USCI1_Group2 Base functions
+ 121           *  @brief   USCI1 functions
+ 122           *
+ 123          @verbatim
+ 124           ===============================================================================
+ 125                               ##### USCI1_SPI Base functions #####
+ 126           ===============================================================================
+ 127          @endverbatim
+ 128            * @{
+ 129            */
+ 130          
+ 131          /**
+ 132           * @brief  SPI 传输模式配置函数
+ 133           * @param  TransmissionMode[in]:TransmissionMode
+ 134           *          - USCI1_SPI_DATA8:SPI 8位传输模式
+ 135           *          - USCI1_SPI_DATA16:SPI 16位传输模式
+ 136           * @retval None
+ 137           */ 
+ 138          void USCI1_TransmissionMode(USCI1_TransmissionMode_TypeDef TransmissionMode)
+ 139          {
+ 140   1        OTCON =(OTCON & 0XCF) | 0X10;
+ 141   1        if (TransmissionMode == USCI1_SPI_DATA8)
+ 142   1        {
+ 143   2          US1CON1 &= 0xFD;
+ 144   2        }
+ 145   1        else
+ 146   1        {
+ 147   2          US1CON1 |= 0x02;
+ 148   2        }
+ 149   1      }
+ 150          
+ 151          /**
+ 152           * @brief  SPI功能开关函数
+ 153           * @param  NewState[in]:功能启动/关闭选择
+ 154           *          - DISABLE:失能
+ 155           *          - ENABLE:使能
+ 156           * @retval None
+ 157           */ 
+ 158          void USCI1_SPI_Cmd(FunctionalState NewState)
+ 159          {
+ 160   1        OTCON = (OTCON & 0X3F) | 0X40;
+ 161   1      
+ 162   1        if (NewState != DISABLE)
+ 163   1        {
+ 164   2          US1CON0 |= 0X80;
+ 165   2        }
+ 166   1        else
+ 167   1        {
+ 168   2          US1CON0 &= (~0X80);
+ 169   2        }
+ 170   1      }
+ 171          
+ 172          /**
+ 173           * @brief  USCI1 SPI发送数据
+C51 COMPILER V9.60.7.0   SC92F_USCI1                                                       10/13/2026 10:46:35 PAGE 4   
+
+ 174           * @param  Data[in]:发送的数据
+ 175           * @retval None
+ 176           */ 
+ 177          void USCI1_SPI_SendData_8(uint8_t Data)
+ 178          {
+ 179   1        US1CON2 = Data;
+ 180   1      }
+ 181          
+ 182          /**
+ 183           * @brief  获得US1CON2中的值
+ 184           * @param  None
+ 185           * @retval SPI接收到的8位数据
+ 186           */
+ 187          uint8_t USCI1_SPI_ReceiveData_8(void)
+ 188          {
+ 189   1        return US1CON2;
+ 190   1      }
+ 191          
+ 192          /**
+ 193           * @brief  US1CON2 SPI发送数据
+ 194           * @param  Data[in]:发送的数据
+ 195           * @retval None
+ 196           */
+ 197          void USCI1_SPI_SendData_16(uint16_t Data)
+ 198          {
+ 199   1        US1CON3 = (uint8_t)(Data >> 8);
+ 200   1        US1CON2 = (uint8_t)Data;
+ 201   1      }
+ 202          
+ 203          /**
+ 204           * @brief  获得US1CON2中的值
+ 205           * @param  None
+ 206           * @retval SPI接收到的16位数据
+ 207           */
+ 208          uint16_t USCI1_SPI_ReceiveData_16(void)
+ 209          {
+ 210   1        uint16_t SPI_data;
+ 211   1        SPI_data = ((uint16_t)US1CON3 << 8) | US1CON2;
+ 212   1        return SPI_data;
+ 213   1      }
+ 214          /**
+ 215           * @}
+ 216           */
+ 217          /* End of USCI1_Group2. */
+ 218          
+ 219          /** @defgroup USCI1_Group3 Initialization and Configuration functions
+ 220           *  @brief Initialization and Configuration functions
+ 221           *
+ 222          @verbatim
+ 223           ====================================================================================================
+ 224                               ##### USCI1 TWI Initialization and Configuration functions #####
+ 225           ====================================================================================================
+ 226          @endverbatim
+ 227            * @{
+ 228            */
+ 229          
+ 230          /**
+ 231           * @brief  USCI1 TWI从机初始化配置函数
+ 232           * @param  TWI_Address[in]:TWI作为从机时7位从机地址配置
+ 233           * @retval None
+ 234           */
+ 235          void USCI1_TWI_Slave_Init(uint8_t TWI_Address)
+C51 COMPILER V9.60.7.0   SC92F_USCI1                                                       10/13/2026 10:46:35 PAGE 5   
+
+ 236          {
+ 237   1        OTCON = OTCON & 0X3F | 0X80;
+ 238   1        US1CON2 = TWI_Address << 1;
+ 239   1      }
+ 240          
+ 241          /**
+ 242           * @brief  USCI1 TWI主机模式下通讯速率设定
+ 243           * @param  TWI_MasterCommunicationRate[in]:TWI主机模式下通讯速率
+ 244           *              - USCI1_TWI_1024:TWI通信速率 Fhrc/1024
+ 245           *              - USCI1_TWI_512:TWI通信速率 Fhrc/512
+ 246           *              - USCI1_TWI_256:TWI通信速率 Fhrc/256
+ 247           *              - USCI1_TWI_128:TWI通信速率 Fhrc/128
+ 248           *              - USCI1_TWI_64:TWI通信速率 Fhrc/64
+ 249           *              - USCI1_TWI_32:TWI通信速率 Fhrc/32
+ 250           *              - USCI1_TWI_16:TWI通信速率 Fhrc/16
+ 251           * @retval None
+ 252           */
+ 253          void USCI1_TWI_MasterCommunicationRate(USCI1_TWI_MasterCommunicationRate_TypeDef
+ 254                                                     TWI_MasterCommunicationRate)
+ 255          {
+ 256   1        OTCON = OTCON & 0X3F | 0X80;
+ 257   1        US1CON1 |= TWI_MasterCommunicationRate;
+ 258   1      }
+ 259          
+ 260          /**
+ 261           * @brief  USCI1 TWI 起始位
+ 262           * @param  None
+ 263           * @retval None
+ 264           */
+ 265          void USCI1_TWI_Start(void)
+ 266          {
+ 267   1        US1CON1 |= 0x20;
+ 268   1      }
+ 269          
+ 270          /**
+ 271           * @brief  USCI1 TWI主机模式停止位
+ 272           * @param  None
+ 273           * @retval None
+ 274           */
+ 275          void USCI1_TWI_MasterModeStop(void)
+ 276          {
+ 277   1        US1CON1 |= 0x10;
+ 278   1      }
+ 279          
+ 280          /**
+ 281           * @brief  USCI1 TWI从机模式时钟延长功能位
+ 282           * @param  NewState[in]: 功能启动/关闭选择
+ 283           *              - DISABLE:关闭
+ 284           *              - ENABLE:使能
+ 285           * @retval None
+ 286           */
+ 287          void USCI1_TWI_SlaveClockExtension(FunctionalState NewState)
+ 288          {
+ 289   1        OTCON = OTCON & 0X3F | 0X80;
+ 290   1      
+ 291   1        if (NewState != DISABLE)
+ 292   1        {
+ 293   2          US1CON1 |= 0x40;
+ 294   2        }
+ 295   1        else
+ 296   1        {
+ 297   2          US1CON1 &= 0XBF;
+C51 COMPILER V9.60.7.0   SC92F_USCI1                                                       10/13/2026 10:46:35 PAGE 6   
+
+ 298   2        }
+ 299   1      }
+ 300          
+ 301          /**
+ 302           * @brief  TWI接收应答使能函数
+ 303           * @param  NewState[in]: 接收应答使能/失能选择
+ 304           *              - DISABLE:关闭
+ 305           *              - ENABLE:使能
+ 306           * @retval None
+ 307           */
+ 308          void USCI1_TWI_AcknowledgeConfig(FunctionalState NewState)
+ 309          {
+ 310   1        OTCON = OTCON & 0X3F | 0X80;
+ 311   1      
+ 312   1        if (NewState != DISABLE)
+ 313   1        {
+ 314   2          US1CON0 |= 0X08;
+ 315   2        }
+ 316   1        else
+ 317   1        {
+ 318   2          US1CON0 &= 0XF7;
+ 319   2        }
+ 320   1      }
+ 321          
+ 322          /**
+ 323           * @brief  TWI通用地址响应使能函数
+ 324           * @param  NewState[in]: 通用地址响应使能/失能选择
+ 325           *              - DISABLE:关闭
+ 326           *              - ENABLE:使能
+ 327           * @retval None
+ 328           */
+ 329          void USCI1_TWI_GeneralCallCmd(FunctionalState NewState)
+ 330          {
+ 331   1        OTCON = OTCON & 0X3F | 0X80;
+ 332   1      
+ 333   1        if (NewState != DISABLE)
+ 334   1        {
+ 335   2          US1CON2 |= 0X01;
+ 336   2        }
+ 337   1        else
+ 338   1        {
+ 339   2          US1CON2 &= 0XFE;
+ 340   2        }
+ 341   1      }
+ 342          
+ 343          /**
+ 344           * @brief  获取TWI状态机
+ 345           * @param  USCI1_TWIState[in]: TWI状态机状态
+ 346           *              - USCI1_TWI_SlaveBusy:从机忙模式
+ 347           *              - USCI1_TWI_SlaveReceivedaAddress:从机接收地址
+ 348           *              - USCI1_TWI_SlaveReceivedaData:从机接收数据
+ 349           *              - USCI1_TWI_SlaveSendData:从机发送数据
+ 350           *              - USCI1_TWI_SlaveReceivedaUACK:从机接收UACK
+ 351           *              - USCI1_TWI_SlaveDisableACK:从机关闭ACK
+ 352           *              - USCI1_TWI_SlaveAddressError:从机接收地址错误
+ 353           *              - USCI1_TWI_MasterBusy:主机忙状态
+ 354           *              - USCI1_TWI_MasterSendAddress:主机发送地址
+ 355           *              - USCI1_TWI_MasterReceivedaData:主机接收数据
+ 356           *              - USCI1_TWI_MasterSendData:主机发送数据
+ 357           *              - USCI1_TWI_MasterReceivedaUACK:主机接收UACK
+ 358           * @retval USCI1_SC标志状态
+ 359           *              - RESET:操作不成功
+C51 COMPILER V9.60.7.0   SC92F_USCI1                                                       10/13/2026 10:46:35 PAGE 7   
+
+ 360           *              - SET:操作成功
+ 361           */
+ 362          FlagStatus USCI1_GetTWIStatus(USCI1_TWIState_TypeDef USCI1_TWIState)
+ 363          {
+ 364   1        if ((US1CON0 & 0x07) == USCI1_TWIState)
+ 365   1          return SET;
+ 366   1        else
+ 367   1          return RESET;
+ 368   1      }
+ 369          
+ 370          /**
+ 371           * @brief  TWI功能开关函数
+ 372           * @param  NewState[in]: 功能启动/关闭选择
+ 373           *              - DISABLE:关闭
+ 374           *              - ENABLE:使能
+ 375           * @retval None
+ 376           */
+ 377          void USCI1_TWI_Cmd(FunctionalState NewState)
+ 378          {
+ 379   1        OTCON = OTCON & 0X3F | 0X80;
+ 380   1      
+ 381   1        if (NewState != DISABLE)
+ 382   1        {
+ 383   2          US1CON0 |= 0X80;
+ 384   2        }
+ 385   1        else
+ 386   1        {
+ 387   2          US1CON0 &= (~0X80);
+ 388   2        }
+ 389   1      }
+ 390          
+ 391          /**
+ 392           * @brief  TWI发送数据
+ 393           * @param  Data[in]:发送的数据
+ 394           * @retval None
+ 395           */ 
+ 396          void USCI1_TWI_SendData(uint8_t Data)
+ 397          {
+ 398   1        US1CON3 = Data;
+ 399   1      }
+ 400          
+ 401          /**
+ 402           * @brief  获得US1CON3中的值
+ 403           * @param  None
+ 404           * @retval TWI接收到的8位数据
+ 405           */
+ 406          uint8_t USCI1_TWI_ReceiveData(void)
+ 407          {
+ 408   1        return US1CON3;
+ 409   1      }
+ 410          /**
+ 411           * @}
+ 412           */
+ 413          /* End of USCI1_Group4. */
+ 414          
+ 415          /** @defgroup USCI1_Group5 Base functions
+ 416           *  @brief   USCI1 functions
+ 417           *
+ 418          @verbatim
+ 419           ===============================================================================
+ 420                               ##### USCI1_UART Base functions #####
+ 421           ===============================================================================
+C51 COMPILER V9.60.7.0   SC92F_USCI1                                                       10/13/2026 10:46:35 PAGE 8   
+
+ 422          @endverbatim
+ 423            * @{
+ 424            */
+ 425          
+ 426          /**
+ 427           * @brief  UART初始化配置函数
+ 428           * @param  UARTFsys[in]:系统时钟频率
+ 429           * @param  BaudRate[in]:波特率
+ 430           * @param  Mode[in]:UART0工作模式
+ 431           *          - USCI1_UART_Mode_8B:UART设置为8位模式
+ 432           *          - USCI1_UART_Mode_10B:UART设置为10位模式
+ 433           *          - USCI1_UART_Mode_11B:UART设置为11位模式
+ 434           * @param  RxMode[in]:接收允许选择
+ 435           *          - USCI1_UART_RX_ENABLE:UART允许接收
+ 436           *          - USCI1_UART_RX_DISABLE:UART禁止接收
+ 437           * @retval None
+ 438           */
+ 439          void USCI1_UART_Init(uint32_t UARTFsys, uint32_t BaudRate, USCI1_UART_Mode_TypeDef Mode,
+ 440                               USCI1_UART_RX_TypeDef RxMode)
+ 441          {
+ 442   1        OTCON |= 0xC0;
+ 443   1        US1CON0 = US1CON0 & 0X0F | Mode | RxMode;
+ 444   1      
+ 445   1        if (Mode == USCI1_UART_Mode_8B)
+ 446   1        {
+ 447   2          if (BaudRate == USCI1_UART_BaudRate_FsysDIV12)
+ 448   2          {
+ 449   3            US1CON0 &= 0XDF;
+ 450   3          }
+ 451   2          else if (BaudRate == USCI1_UART_BaudRate_FsysDIV4)
+ 452   2          {
+ 453   3            US1CON0 |= 0X20;
+ 454   3          }
+ 455   2        }
+ 456   1        else
+ 457   1        {
+ 458   2          US1CON2 = UARTFsys / BaudRate / 256;
+ 459   2          US1CON1 = UARTFsys / BaudRate % 256;
+ 460   2        }
+ 461   1      }
+ 462          
+ 463          /**
+ 464           * @brief  USCI1 UART1发送8位数据
+ 465           * @param  Data[in]:发送的数据
+ 466           * @retval None
+ 467           */
+ 468          void USCI1_UART_SendData8(uint8_t Data)
+ 469          {
+ 470   1        US1CON3 = Data;
+ 471   1      }
+ 472          
+ 473          /**
+ 474           * @brief  获得US1CON3中的值
+ 475           * @param  None
+ 476           * @retval UART接收到的8位数据
+ 477           */
+ 478          uint8_t USCI1_UART_ReceiveData8(void)
+ 479          {
+ 480   1        return US1CON3;
+ 481   1      }
+ 482          
+ 483          /**
+C51 COMPILER V9.60.7.0   SC92F_USCI1                                                       10/13/2026 10:46:35 PAGE 9   
+
+ 484           * @brief  UART发送9位数据
+ 485           * @param  Data[in]:发送的数据
+ 486           * @retval None
+ 487           */
+ 488          void USCI1_UART_SendData9(uint16_t Data)
+ 489          {
+ 490   1        uint8_t Data_9Bit;
+ 491   1        Data_9Bit = (Data >> 8);
+ 492   1      
+ 493   1        if (Data_9Bit)
+ 494   1        {
+ 495   2          US1CON0 |= 0x08;
+ 496   2        }
+ 497   1        else
+ 498   1        {
+ 499   2          US1CON0 &= 0xf7;
+ 500   2        }
+ 501   1      
+ 502   1        US1CON3 = (uint8_t)Data;
+ 503   1      }
+ 504          
+ 505          /**
+ 506           * @brief  获得US1CON3中的值及第九位的值
+ 507           * @param  None
+ 508           * @retval 接收到的数据
+ 509           */
+ 510          uint16_t USCI1_UART_ReceiveData9(void)
+ 511          {
+ 512   1        uint16_t Data9;
+ 513   1        Data9 = US1CON3 + (((uint16_t)(US1CON0 & 0X04) & 0x00FF) << 6);
+ 514   1        return Data9;
+ 515   1      }
+ 516          
+ 517          /**
+ 518           * @brief  USCI1中断初始化
+ 519           * @param  NewState[in]: 断使能/关闭选择
+ 520           *              - DISABLE:关闭
+ 521           *              - ENABLE:使能
+ 522           * @param  Priority[in]: 中断优先级选择
+ 523           *              - LOW:低
+ 524           *              - HIGH:高
+ 525           * @retval None
+ 526           */ 
+ 527          void USCI1_ITConfig(FunctionalState NewState, PriorityStatus Priority)
+ 528          {
+ 529   1        if (NewState != DISABLE)
+ 530   1        {
+ 531   2          IE2 |= 0x01;
+ 532   2        }
+ 533   1        else
+ 534   1        {
+ 535   2          IE2 &= 0xFE;
+ 536   2        }
+ 537   1      
+ 538   1        /************************************************************/
+ 539   1        if (Priority != LOW)
+ 540   1        {
+ 541   2          IP2 |= 0x01;
+ 542   2        }
+ 543   1        else
+ 544   1        {
+ 545   2          IP2 &= 0xFE;
+C51 COMPILER V9.60.7.0   SC92F_USCI1                                                       10/13/2026 10:46:35 PAGE 10  
+
+ 546   2        }
+ 547   1      }
+ 548          
+ 549          /**
+ 550           * @brief  获得USCI1标志状态
+ 551           * @param  USCI1_FLAG[in]:所需获取的标志位
+ 552           *              - USCI1_SPI_FLAG_SPIF:SPI数据传送标志位SPIF
+ 553           *              - USCI1_SPI_FLAG_WCOL:SPI写入冲突标志位WCOL
+ 554           *              - USCI1_SPI_FLAG_TXE:SPI发送缓存器空标志TXE
+ 555           *              - USCI1_TWI_FLAG_TWIF:TWI中断标志位TWIF
+ 556           *              - USCI1_TWI_FLAG_GCA:TWI通用地址响应标志位GCA
+ 557           *              - USCI1_TWI_FLAG_MSTR:TWI主从标志位MSTR
+ 558           *              - USCI1_TWI_FLAG_TXRXnE:TWI发送接收标志位
+ 559           *              - USCI1_UART_FLAG_RI:UART发送中断标志位TI
+ 560           *              - USCI1_UART_FLAG_TI:UART接收中断标志位RI
+ 561           * @retval USCI1标志状态
+ 562           *              - RESET:置零
+ 563           *              - SET:置起
+ 564           */
+ 565          FlagStatus USCI1_GetFlagStatus(USCI1_Flag_TypeDef USCI1_FLAG)
+ 566          {
+ 567   1        FlagStatus bitstatus = RESET;
+ 568   1      #if defined(SC92L853x) || defined(SC92L753x) || defined(SC92F646x) || defined(SC92F546x) || defined(SC92F5
+             -42x)|| defined(SC92L840x)
+ 569   1        if ((USCI1_FLAG == USCI1_SPI_FLAG_SPIF) || (USCI1_FLAG == USCI1_SPI_FLAG_WCOL) || (USCI1_FLAG == USCI1_T
+             -WI_FLAG_TXRXnE))
+ 570   1      #endif
+ 571   1          {
+ 572   2            if ((USCI1_FLAG & US1CON1) != (uint8_t)RESET)
+ 573   2            {
+ 574   3              bitstatus = SET;
+ 575   3            }
+ 576   2            else
+ 577   2            {
+ 578   3              bitstatus = RESET;
+ 579   3            }
+ 580   2          }
+ 581   1          else
+ 582   1          {
+ 583   2            if ((USCI1_FLAG & US1CON0) != (uint8_t)RESET)
+ 584   2            {
+ 585   3              bitstatus = SET;
+ 586   3            }
+ 587   2            else
+ 588   2            {
+ 589   3              bitstatus = RESET;
+ 590   3            }
+ 591   2          }
+ 592   1      
+ 593   1        return bitstatus;
+ 594   1      }
+ 595          
+ 596          /**
+ 597           * @brief  清除USCI1标志状态
+ 598           * @param  USCI1_FLAG[in]:所需清除的标志位
+ 599           *              - USCI1_SPI_FLAG_SPIF:SPI数据传送标志位SPIF
+ 600           *              - USCI1_SPI_FLAG_WCOL:SPI写入冲突标志位WCOL
+ 601           *              - USCI1_SPI_FLAG_TXE:SPI发送缓存器空标志TXE
+ 602           *              - USCI1_TWI_FLAG_TWIF:TWI中断标志位TWIF
+ 603           *              - USCI1_TWI_FLAG_GCA:TWI通用地址响应标志位GCA
+ 604           *              - USCI1_TWI_FLAG_MSTR:TWI主从标志位MSTR
+ 605           *              - USCI1_TWI_FLAG_TXRXnE:TWI发送接收标志位
+C51 COMPILER V9.60.7.0   SC92F_USCI1                                                       10/13/2026 10:46:35 PAGE 11  
+
+ 606           *              - USCI1_UART_FLAG_RI:UART发送中断标志位TI
+ 607           *              - USCI1_UART_FLAG_TI:UART接收中断标志位RI
+ 608           * @retval None
+ 609           */
+ 610          void USCI1_ClearFlag(USCI1_Flag_TypeDef USCI1_FLAG)
+ 611          {
+ 612   1      #if defined(SC92L853x) || defined(SC92L753x) || defined(SC92F646x) || defined(SC92F546x) || defined(SC92F5
+             -42x)|| defined(SC92L840x)
+ 613   1        if ((USCI1_FLAG == USCI1_SPI_FLAG_SPIF) || (USCI1_FLAG == USCI1_SPI_FLAG_WCOL) || (USCI1_FLAG == USCI1_T
+             -WI_FLAG_TXRXnE))
+ 614   1      #endif
+ 615   1        {
+ 616   2          US1CON1 &= (~USCI1_FLAG); //操作寄存器US1CON1
+ 617   2        }
+ 618   1        else if ((USCI1_FLAG == USCI1_UART_FLAG_TI) || (USCI1_FLAG == USCI1_UART_FLAG_RI))
+ 619   1        {
+ 620   2      #if defined(SC92L853x) || defined(SC92L753x) || defined(SC92F646x) || defined(SC92F546x) || defined(SC92F5
+             -42x)|| defined(SC92L840x)
+ 621   2        if((US1CON0 & USCI1_UART_FLAG_TI))
+ 622   2        {
+ 623   3          US1CON0 &=0xFE;
+ 624   3        }
+ 625   2        if((US1CON0 & USCI1_UART_FLAG_RI))
+ 626   2        {
+ 627   3          US1CON0 &=0xFD;
+ 628   3        }   //写1清零
+ 629   2      #endif
+ 630   2        }
+ 631   1        else
+ 632   1        {
+ 633   2          US1CON0 &= (~USCI1_FLAG); //操作寄存器US1CON0
+ 634   2        }
+ 635   1      }
+ 636          
+ 637          /**
+ 638           * @brief  TWI发送地址，读写类型
+ 639           * @param  Addr[in]:发送的地址 0~127
+ 640           * @param  RW[in]:读写类型
+ 641           *              - USCI1_TWI_Write:写操作
+ 642           *              - USCI1_TWI_Read:读操作
+ 643           * @retval None
+ 644           */
+ 645          void USCI1_TWI_SendAddr(uint8_t Addr, USCI1_TWI_RWType RW)
+ 646          {
+ 647   1        US1CON3 = (Addr << 1) | RW;
+ 648   1      }
+ 649          /**
+ 650           * @}
+ 651           */
+ 652          /* End of USCI1_Group5. */
+ 653          #endif
+ 654          /**
+ 655           * @}
+ 656           */
+ 657          
+ 658          /**
+ 659           * @}
+ 660           */
+ 661          
+ 662          /**
+ 663           * @}
+ 664           */
+C51 COMPILER V9.60.7.0   SC92F_USCI1                                                       10/13/2026 10:46:35 PAGE 12  
+
+ 665          /******************* (C) COPYRIGHT 2025 SinOne Microelectronics *****END OF FILE****/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    542    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----      17
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

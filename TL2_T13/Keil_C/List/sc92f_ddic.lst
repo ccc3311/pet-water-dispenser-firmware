@@ -1,0 +1,982 @@
+C51 COMPILER V9.60.7.0   SC92F_DDIC                                                        10/13/2026 10:46:31 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SC92F_DDIC
+OBJECT MODULE PLACED IN ..\Output\sc92f_ddic.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\FWLib\SC92F_Lib\src\sc92f_ddic.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE I
+                    -NCDIR(..\FWLib\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753
+                    -x) DEBUG PRINT(..\List\sc92f_ddic.lst) TABS(2) OBJECT(..\Output\sc92f_ddic.obj)
+
+line level    source
+
+   1          /**
+   2           ******************************************************************************
+   3           * @file    sc92f_ddic.c
+   4           * @author  SOC AE Team
+   5           * @version V1.2.4
+   6           * @date    2026-2-28
+   7           * @brief   DDIC function module
+   8           ******************************************************************************
+   9           * @attention
+  10           *
+  11           *1.This software is supplied by SinOne Microelectronics Co.,Ltd. and is only 
+  12           *intended for use with SinOne products. No other uses are authorized. This 
+  13           *software is owned by SinOne Microelectronics Co.,Ltd. and is protected under 
+  14           *all applicable laws, including copyright laws. 
+  15           *2.The software which is for guidance only aims at providing customers with 
+  16           *coding information regarding their products in order for them to save time. 
+  17           *As a result, SinOne shall not be held liable for any direct, indirect or 
+  18           *consequential damages with respect to any claims arising from the content of 
+  19           *such software and/or the use made by customers of the coding information 
+  20           *contained herein in connection with their products.
+  21           *
+  22           *  COPYRIGHT 2025 SinOne Microelectronics
+  23           ******************************************************************************
+  24           */
+  25          
+  26          /* Includes ------------------------------------------------------------------*/
+  27          #include "sc92f_ddic.h"
+  28          
+  29          /** @addtogroup sc92f_StdPeriph_Driver
+  30           * @{
+  31           */
+  32          
+  33          /** @defgroup DDIC
+  34           * @brief DDIC driver modules
+  35           * @{
+  36           */
+  37          
+  38          /** @defgroup DDIC_Functions
+  39           * @{
+  40           */
+  41           
+  42          #if defined (SC92F854x) || defined (SC92F754x) || defined  (SC92F844xB) || defined (SC92F744xB) || defined
+             -  (SC92F84Ax_2) || defined (SC92F74Ax_2)\
+  43              || defined (SC92F859x) || defined (SC92F759x) || defined (SC92L853x) || defined (SC92L753x) || defined (
+             -SC92R511x) || defined (SC92F6x1x)\
+  44              || defined (SC92F5x1x) || defined (SC92R436)|| defined (SC92R438)|| defined (SC92R439)|| defined (SC92R4
+             -22A)|| defined (SC92F652x)|| defined(SC92R51x_R52x) || defined (SC92F552x)\
+  45              || defined (SC92F531x) || defined(SC92F663x)
+  46              
+  47          #if defined (SC92L853x) || defined (SC92L753x)
+  48          uint8_t xdata LCDRAM[30] _at_ 0xF00;
+  49          #elif defined(SC92F6x1x) || defined(SC92F5x1x)|| defined(SC92R436)|| defined(SC92R438)|| defined (SC92R439
+             -)|| defined (SC92R422A)
+C51 COMPILER V9.60.7.0   SC92F_DDIC                                                        10/13/2026 10:46:31 PAGE 2   
+
+              uint8_t xdata LEDRAM[24] _at_ 0x400;
+              #elif defined(SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x)
+              uint8_t xdata LED_LCDRAM[24] _at_ 0x1000;
+              #elif defined(SC92F531x)
+              uint8_t xdata LEDRAM[8] _at_ 0x100;
+              #elif defined(SC92F663x)
+              uint8_t xdata LEDRAM[16] _at_ 0x1000;
+              #else
+              uint8_t xdata LCDRAM[30] _at_ 0x700;
+              #endif
+  60          
+  61          /** @defgroup DDIC_Group1 Initialization and Configuration functions
+  62           *  @brief Initialization and Configuration functions
+  63           *
+  64           
+  65          @verbatim
+  66           ===============================================================================
+  67                               ##### Initialization and Configuration functions #####
+  68           ===============================================================================
+  69          @endverbatim
+  70            * @{
+  71            */
+  72            
+  73           /**
+  74           * @brief  DeInitializes the DDIC peripheral
+  75           * @retval None
+  76           */
+  77          void DDIC_DeInit(void)
+  78          {
+  79   1      #if !defined(SC92F6x1x) && !defined(SC92F5x1x) && !defined(SC92R436)&& !defined(SC92R438)&& !defined(SC92R
+             -439)&& !defined(SC92R422A)\
+  80   1          && !defined(SC92F652x) && !defined(SC92R51x_R52x) && !defined(SC92F552x) && !defined(SC92F531x) && !defi
+             -ned(SC92F663x)
+  81   1        DDRCON = 0X00;
+  82   1        P0VO = 0X00;
+  83   1        P1VO = 0X00;
+  84   1        P2VO = 0X00;
+  85   1      #if defined (SC92L853x) || defined (SC92L753x)
+  86   1        P5VO = 0X00;
+  87   1      #else
+                P3VO = 0X00;
+              #endif
+  90   1        OTCON &= 0XF0;
+  91   1      #endif
+  92   1      #if defined(SC92F6x1x) || defined(SC92F5x1x) || defined (SC92R436)|| defined (SC92R438)|| defined (SC92R43
+             -9)|| defined (SC92R422A)
+                 LEDVO1  = 0X00;  
+                 DDRCON  = 0X00;  
+                 SCANCON = 0X00; 
+                 LEDVO0  = 0X00;
+              #elif defined(SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x)|| defined(SC92F531x)
+              #if !defined(SC92F531x)
+                 OTCON   &= 0XF0;
+              #endif
+                 LEDVO    = 0X00;
+                 COMCON   = 0X00;
+                 DDRCON1  = 0X00;
+                 DDRCON2  = 0X00;
+                 DDRCON0  = 0X00;
+                 SCANCON  = 0X00;
+              #elif defined(SC92F663x)
+                 LEDVO    = 0X00;
+C51 COMPILER V9.60.7.0   SC92F_DDIC                                                        10/13/2026 10:46:31 PAGE 3   
+
+                 COMCON   = 0X00;
+                 DDRCON2  = 0X00;
+                 DDRCON0  = 0X00;
+                 SCANCON  = 0X00;
+              #endif
+ 114   1      }
+ 115          
+ 116          /**
+ 117           * @brief  Initializes the peripheral DDIC register according to the parameters.
+ 118           * @param  DDIC_DutyCycle_TypeDef[in]: Set DDIC duty cycle configuration.
+ 119           *                     - DDIC_DUTYCYCLE_D8:1/8 duty cycle
+ 120           *                     - DDIC_DUTYCYCLE_D6:1/6 duty cycle
+ 121           *                     - DDIC_DUTYCYCLE_D5:1/5 duty cycle
+ 122           *                     - DDIC_DUTYCYCLE_D4:1/4 duty cycle
+ 123           * @param  P1OutputPin[in]: Set pin P1 as the LCD voltage output port.
+ 124           * @param  P2OutputPin[in]: Set pin P2 as the LCD voltage output port.
+ 125           * @param  P3OutputPin[in]: Set pin P3 as the LCD voltage output port.When the model is SC92L853x or SC92L
+             -753x, it actually corresponds to setting the P5 port.
+ 126           * @retval None
+ 127           */
+ 128          #if !defined(SC92F6x1x) && !defined(SC92F5x1x) && !defined(SC92R436) && !defined(SC92R438)&& !defined(SC92
+             -R439)&& !defined(SC92R422A)
+ 129          #if defined(SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x) || defined(SC92F663x)
+              void DDIC_Init(DDIC_DutyCycle_TypeDef DDIC_DutyCylce,
+                             uint8_t P0OutputPin, uint8_t P1OutputPin,
+                             uint8_t P2OutputPin)
+              {
+                DDRCON0 = DDRCON0 & 0XCF | DDIC_DutyCylce;
+                DDRCON0 = DDRCON0 & 0XF3 | 0X00;
+                LEDVO = P0OutputPin;
+                DDRCON0 = DDRCON0 & 0XF3 | 0X04;
+                LEDVO = P1OutputPin;
+                DDRCON0 = DDRCON0 & 0XF3 | 0X08;
+                LEDVO = P2OutputPin;
+              #if defined(SC92F663x)
+                COMCON = 0X00;
+              #else
+                DDRCON0 = DDRCON0 & 0XFC | 0X00;
+                COMCON = 0X00;
+                DDRCON0 = DDRCON0 & 0XFC | 0X01;
+                COMCON = 0X00;
+              #endif
+              }
+              #elif defined(SC92F531x)
+              void DDIC_Init(uint8_t P0OutputPin)
+              {
+                LEDVO = P0OutputPin;
+                COMCON = 0X00;
+              }
+              #else
+ 157          void DDIC_Init(DDIC_DutyCycle_TypeDef DDIC_DutyCylce,
+ 158                         uint8_t P0OutputPin, uint8_t P1OutputPin,
+ 159                         uint8_t P2OutputPin, uint8_t P3OutputPin)
+ 160          {
+ 161   1        DDRCON = DDRCON & 0XCF | DDIC_DutyCylce;
+ 162   1        P0VO = P0OutputPin;
+ 163   1        P1VO = P1OutputPin;
+ 164   1        P2VO = P2OutputPin;
+ 165   1      #if defined (SC92L853x) || defined (SC92L753x)
+ 166   1        P5VO = P3OutputPin;
+ 167   1      #else
+                P3VO = P3OutputPin;
+C51 COMPILER V9.60.7.0   SC92F_DDIC                                                        10/13/2026 10:46:31 PAGE 4   
+
+              #endif
+ 170   1      }
+ 171          #endif
+ 172          
+ 173          /**
+ 174           * @brief  Set DDIC to LED driving mode.
+ 175           * @param  None
+ 176           * @retval None
+ 177           */
+ 178          #if !defined(SC92F531x) && !defined(SC92F663x)
+ 179          #if defined(SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x)
+              void DDIC_LEDDrivingModeConfig(void)
+              {
+                DDRCON0 |= 0X40;
+              }
+              #else
+ 185          void DDIC_LEDDrivingModeConfig(void)
+ 186          {
+ 187   1        DDRCON |= 0X40;
+ 188   1      }
+ 189          #endif
+ 190          #endif
+ 191          
+ 192          /**
+ 193           * @brief  Initializes the peripheral DDIC register according to the parameters.
+ 194           * @param  LCDVoltage[in]: LCD voltage regulation.
+ 195           * @param  DDIC_ResSel[in]:Set pin P1 as the LCD voltage output port.
+ 196           * if the model is SC92F652x
+ 197           *                     - DDIC_ResSel_11K:Set the internal voltage divider resistor to 11k.
+ 198           *                     - DDIC_ResSel_100K:Set the internal voltage divider resistor to 100k.
+ 199           *                     - DDIC_ResSel_300K:Set the internal voltage divider resistor to 300k.
+ 200           *                     - DDIC_ResSel_800K:Set the internal voltage divider resistor to 800k.
+ 201           * if the model is else model
+ 202           *                     - DDIC_ResSel_100K:Set the internal voltage divider resistor to 100k.
+ 203           *                     - DDIC_ResSel_200K:Set the internal voltage divider resistor to 200k.
+ 204           *                     - DDIC_ResSel_400K:Set the internal voltage divider resistor to 400k.
+ 205           *                     - DDIC_ResSel_800K:Set the internal voltage divider resistor to 800k.
+ 206           * @param  DDIC_BiasVoltage[in]:Set the LCD display driver bias voltage.
+ 207           *                     - DDIC_BIAS_D3:The LCD bias voltage is 1/3.
+ 208           *                     - DDIC_BIAS_D4:The LCD bias voltage is 1/4.
+ 209           * @retval None
+ 210           */
+ 211          #if !defined(SC92F531x) && !defined(SC92F663x)
+ 212          #if defined(SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x)
+              void DDIC_LCDConfig(uint8_t LCDVoltage,
+                                  DDIC_ResSel_Typedef DDIC_ResSel,
+                                  DDIC_BiasVoltage_Typedef DDIC_BiasVoltage)
+              {
+                DDRCON1 = DDRCON1 & 0XF0 | LCDVoltage;
+                OTCON = OTCON & 0XF2 | DDIC_ResSel | DDIC_BiasVoltage;
+              }
+              #else
+ 221          void DDIC_LCDConfig(uint8_t LCDVoltage,
+ 222                              DDIC_ResSel_Typedef DDIC_ResSel,
+ 223                              DDIC_BiasVoltage_Typedef DDIC_BiasVoltage)
+ 224          {
+ 225   1        DDRCON = DDRCON & 0XB0 | LCDVoltage;
+ 226   1        OTCON = OTCON & 0XF2 | DDIC_ResSel | DDIC_BiasVoltage;
+ 227   1      }
+ 228          #endif
+ 229          #endif
+ 230          
+C51 COMPILER V9.60.7.0   SC92F_DDIC                                                        10/13/2026 10:46:31 PAGE 5   
+
+ 231          /**
+ 232           * @brief  DDIC Clock Configuration.
+ 233           * @param  Clock_Source[in]:LCD/LED clock source.
+ 234           *                     - Source_Fsys:Set the clock source to the system clock.
+ 235           *                     - Source_32K:Set the clock source to the internal 32KHz or the external 32.768KHz.
+ 236           * @param  Clock_Division[in]:LCD/LED clock division.
+ 237           *                     - Fsys_4096_or_16:Set the clock division ratio to 4096 (under Source_Fsys) or 16 (u
+             -nder Source_32K).
+ 238           *                     - Fsys_8192_or_32:Set the clock division ratio to 8192 (under Source_Fsys) or 32 (u
+             -nder Source_32K).
+ 239           *                     - Fsys_16384_or_64:Set the clock division ratio to 16384 (under Source_Fsys) or 64 
+             -(under Source_32K).
+ 240           *                     - Fsys_32768_or_128:Set the clock division ratio to 32768 (under Source_Fsys) or 12
+             -8 (under Source_32K).
+ 241           * @retval None
+ 242           */
+ 243          #if defined(SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x)
+              void DDIC_LCDClockConfig(DDIC_ClockSource_TypeDef Clock_Source,
+                                       DDIC_CK_TypeDef Clock_Division)
+              {
+                DDRCON1 = DDRCON1 & 0X7F | Clock_Source;
+                SCANCON = SCANCON & 0XFC | Clock_Division;
+              }
+              #elif defined(SC92F531x)
+              void DDIC_LEDClockConfig(DDIC_ClockSource_TypeDef Clock_Source)
+              {
+                DDRCON1 = DDRCON1 & 0X7F | Clock_Source;
+              }
+              #elif defined(SC92F663x)
+              void DDIC_LEDClockConfig(DDIC_ClockSource_TypeDef Clock_Source,
+                                       DDIC_CK_TypeDef Clock_Division)
+              {
+                Clock_Source = 0x00;
+                SCANCON = SCANCON & 0XFC | Clock_Division;
+              }
+              #endif
+ 263          
+ 264          /**
+ 265           * @brief  Select DDIC display driver mode.
+ 266           * @param  DDIC_DMOD_TypeDef[in]: Select Display Mode.
+ 267           *                     - DMOD_LED:Select LED mode.
+ 268           *                     - DMOD_LCD:Select LCD mode.
+ 269           * @retval None
+ 270           */
+ 271          #if !defined(SC92F531x) && !defined(SC92F663x)
+ 272          #if defined(SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x)
+              void DDIC_DMOD_Selcet(DDIC_LMOD_TypeDef DDIC_DMOD)
+              {
+                if(DDIC_DMOD == DMOD_LED)
+                {
+                  DDRCON0 &= 0XBF;
+                }
+                else
+                {
+                  DDRCON0 |= 0X40;
+                }
+              }
+              #else
+ 285          void DDIC_DMOD_Selcet(DDIC_DMOD_TypeDef DDIC_DMOD)
+ 286          {
+ 287   1        if(DDIC_DMOD == DMOD_LED)
+ 288   1        {
+C51 COMPILER V9.60.7.0   SC92F_DDIC                                                        10/13/2026 10:46:31 PAGE 6   
+
+ 289   2          DDRCON |= 0X40;
+ 290   2        }
+ 291   1        else
+ 292   1        {
+ 293   2          DDRCON &= 0XBF;
+ 294   2        }
+ 295   1      }
+ 296          #endif
+ 297          #endif
+ 298          
+ 299          
+ 300          
+ 301          /**
+ 302           * @brief  Selection of segment and common multiplexing pins for LED at 1/4 duty cycle.
+ 303           * @param  DDIC_OutputPin_TypeDef[in]: Select segment and common multiplexing pins.
+ 304           *                     - SEG4_11COM0_7:S4-S11 are segments, C0-C7 are common.
+ 305           *                     - SEG2_11COM2_7:S2-S11 are segments, C2-C7 are common.
+ 306           *                     - SEG1_11COM3_7:S1-S11 are segments, C3-C7 are common.
+ 307           *                     - SEG0_11COM4_7:S0-S11 are segments, C4-C7 are common.
+ 308           * @retval None
+ 309           */
+ 310          #if !defined(SC92F652x)&& !defined(SC92R51x_R52x) && !defined(SC92F552x)&& !defined(SC92F531x) && !defined
+             -(SC92F663x)
+ 311          void DDIC_OutputPinOfDutycycleD4(DDIC_OutputPin_TypeDef DDIC_OutputPin)
+ 312          {
+ 313   1        OTCON &=  ~0X02;
+ 314   1        OTCON |= DDIC_OutputPin<<1;
+ 315   1      }
+ 316          #endif
+ 317          
+ 318          /**
+ 319           * @brief  Selection of segment and common multiplexing pins for LED at 1/4 duty cycle.
+ 320           * @param  DDIC_Control_SEG_TypeDef[in]: Select segment pins.
+ 321           *                     - DDIC_SEG0:select SEG0.
+ 322           *                     - DDIC_SEG1:select SEG1.
+ 323           *                     - DDIC_SEG2:select SEG2.
+ 324           *                     - DDIC_SEG3:select SEG3.
+ 325           *                     - DDIC_SEG4:select SEG4.
+ 326           *                     - DDIC_SEG5:select SEG5.
+ 327           *                     - DDIC_SEG6:select SEG6.
+ 328           *                     - DDIC_SEG7:select SEG7.
+ 329           *                     - DDIC_SEG8:select SEG8.
+ 330           *                     - DDIC_SEG9:select SEG9.
+ 331           *                     - DDIC_SEG10:select SEG10.
+ 332           *                     - DDIC_SEG11:select SEG11.
+ 333           *                     - DDIC_SEG12:select SEG12.
+ 334           *                     - DDIC_SEG13:select SEG13.
+ 335           *                     - DDIC_SEG14:select SEG14.
+ 336           *                     - DDIC_SEG15:select SEG15.
+ 337           *                     - DDIC_SEG16:select SEG16.
+ 338           *                     - DDIC_SEG17:select SEG17.
+ 339           *                     - DDIC_SEG18:select SEG18.
+ 340           *                     - DDIC_SEG19:select SEG19.
+ 341           *                     - DDIC_SEG20:select SEG20.
+ 342           *                     - DDIC_SEG21:select SEG21.
+ 343           *                     - DDIC_SEG22:select SEG22.
+ 344           *                     - DDIC_SEG23:select SEG23.
+ 345           *                     - DDIC_SEG24:select SEG24.
+ 346           *                     - DDIC_SEG25:select SEG25.
+ 347           *                     - DDIC_SEG26:select SEG26.
+ 348           *                     - DDIC_SEG27:select SEG27.
+ 349           * @param  DDIC_Control_COM_TypeDef[in]: Select common pins.
+C51 COMPILER V9.60.7.0   SC92F_DDIC                                                        10/13/2026 10:46:31 PAGE 7   
+
+ 350           * @param  DDIC_Control_Status[in]: The status of the control bit corresponding to DDIC.
+ 351           *                     - DDIC_Control_ON:Enable.
+ 352           *                     - DDIC_Control_OFF:Disable.
+ 353           * @retval None
+ 354           */
+ 355          #if defined(SC92F652x)|| defined(SC92R51x_R52x) || defined (SC92F552x)
+              void DDIC_Control(DDIC_Control_SEG_TypeDef DDIC_Seg,
+                                uint8_t DDIC_Com,
+                                DDIC_Control_Status DDIC_Contr)
+              {
+                if(DDIC_Contr)
+                {
+                  if(DDIC_Seg < 0x0100)
+                  {
+                    LED_LCDRAM[DDIC_Com*2] |= (uint8_t)DDIC_Seg;
+                  }
+                  else if(DDIC_Seg < 0x010000)
+                  {
+                    LED_LCDRAM[DDIC_Com*2+1] |= (uint8_t)(DDIC_Seg>>8);
+                  }
+                }
+                else
+                {
+                  if(DDIC_Seg < 0x0100)
+                  {
+                    LED_LCDRAM[DDIC_Com*2] &= ~(uint8_t)DDIC_Seg;
+                  }
+                  else if(DDIC_Seg < 0x010000)
+                  {
+                    LED_LCDRAM[DDIC_Com*2+1] &= ~(uint8_t)(DDIC_Seg>>8);
+                  }
+                }
+              }
+              #elif defined(SC92F663x)
+              void DDIC_Control(DDIC_Control_SEG_TypeDef DDIC_Seg,
+                                uint8_t DDIC_Com,
+                                DDIC_Control_Status DDIC_Contr)
+              {
+                if(DDIC_Contr)
+                {
+                  if(DDIC_Seg < 0x0100)
+                  {
+                    LEDRAM[DDIC_Com*2+1] |= (uint8_t)DDIC_Seg;
+                  }
+                  else if(DDIC_Seg < 0x010000)
+                  {
+                    LEDRAM[DDIC_Com*2] |= (uint8_t)(DDIC_Seg>>8);
+                  }
+                }
+                else
+                {
+                  if(DDIC_Seg < 0x0100)
+                  {
+                    LEDRAM[DDIC_Com*2+1] &= ~(uint8_t)DDIC_Seg;
+                  }
+                  else if(DDIC_Seg < 0x010000)
+                  {
+                    LEDRAM[DDIC_Com*2] &= ~(uint8_t)(DDIC_Seg>>8);
+                  }
+                }
+              }
+              #elif defined(SC92F531x)
+C51 COMPILER V9.60.7.0   SC92F_DDIC                                                        10/13/2026 10:46:31 PAGE 8   
+
+              void DDIC_Control(uint8_t OutputPin,
+                                DDIC_Control_Status DDIC_Contr)
+              {
+                uint16_t i;
+                for(i=0;i<=7;i++)
+                {
+                  if((OutputPin>>i)&0x01)
+                  {
+                    if(DDIC_Contr)
+                    {
+                      LEDRAM[i] |= OutputPin;
+                    }
+                    else
+                    {
+                      LEDRAM[i] &= (~OutputPin);
+                    }
+                  }
+                }
+              }
+              #else
+ 432          void DDIC_Control(DDIC_Control_SEG_TypeDef DDIC_Seg,
+ 433                            uint8_t DDIC_Com,
+ 434                            DDIC_Control_Status DDIC_Contr)
+ 435          {
+ 436   1        if(DDIC_Contr)
+ 437   1        {
+ 438   2          LCDRAM[DDIC_Seg] |= DDIC_Com;
+ 439   2        }
+ 440   1        else
+ 441   1        {
+ 442   2          LCDRAM[DDIC_Seg] &= (~DDIC_Com);
+ 443   2        }
+ 444   1      }
+ 445          #endif
+ 446          
+ 447          #endif
+ 448          
+ 449          #if defined(SC92F6x1x) || defined(SC92F5x1x) || defined(SC92R436) || defined(SC92R438) || defined(SC92R439
+             -) || defined(SC92R422A)\
+ 450                || defined(SC92F652x)|| defined(SC92R51x_R52x) || defined (SC92F552x) || defined(SC92F531x) || defin
+             -ed(SC92F663x)
+              /**
+               * @brief  Initialization configuration function for the LED mode.
+               * @param  DDIC_OutputPin_TypeDef[in]: Select segment and common multiplexing pins.
+               *                     - SEG4_11COM0_7:S4-S11 are segments, C0-C7 are common.
+               *                     - SEG2_11COM2_7:S2-S11 are segments, C2-C7 are common.
+               *                     - SEG1_11COM3_7:S1-S11 are segments, C3-C7 are common.
+               *                     - SEG0_11COM4_7:S0-S11 are segments, C4-C7 are common.
+               * @param  OutputPin[in]: Set the I/O port pins as LCD voltage output pins.
+               * @retval None
+               */
+              #if defined(SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x)
+              void DDIC_LEDInit(DDIC_OutputPin_TypeDef DDIC_DutyCylce,uint32_t OutputPin)
+              {
+                uint16_t i;
+                DDRCON0 = DDRCON0 & 0XCF | DDIC_DutyCylce;
+                for(i=0;i<=19;i++)
+                {
+                  if((OutputPin>>i)&0x01)
+                  {
+                    if(i<=7)
+                    {
+C51 COMPILER V9.60.7.0   SC92F_DDIC                                                        10/13/2026 10:46:31 PAGE 9   
+
+                      DDRCON0 &= 0xF3;
+                      DDRCON0 |= 0x00; 
+                      LEDVO |= (0x01<<i);
+                    }
+                    else if(i<=15)
+                    {
+                      DDRCON0 &= 0xF3;
+                      DDRCON0 |= 0x04;
+                      LEDVO |=(0x01<<(i-8));
+                    }
+                    else
+                    {
+                      DDRCON0 &= 0xF3;
+                      DDRCON0 |= 0x08;
+                      LEDVO |=(0x01<<(i-16));
+                    }
+                  }
+                }
+              }
+              #elif defined(SC92F663x)
+              void DDIC_LEDInit(DDIC_OutputPin_TypeDef DDIC_DutyCylce,uint32_t OutputPin)
+              {
+                uint16_t i;
+                DDRCON0 = DDRCON0 & 0XCF | DDIC_DutyCylce;
+                for(i=0;i<=23;i++)
+                {
+                  if((OutputPin>>i)&0x01)
+                  {
+                    if(i<=7)
+                    {
+                      DDRCON0 &= 0xF3;
+                      DDRCON0 |= 0x00; 
+                      LEDVO |= (0x01<<i);
+                    }
+                    else if(i<=15)
+                    {
+                      DDRCON0 &= 0xF3;
+                      DDRCON0 |= 0x04;
+                      LEDVO |=(0x01<<(i-8));
+                    }
+                    else
+                    {
+                      DDRCON0 &= 0xF3;
+                      DDRCON0 |= 0x08;
+                      LEDVO |=(0x01<<(i-16));
+                    }
+                  }
+                }
+              }
+              #elif defined(SC92F531x)
+              void DDIC_LEDInit(DDIC_OutputPin_TypeDef DDIC_DutyCylce,uint16_t OutputPin)
+              {
+                uint16_t i;
+                DDIC_DutyCylce = None;
+                for(i=0;i<=7;i++)
+                {
+                  if((OutputPin>>i)&0x01)
+                  {
+                    if(i<=7)
+                    {
+                      LEDVO |= (0x01<<i);
+                    }
+C51 COMPILER V9.60.7.0   SC92F_DDIC                                                        10/13/2026 10:46:31 PAGE 10  
+
+                  }
+                }
+              }
+              #else
+              void DDIC_LEDInit(DDIC_OutputPin_TypeDef DDIC_DutyCylce,uint16_t OutputPin)
+              {
+                uint16_t i;
+                DDRCON = DDRCON & 0XCF | DDIC_DutyCylce;
+                for(i=0;i<=15;i++)
+                {
+                  if((OutputPin>>i)&0x01)
+                  {
+                    if(i<=7)
+                    {
+                      LEDVO0 |= (0x01<<i);
+                    }
+                    else
+                    {
+                      LEDVO1 |=(0x01<<(i-8));
+                    }
+                  }
+                }
+              }
+              #endif
+              
+              /**
+               * @brief  Initialization configuration function for the LED mode.
+               * @param  OutputPin[in]: Set the I/O port pins as LCD voltage output pins.
+               * @retval None
+               */
+              #if defined(SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x)
+              void DDIC_LEDOutputPinOfDuty(uint32_t OutputPin)
+              {
+                uint16_t i;
+                for(i=0;i<=19;i++)
+                {
+                  if((OutputPin>>i)&0x01)
+                  {
+                    if(i<=7)
+                    {
+                      DDRCON0 &= 0xF3;
+                      DDRCON0 |= 0x00; 
+                      LEDVO |= (0x01<<i);
+                    }
+                    else if(i<=15)
+                    {
+                      DDRCON0 &= 0xF3;
+                      DDRCON0 |= 0x04;
+                      LEDVO |=(0x01<<(i-8));
+                    }
+                    else
+                    {
+                      DDRCON0 &= 0xF3;
+                      DDRCON0 |= 0x08;
+                      LEDVO |=(0x01<<(i-16));
+                    }
+                  }
+                }
+              }
+              #elif defined(SC92F663x)
+              void DDIC_LEDOutputPinOfDuty(uint32_t OutputPin)
+              {
+C51 COMPILER V9.60.7.0   SC92F_DDIC                                                        10/13/2026 10:46:31 PAGE 11  
+
+                uint16_t i;
+                for(i=0;i<=23;i++)
+                {
+                  if((OutputPin>>i)&0x01)
+                  {
+                    if(i<=7)
+                    {
+                      DDRCON0 &= 0xF3;
+                      DDRCON0 |= 0x00; 
+                      LEDVO |= (0x01<<i);
+                    }
+                    else if(i<=15)
+                    {
+                      DDRCON0 &= 0xF3;
+                      DDRCON0 |= 0x04;
+                      LEDVO |=(0x01<<(i-8));
+                    }
+                    else
+                    {
+                      DDRCON0 &= 0xF3;
+                      DDRCON0 |= 0x08;
+                      LEDVO |=(0x01<<(i-16));
+                    }
+                  }
+                }
+              }
+              #elif defined(SC92F531x)
+              void DDIC_LEDOutputPinOfDuty(uint16_t OutputPin)
+              {
+                uint16_t i;
+                for(i=0;i<=7;i++)
+                {
+                  if((OutputPin>>i)&0x01)
+                  {
+                    if(i<=7)
+                    {
+                      LEDVO |= (0x01<<i);
+                    }
+                  }
+                }
+              }
+              #else
+              void DDIC_LEDOutputPinOfDuty(uint16_t OutputPin)
+              {
+                uint16_t i;
+                for(i=0;i<=15;i++)
+                {
+                  if((OutputPin>>i)&0x01)
+                  {
+                    if(i<=7)
+                    {
+                      LEDVO0 |= (0x01<<i);
+                    }
+                    else
+                    {
+                      LEDVO1 |=(0x01<<(i-8));
+                    }
+                  }
+                }
+              }
+              #endif
+              
+C51 COMPILER V9.60.7.0   SC92F_DDIC                                                        10/13/2026 10:46:31 PAGE 12  
+
+              /**
+               * @brief  Adjust LED brightness.
+               * @param  DDIC_DRIV_TypeDef[in]: Adjust LED current levels.
+               *                     - LED_DRIV0:Brightness level 1.
+               *                     - LED_DRIV1:Brightness level 2.
+               *                     - LED_DRIV2:Brightness level 3.
+               *                     - LED_DRIV3:Brightness level 4.
+               *                     - LED_DRIV4:Brightness level 5.
+               *                     - LED_DRIV5:Brightness level 6.
+               *                     - LED_DRIV6:Brightness level 7.
+               *                     - LED_DRIV7:Brightness level 8.
+               *                     - LED_DRIV8:Brightness level 9.
+               *                     - LED_DRIV9:Brightness level 10.
+               *                     - LED_DRIV10:Brightness level 11.
+               *                     - LED_DRIV11:Brightness level 12.
+               *                     - LED_DRIV12:Brightness level 13.
+               *                     - LED_DRIV13:Brightness level 14.
+               *                     - LED_DRIV14:Brightness level 15.
+               *                     - LED_DRIV15:Brightness level 16.
+               * @retval None
+               */
+              #if !defined(SC92F663x)
+              #if defined(SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x) || defined(SC92F531x)
+              void DDIC_LEDDRIVSelect(DDIC_DRIV_TypeDef LEDVoltage)
+              {
+                DDRCON2 = DDRCON2 & 0XF0 | LEDVoltage;
+              }
+              #else
+              void DDIC_LEDDRIVSelect(DDIC_DRIV_TypeDef LEDVoltage)
+              {
+                DDRCON = DDRCON & 0XF0 | LEDVoltage;
+              }
+              #endif
+              #endif
+              
+              /**
+               * @brief  Initialize LED configuration..
+               * @param  DDIC_LEDXT_TypeDef[in]: Set the specific scan port scan time for the LED.
+               *                     - LED_0_5T:The LED scanning period is 0.5T.
+               *                     - LED_1T:The LED scanning period is 1T.
+               *                     - LED_1_5T:The LED scanning period is 1.5T.
+               *                     - LED_2T:The LED scanning period is 2 T.
+               * @param  DDIC_LEDEL_TypeDef[in]: Select LED specific port.
+               *                     - LED0:LED0 is selected for a specific port.
+               *                     - LED1:LED1 is selected for a specific port.
+               *                     - LED8:LED8 is selected for a specific port.
+               *                     - LED9:LED9 is selected for a specific port.
+               * @param  DDIC_LEDCK_TypeDef[in]: Select LED module clock division.
+               *                     - LED_Fsys_8182:LED clock 8182 frequency division.
+               *                     - LED_Fsys_16384:LED clock 16384 frequency division.
+               *                     - LED_Fsys_32768:LED clock 32768 frequency division.
+               *                     - LED_Fsys_65536:LED clock 65536 frequency division.
+               * @retval None
+               */
+              void DDIC_LEDConfig(DDIC_LEDXT_TypeDef DDIC_LEDXT,
+                                  DDIC_LEDEL_TypeDef DDIC_LEDEL,
+                                  DDIC_LEDCK_TypeDef DDIC_LEDCK)
+              {
+                SCANCON = SCANCON & 0XC0 | DDIC_LEDXT |DDIC_LEDEL| DDIC_LEDCK;
+              }
+              
+              /**
+C51 COMPILER V9.60.7.0   SC92F_DDIC                                                        10/13/2026 10:46:31 PAGE 13  
+
+               * @brief  Select DDIC display driver mode.
+               * @param  DDIC_DMOD_TypeDef[in]: Select Display Mode.
+               *                     - DMOD_Normal:Select Normal mode.
+               *                     - DMOD_ForBack:Select LED forward and reverse drive mode.
+               * @retval None
+               */
+              #if !defined(SC92F531x)
+              #if defined(SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x)
+              void DDIC_LEDDMOD_Selcet(DDIC_DMOD_TypeDef DDIC_DMOD)
+              {
+                DDRCON2 &=0xBF;
+                DDRCON2 |= DDIC_DMOD;
+                if(DDRCON2&0x40 != 0)
+                {
+                  DDRCON0 = DDRCON0 & 0XFC | 0X00;
+                  COMCON = 0xFF;
+                  DDRCON0 = DDRCON0 & 0XFC | 0X01;
+                  COMCON = 0xFF;
+                }
+              }
+              #elif defined(SC92F663x)
+              void DDIC_LEDDMOD_Selcet(DDIC_DMOD_TypeDef DDIC_DMOD)
+              {
+                DDRCON2 &=0xBF;
+                DDRCON2 |= DDIC_DMOD;
+                if(DDRCON2&0x40 != 0)
+                {
+                  COMCON = 0xFF;
+                }
+              }
+              #else
+              void DDIC_LEDDMOD_Selcet(DDIC_DMOD_TypeDef DDIC_DMOD)
+              {
+                DDRCON &=0xBF;
+                DDRCON |= DDIC_DMOD;
+              }
+              #endif
+              #endif
+              
+              /**
+               * @brief  Configure IO port constant current output mode.
+               * @param  FunctionalState[in]: new state of the DDIC peripheral.
+               *                  - DISABLE:Function disable
+               *                  - ENABLE:Function enable  
+               * @retval None
+               */
+              #if !defined(SC92F663x)
+              void DDIC_LEDCMCmd(FunctionalState NewState)
+              {
+                if(NewState != ENABLE)
+                {
+                  SCANCON &=~(0x40) ;
+                }
+                else
+                {
+                  SCANCON |= (0x40) ;
+                }
+              }
+              #endif
+              
+              /**
+               * @brief  Clear DDIC Status flag.
+C51 COMPILER V9.60.7.0   SC92F_DDIC                                                        10/13/2026 10:46:31 PAGE 14  
+
+               * @param  DDIC_Flag_TypeDef[in]: DDIC Flag.
+               *                  - LED_Flag_AUIF:AUIF Flag
+               * @retval None
+               */
+              void DDIC_ClearFlag(DDIC_Flag_TypeDef DDIC_FLAG)
+              {
+                 SCANCON |= DDIC_FLAG;
+              }
+              #endif
+ 791          
+ 792          /**
+ 793           * @brief  Enable or disable DDIC peripheral.
+ 794           * @param  FunctionalState[in]: new state of the DDIC peripheral.
+ 795           *                  - DISABLE:Function disable
+ 796           *                  - ENABLE:Function enable  
+ 797           * @retval None
+ 798           */
+ 799          #if defined(SC92F652x) || defined(SC92R51x_R52x) || defined (SC92F552x) || defined(SC92F531x) || defined(S
+             -C92F663x)
+              void DDIC_Cmd(FunctionalState NewState)
+              {
+                if(NewState == DISABLE)
+                {
+                  DDRCON0 &= 0X7F;
+                }
+                else
+                {
+                  DDRCON0 |= 0x80;
+                }
+              }
+              #else
+ 812          void DDIC_Cmd(FunctionalState NewState)
+ 813          {
+ 814   1        if(NewState == DISABLE)
+ 815   1        {
+ 816   2          DDRCON &= 0X7F;
+ 817   2        }
+ 818   1        else
+ 819   1        {
+ 820   2          DDRCON |= 0x80;
+ 821   2        }
+ 822   1      }
+ 823          #endif
+ 824          
+ 825          
+ 826          #endif
+ 827          
+ 828          #if defined (SC92F846xB) || defined (SC92F746xB) || defined (SC92F836xB) || defined (SC92F736xB) || define
+             -d (SC92F83Ax) || defined (SC92F73Ax)\
+ 829              || defined (SC92F84Ax) || defined (SC92F74Ax) || defined (SC92F742x) || defined (SC92F730x) || defined (
+             -SC92F725X) || defined (SC92F735X)\
+ 830              || defined (SC92F732X) || defined (SC93F833x) || defined (SC93F843x) || defined (SC93F743x) || defined (
+             -SC92F848x) || defined (SC92F748x)\
+ 831              || defined (SC92R342) || defined (SC92F841x) || defined (SC92F741x) || defined(SC92F730x_2) || defined(S
+             -C92F720x) || defined (SC92F7308B)\
+ 832              || defined (SC92Fx41xB)|| defined (SC92R445)
+               /**
+               * @brief  DeInitializes the DDIC peripheral
+               * @retval None
+               */
+              void DDIC_DeInit(void)
+              {
+C51 COMPILER V9.60.7.0   SC92F_DDIC                                                        10/13/2026 10:46:31 PAGE 15  
+
+                P0VO   = 0X00;
+                OTCON &= 0XF3;
+              }
+              
+              /**
+               * @brief  Initializes the peripheral DDIC register according to the parameters.
+               * @param  P0OutputPin[in]: Set P0 pin as the LCD voltage output pin.
+               * @retval None
+               */
+              void DDIC_Init(uint8_t P0OutputPin)
+              {
+                P0VO = P0OutputPin;
+              }
+              
+              /**
+               * @brief  Initializes the LCD according to the parameters.
+               * @param  DDIC_ResSel_Typedef[in]:Select the output resistance of the LCD voltage output port.
+               *                     - DDIC_ResSel_100K:Set the internal voltage divider resistor to 100k.
+               *                     - DDIC_ResSel_200K:Set the internal voltage divider resistor to 200k.
+               *                     - DDIC_ResSel_400K:Set the internal voltage divider resistor to 400k.
+               *                     - DDIC_ResSel_800K:Set the internal voltage divider resistor to 800k.
+              
+               * @retval None
+               */
+              void DDIC_LCDConfig(DDIC_ResSel_Typedef DDIC_ResSel)
+              {
+                OTCON = (OTCON & 0XF3) | DDIC_ResSel;
+              }
+              
+              /**
+               * @brief  Initializes the peripheral DDIC register according to the parameters.
+               * @param  P0OutputPin[in]: Set pin P0 as the LCD voltage output pin.
+               * @param  DDIC_ResSel_Typedef[in]:Set pin P1 as the LCD voltage output port.
+               *                     - DDIC_ResSel_100K:Set the internal voltage divider resistor to 100k.
+               *                     - DDIC_ResSel_200K:Set the internal voltage divider resistor to 200k.
+               *                     - DDIC_ResSel_400K:Set the internal voltage divider resistor to 400k.
+               *                     - DDIC_ResSel_800K:Set the internal voltage divider resistor to 800k.
+               * @retval None
+               */
+              void DDIC_Config_Init(uint8_t P0OutputPin,
+                                    DDIC_ResSel_Typedef DDIC_ResSel)
+              {
+                P0VO = P0OutputPin;
+                OTCON = (OTCON & 0XF3) | DDIC_ResSel;
+              }
+              
+              #endif
+ 886          /**
+ 887           * @}
+ 888           */
+ 889          /* End of DDIC_Group1.  */
+ 890          
+ 891          /**
+ 892           * @}
+ 893           */
+ 894          
+ 895          /**
+ 896           * @}
+ 897           */
+ 898          
+ 899          /**
+ 900           * @}
+C51 COMPILER V9.60.7.0   SC92F_DDIC                                                        10/13/2026 10:46:31 PAGE 16  
+
+ 901           */
+ 902          /******************* (C) COPYRIGHT 2025 SinOne Microelectronics *****END OF FILE****/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    129    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----       5
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

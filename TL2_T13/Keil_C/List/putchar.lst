@@ -1,0 +1,120 @@
+C51 COMPILER V9.60.7.0   PUTCHAR                                                           10/13/2026 10:46:30 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE PUTCHAR
+OBJECT MODULE PLACED IN ..\Output\putchar.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\FWLib\SC92F_Lib\src\putchar.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE INCD
+                    -IR(..\FWLib\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753x) 
+                    -DEBUG PRINT(..\List\putchar.lst) TABS(2) OBJECT(..\Output\putchar.obj)
+
+line level    source
+
+   1          /**
+   2           ******************************************************************************
+   3           * @file    putchar.c
+   4           * @author  SOC AE Team
+   5           * @version V1.2.4
+   6           * @date    2026-2-28
+   7           * @brief   Rewrite the function when using the printf interface
+   8           ******************************************************************************
+   9           * @attention
+  10           *
+  11           *1.This software is supplied by SinOne Microelectronics Co.,Ltd. and is only 
+  12           *intended for use with SinOne products. No other uses are authorized. This 
+  13           *software is owned by SinOne Microelectronics Co.,Ltd. and is protected under 
+  14           *all applicable laws, including copyright laws. 
+  15           *2.The software which is for guidance only aims at providing customers with 
+  16           *coding information regarding their products in order for them to save time. 
+  17           *As a result, SinOne shall not be held liable for any direct, indirect or 
+  18           *consequential damages with respect to any claims arising from the content of 
+  19           *such software and/or the use made by customers of the coding information 
+  20           *contained herein in connection with their products.
+  21           *
+  22           *  COPYRIGHT 2025 SinOne Microelectronics
+  23           ******************************************************************************
+  24           */
+  25           
+  26          /* Includes ------------------------------------------------------------------*/
+  27          #include "putchar.h"
+  28          
+  29          /** @addtogroup sc92f_StdPeriph_Driver
+  30           * @{
+  31           */
+  32           
+  33          /** @defgroup putchar
+  34           * @brief putchar driver modules
+  35           * @{
+  36           */
+  37          
+  38          /** @defgroup putchar_Functions
+  39           * @{
+  40           */
+  41           
+  42             /** @defgroup putchar_Group1 Initialization and Configuration functions
+  43           *  @brief Initialization and Configuration functions
+  44           *
+  45           
+  46          @verbatim
+  47           ====================================================================================================
+  48                               ##### putchar Configuration functions #####
+  49           ====================================================================================================
+  50          @endverbatim
+  51            * @{
+  52            */
+  53            
+C51 COMPILER V9.60.7.0   PUTCHAR                                                           10/13/2026 10:46:30 PAGE 2   
+
+  54          
+  55          
+  56          #if defined (SSIPENABLE) || defined(SSI0PENABLE) || defined(SSI1PENABLE) || defined(UART0PENABLE) || defin
+             -ed(UART2PENABLE) || defined(USCI0PENABLE)\
+  57          || defined(USCI1PENABLE) || defined(USCI2PENABLE) || defined(UART3PENABLE)
+              
+              char putchar(char c)
+              {
+                 uint16_t i = 0;
+                 Printf_SendData8(c);
+                 while(!Printf_GetTxStatus)
+                 {
+                   
+                   
+                    if(20000<i++)
+                    {
+                      break;
+                    }
+                 }
+                 
+                 Printf_ClearTxFlag;
+                 return c;
+              }
+              #endif
+  77          /**
+  78           * @}
+  79           */
+  80          
+  81          /**
+  82           * @}
+  83           */
+  84          
+  85          /**
+  86           * @}
+  87           */
+  88          /******************* (C) COPYRIGHT 2025 SinOne Microelectronics *****END OF FILE****/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

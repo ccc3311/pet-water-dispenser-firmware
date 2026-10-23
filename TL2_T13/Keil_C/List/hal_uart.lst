@@ -1,0 +1,271 @@
+C51 COMPILER V9.60.7.0   HAL_UART                                                          10/22/2026 15:13:09 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE HAL_UART
+OBJECT MODULE PLACED IN ..\Output\hal_uart.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\Hardware\hal_uart.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE INCDIR(..\FWLi
+                    -b\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753x) DEBUG PRIN
+                    -T(..\List\hal_uart.lst) TABS(2) OBJECT(..\Output\hal_uart.obj)
+
+line level    source
+
+   1          #include "hal_uart.h"
+   2          #include "SC_Init.h"
+   3          #include <stdio.h>
+   4          
+   5          volatile bit g_usci2_tx_done = 1;
+   6          
+   7          /* 主循环写，接收 ISR 读。 */
+   8          static volatile bit s_wifi_cen_held = 0;
+   9          
+  10          /* 提前定义，供串口恢复和发送函数共用。 */
+  11          static bit s_usci2_tx_fault = 0;
+  12          static unsigned char s_usci2_tx_fault_reason = 0;
+  13          
+  14          /* 模组内部已上拉，正常运行时高阻释放 CEN。 */
+  15          void WiFi_CEN_Release(void)
+  16          {
+  17   1          GPIO_Init(GPIO5, GPIO_PIN_1, GPIO_MODE_IN_HI); /* CEN迁移到P5.1。 */
+  18   1          s_wifi_cen_held = 0;
+  19   1      }
+  20          
+  21          void WiFi_CEN_Assert(void)
+  22          {
+  23   1          s_wifi_cen_held = 1; /* 先禁止协议收发，再拉低复位脚。 */
+  24   1          P51  = 0;
+  25   1          GPIO_Init(GPIO5, GPIO_PIN_1, GPIO_MODE_OUT_PP); /* P5.1输出低。 */
+  26   1      }
+  27          
+  28          unsigned char WiFi_CEN_IsHeld(void)
+  29          {
+  30   1          return s_wifi_cen_held ? 1 : 0;
+  31   1      }
+  32          
+  33          /* 仅在 CEN 拉低期间调用，恢复串口及发送状态。 */
+  34          void WiFi_UART_Reinit(void)
+  35          {
+  36   1          bit saved_ea;
+  37   1      
+  38   1          saved_ea = EA;
+  39   1          EA = 0; /* 避免 ISR 与恢复操作交叉修改发送状态。 */
+  40   1      
+  41   1          SC_USCI2_Init();
+  42   1          US2CON0 = (US2CON0 & 0xFCu) | 0x03u;
+  43   1          /* RI/TI 写 1 清零，保留其他配置位。 */
+  44   1      
+  45   1          g_usci2_tx_done = 1;
+  46   1          s_usci2_tx_fault = 0;
+  47   1          s_usci2_tx_fault_reason = 0;
+  48   1      
+  49   1          EA = saved_ea;
+  50   1      }
+  51          
+  52          /*
+  53           * 0：本次发送尝试尚未记录底层错误
+C51 COMPILER V9.60.7.0   HAL_UART                                                          10/22/2026 15:13:09 PAGE 2   
+
+  54           * 1：全局中断关闭
+  55           * 2：开始发送时，上一字节尚未完成
+  56           * 3：等待发送完成超时
+  57           */
+  58          unsigned char WiFi_UART_GetTxFaultReason(void)
+  59          {
+  60   1          return s_usci2_tx_fault_reason;
+  61   1      }
+  62          
+  63          unsigned char WiFi_UART_HasTxFault(void)
+  64          {
+  65   1          return s_usci2_tx_fault ? 1 : 0;
+  66   1      }
+  67          
+  68          //void HAL_UART_Init(void)
+  69          //{
+  70          //    WiFi_CEN_Release(); /* P5.1作为CEN，正常运行时高阻释放。 */
+  71          //}
+  72          
+  73          void HAL_UART_Init(void)
+  74          {
+  75   1      #if APP_CHARGE_DEBUG
+  76   1          SC_UART0_Init(); /* 仅打印模式启用调试串口。 */
+  77   1      #endif
+  78   1      }
+  79          
+  80          /* printf输出入口；正常模式直接丢弃调试字符。 */
+  81          char putchar(char c)
+  82          {
+  83   1      #if APP_CHARGE_DEBUG
+  84   1          uint16_t timeout = 5000u;
+  85   1      
+  86   1          SBUF = c;
+  87   1      
+  88   1          while (!TI) {
+  89   2              if (--timeout == 0u) {
+  90   3                  break;
+  91   3              }
+  92   2          }
+  93   1      
+  94   1          TI = 0;
+  95   1      #endif
+  96   1      
+  97   1          return c;
+  98   1      }
+  99          
+ 100          /*
+ 101           * 仅在主循环上下文调用。
+ 102           * 调用期间必须允许 USCI2 发送中断执行。
+ 103           * printf 使用独立的 UART0 调试串口。
+ 104           */
+ 105          void WiFi_UART_SendByte(unsigned char value)
+ 106          {
+ 107   1          uint16_t timeout = 5000;
+ 108   1          static unsigned char s_first_timeout_printed = 0;
+ 109   1      
+ 110   1          /* 本帧已经出现发送故障，不继续发送剩余字节 */
+ 111   1          if (s_wifi_cen_held || s_usci2_tx_fault) {
+ 112   2              return; /* 复位期间禁止发送字节。 */
+ 113   2          }
+ 114   1      
+ 115   1          /* 全局中断关闭，不能启动依赖中断完成的发送 */
+C51 COMPILER V9.60.7.0   HAL_UART                                                          10/22/2026 15:13:09 PAGE 3   
+
+ 116   1          if (!EA) {
+ 117   2              s_usci2_tx_fault_reason = 1;
+ 118   2              s_usci2_tx_fault = 1;
+ 119   2              return;
+ 120   2          }
+ 121   1      
+ 122   1          /* 上一字节尚未完成，不覆盖发送寄存器 */
+ 123   1          if (!g_usci2_tx_done) {
+ 124   2              s_usci2_tx_fault_reason = 2;
+ 125   2              s_usci2_tx_fault = 1;
+ 126   2              return;
+ 127   2          }
+ 128   1      
+ 129   1      //    USCI2_ClearFlag(USCI2_UART_FLAG_TI);
+ 130   1      /* 仅清 TI，保留可能同时到达的 RI。 */
+ 131   1      US2CON0 = (US2CON0 & 0xFC) | 0x02;
+ 132   1          
+ 133   1          g_usci2_tx_done = 0;
+ 134   1          USCI2_UART_SendData8(value);
+ 135   1      
+ 136   1          /* 防卡死计数，5000 不是毫秒数 */
+ 137   1          while (!g_usci2_tx_done) {
+ 138   2              if (--timeout == 0) {
+ 139   3                  break;
+ 140   3              }
+ 141   2          }
+ 142   1      
+ 143   1          /* 等待结束后仍未观察到发送完成，记录故障 */
+ 144   1          if (!g_usci2_tx_done) {
+ 145   2              s_usci2_tx_fault_reason = 3;
+ 146   2              s_usci2_tx_fault = 1;
+ 147   2      
+ 148   2              /* 每次上电只打印第一次发送等待超时 */
+ 149   2              if (!s_first_timeout_printed) {
+ 150   3                  s_first_timeout_printed = 1;
+ 151   3      
+ 152   3      //            printf(
+ 153   3      //                "\r\n[UTX-FIRST] byte=%02X ea=%u done=%u\r\n",
+ 154   3      //                (unsigned int)value,
+ 155   3      //                (unsigned int)EA,
+ 156   3      //                (unsigned int)g_usci2_tx_done);
+ 157   3              }
+ 158   2          }
+ 159   1      }
+ 160          
+ 161          /*
+ 162           * 仅在主循环准备发送一帧新数据时调用。
+ 163           * 不允许在一帧的中途调用。
+ 164           */
+ 165          unsigned char WiFi_UART_BeginFrame(void)
+ 166          {
+ 167   1          if (s_wifi_cen_held) {
+ 168   2          return 0; /* 复位期间禁止启动新帧。 */
+ 169   2          }
+ 170   1          
+ 171   1            s_usci2_tx_fault_reason = 0;
+ 172   1        
+ 173   1          /* 当前发送依赖中断 */
+ 174   1          if (!EA) {
+ 175   2                    s_usci2_tx_fault_reason = 1;
+ 176   2      
+ 177   2              return 0;
+C51 COMPILER V9.60.7.0   HAL_UART                                                          10/22/2026 15:13:09 PAGE 4   
+
+ 178   2          }
+ 179   1      
+ 180   1          /* 上一字节尚未完成，不能启动新帧 */
+ 181   1          if (!g_usci2_tx_done) {
+ 182   2                    s_usci2_tx_fault_reason = 2;
+ 183   2      
+ 184   2              return 0;
+ 185   2          }
+ 186   1      
+ 187   1          /*
+ 188   1           * 上一字节已完成，允许新帧重新尝试。
+ 189   1           * 不继续发送上一帧剩余的字节。
+ 190   1           */
+ 191   1          s_usci2_tx_fault = 0;
+ 192   1      
+ 193   1          return 1;
+ 194   1      }
+ 195          
+ 196          /*
+ 197           * 只检查现有发送入口的两个前置条件。
+ 198           * 不清故障、不修改完成标志、不写发送寄存器。
+ 199           */
+ 200          unsigned char WiFi_UART_IsTxReady(void)
+ 201          {
+ 202   1          if (s_wifi_cen_held || !EA || !g_usci2_tx_done) {
+ 203   2              return 0;
+ 204   2          }
+ 205   1      
+ 206   1          return 1;
+ 207   1      }
+ 208          
+ 209          /*
+ 210           * 初始化 MCU -> Wi-Fi 唤醒脚。
+ 211           * 按当前 wkp=0 配置，低电平保持模组工作。
+ 212           */
+ 213          void WiFi_WakeupPin_Init(void)
+ 214          {
+ 215   1          /* MCU -> 模组 P24：低电平保持模组工作 */
+ 216   1          /* 先设置输出锁存值，再打开输出 */
+ 217   1          P21  = 0;
+ 218   1          GPIO_Init(GPIO2, GPIO_PIN_1, GPIO_MODE_OUT_PP);
+ 219   1        
+ 220   1          /* 模组 P32 -> MCU：高电平唤醒输入 */
+ 221   1          GPIO_Init(GPIO2, GPIO_PIN_0, GPIO_MODE_IN_HI);
+ 222   1      }
+ 223          
+ 224          /* 请求唤醒，并持续保持模组工作 */
+ 225          void WiFi_Module_KeepAwake(void)
+ 226          {
+ 227   1          P21 = 0;
+ 228   1      }
+ 229          
+ 230          /* 释放保持工作条件，不代表模组已经休眠 */
+ 231          void WiFi_Module_Release(void)
+ 232          {
+ 233   1          P21 = 1;
+ 234   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    265    ----
+   CONSTANT SIZE    =   ----    ----
+C51 COMPILER V9.60.7.0   HAL_UART                                                          10/22/2026 15:13:09 PAGE 5   
+
+   XDATA SIZE       =      2       2
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      3       1
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

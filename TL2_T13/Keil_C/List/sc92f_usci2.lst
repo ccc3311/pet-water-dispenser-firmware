@@ -1,0 +1,728 @@
+C51 COMPILER V9.60.7.0   SC92F_USCI2                                                       10/13/2026 10:46:30 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SC92F_USCI2
+OBJECT MODULE PLACED IN ..\Output\sc92f_usci2.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\FWLib\SC92F_Lib\src\sc92f_usci2.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE 
+                    -INCDIR(..\FWLib\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L75
+                    -3x) DEBUG PRINT(..\List\sc92f_usci2.lst) TABS(2) OBJECT(..\Output\sc92f_usci2.obj)
+
+line level    source
+
+   1          /**
+   2           ******************************************************************************
+   3           * @file    sc92F_usci2.c
+   4           * @author  SOC AE Team
+   5           * @version V1.2.4
+   6           * @date    2026-2-28
+   7           * @brief   USCI2 function module
+   8           ******************************************************************************
+   9           * @attention
+  10           *
+  11           *1.This software is supplied by SinOne Microelectronics Co.,Ltd. and is only 
+  12           *intended for use with SinOne products. No other uses are authorized. This 
+  13           *software is owned by SinOne Microelectronics Co.,Ltd. and is protected under 
+  14           *all applicable laws, including copyright laws. 
+  15           *2.The software which is for guidance only aims at providing customers with 
+  16           *coding information regarding their products in order for them to save time. 
+  17           *As a result, SinOne shall not be held liable for any direct, indirect or 
+  18           *consequential damages with respect to any claims arising from the content of 
+  19           *such software and/or the use made by customers of the coding information 
+  20           *contained herein in connection with their products.
+  21           *
+  22           *  COPYRIGHT 2025 SinOne Microelectronics
+  23           ******************************************************************************
+  24           */
+  25           
+  26          /* Includes ------------------------------------------------------------------*/
+  27          #include "sc92f_usci2.h"
+  28          
+  29          #if defined (SC92L853x) || defined (SC92L753x) || defined(SC92F646x) || defined(SC92F546x) || defined(SC92
+             -F542x) || defined(SC92L840x)
+  30          /** @addtogroup sc92f_StdPeriph_Driver
+  31           * @{
+  32           */
+  33           
+  34          /** @defgroup USCI2
+  35           * @brief USCI2 driver modules
+  36           * @{
+  37           */
+  38          
+  39          /** @defgroup USCI2_Functions
+  40           * @{
+  41           */
+  42           
+  43            /** @defgroup USCI2_Group1 Initialization and Configuration functions
+  44           *  @brief Initialization and Configuration functions
+  45           *
+  46           
+  47          @verbatim
+  48           ====================================================================================================
+  49                               ##### USCI2 SPI Initialization and Configuration functions #####
+  50           ====================================================================================================
+  51          @endverbatim
+  52            * @{
+C51 COMPILER V9.60.7.0   SC92F_USCI2                                                       10/13/2026 10:46:30 PAGE 2   
+
+  53            */
+  54          
+  55          /**
+  56           * @brief  USCI2相关寄存器复位至缺省值
+  57           * @param  None
+  58           * @retval None
+  59           */ 
+  60          void USCI2_DeInit(void)
+  61          {
+  62   1        TMCON &= 0X3F;
+  63   1        US2CON0 = 0X00;
+  64   1        US2CON1 = 0X00;
+  65   1        US2CON2 = 0X00;
+  66   1        US2CON3 = 0X00;
+  67   1        IE2 &= (~0X02);
+  68   1        IP2 &= (~0X02);
+  69   1      }
+  70          
+  71          /**
+  72           * @brief  SPI初始化配置函数
+  73           * @param  FirstBit[in]:优先传送位选择（MSB/LSB）
+  74           *          - USCI2_SPI_FIRSTBIT_MSB:MSB优先发送
+  75           *          - USCI2_SPI_FIRSTBIT_LSB:LSB优先发送
+  76           * @param  BaudRatePrescaler[in]:SPI时钟频率选择
+  77           *          - USCI2_SPI_BAUDRATEPRESCALER_1:SPI时钟速率为系统时钟除以1
+  78           *          - USCI2_SPI_BAUDRATEPRESCALER_2:SPI时钟速率为系统时钟除以2
+  79           *          - USCI2_SPI_BAUDRATEPRESCALER_4:SPI时钟速率为系统时钟除以4
+  80           *          - USCI2_SPI_BAUDRATEPRESCALER_8:SPI时钟速率为系统时钟除以8
+  81           *          - USCI2_SPI_BAUDRATEPRESCALER_16:SPI时钟速率为系统时钟除以16
+  82           *          - USCI2_SPI_BAUDRATEPRESCALER_32:SPI时钟速率为系统时钟除以32
+  83           *          - USCI2_SPI_BAUDRATEPRESCALER_64:SPI时钟速率为系统时钟除以64
+  84           *          - USCI2_SPI_BAUDRATEPRESCALER_128:SPI时钟速率为系统时钟除以128
+  85           * @param  Mode[in]:SPI工作模式选择
+  86           *          - USCI2_SPI_MODE_MASTER:SPI为主设备
+  87           *          - USCI2_SPI_MODE_SLAVE:SPI为从设备
+  88           * @param  ClockPolarity[in]:SPI时钟极性选择
+  89           *          - USCI2_SPI_CLOCKPOLARITY_LOW:SCK在空闲状态下为低电平
+  90           *          - USCI2_SPI_CLOCKPOLARITY_HIGH:SCK在空闲状态下为高电平
+  91           * @param  ClockPhase[in]:SPI时钟相位选择
+  92           *          - USCI2_SPI_CLOCKPHASE_1EDGE:SCK的第一沿采集数据
+  93           *          - USCI2_SPI_CLOCKPHASE_2EDGE:SCK的第二沿采集数据
+  94           * @param  SPI_TXE_INT[in]:发送缓存器中断允许选择
+  95           *          - USCI2_SPI_TXE_DISINT:不允许发送中断
+  96           *          - USCI2_SPI_TXE_ENINT:允许发送中断
+  97           * @param  TransmissionMode[in]:TransmissionMode
+  98           *          - USCI2_SPI_DATA8:SPI 8位传输模式
+  99           *          - USCI2_SPI_DATA16:SPI 16位传输模式
+ 100           * @retval None
+ 101           */
+ 102          void USCI2_SPI_Init(USCI2_SPI_FirstBit_TypeDef FirstBit,
+ 103                              USCI2_SPI_BaudRatePrescaler_TypeDef BaudRatePrescaler, USCI2_SPI_Mode_TypeDef Mode,
+ 104                              USCI2_SPI_ClockPolarity_TypeDef ClockPolarity, USCI2_SPI_ClockPhase_TypeDef ClockPhase
+             -,
+ 105                              USCI2_SPI_TXE_INT_TypeDef SPI_TXE_INT, USCI2_TransmissionMode_TypeDef TransmissionMode
+             -)
+ 106          {
+ 107   1        TMCON = (TMCON & 0X3F) | 0X40;
+ 108   1      #if defined(SC92L853x) || defined(SC92L753x) || defined(SC92F646x) || defined(SC92F546x) || defined(SC92F5
+             -42x)|| defined(SC92L840x)
+ 109   1        SPI_TXE_INT = USCI2_SPI_TXE_DISINT; //SPI_TXE_INT该功能在SC92FXX1X芯片上无效
+ 110   1        US2CON1 = US2CON1 & (~0X06) | FirstBit | TransmissionMode;
+ 111   1      #endif
+C51 COMPILER V9.60.7.0   SC92F_USCI2                                                       10/13/2026 10:46:30 PAGE 3   
+
+ 112   1        US2CON0 = US2CON0 & 0X80 | BaudRatePrescaler | Mode | ClockPolarity | ClockPhase;
+ 113   1      }
+ 114          /**
+ 115           * @}
+ 116           */
+ 117          /* End of USCI2_Group1. */
+ 118          
+ 119          /** @defgroup USCI2_Group2 Base functions
+ 120           *  @brief   USCI2 functions
+ 121           *
+ 122          @verbatim
+ 123           ===============================================================================
+ 124                               ##### USCI2_SPI Base functions #####
+ 125           ===============================================================================
+ 126          @endverbatim
+ 127            * @{
+ 128            */
+ 129          
+ 130          /**
+ 131           * @brief  SPI 传输模式配置函数
+ 132           * @param  TransmissionMode[in]:TransmissionMode
+ 133           *          - USCI2_SPI_DATA8:SPI 8位传输模式
+ 134           *          - USCI2_SPI_DATA16:SPI 16位传输模式
+ 135           * @retval None
+ 136           */ 
+ 137          void USCI2_TransmissionMode(USCI2_TransmissionMode_TypeDef TransmissionMode)
+ 138          {
+ 139   1      
+ 140   1        TMCON = (TMCON & 0X3F) | 0X40;
+ 141   1        if (TransmissionMode == USCI2_SPI_DATA8)
+ 142   1        {
+ 143   2          US2CON1 &= 0xFD;
+ 144   2        }
+ 145   1        else
+ 146   1        {
+ 147   2          US2CON1 |= 0x02;
+ 148   2        }
+ 149   1      }
+ 150          
+ 151          /**
+ 152           * @brief  SPI功能开关函数
+ 153           * @param  NewState[in]:功能启动/关闭选择
+ 154           *          - DISABLE:失能
+ 155           *          - ENABLE:使能
+ 156           * @retval None
+ 157           */ 
+ 158          void USCI2_SPI_Cmd(FunctionalState NewState)
+ 159          {
+ 160   1        TMCON = (TMCON & 0X3F) | 0X40;
+ 161   1      
+ 162   1        if (NewState != DISABLE)
+ 163   1        {
+ 164   2          US2CON0 |= 0X80;
+ 165   2        }
+ 166   1        else
+ 167   1        {
+ 168   2          US2CON0 &= (~0X80);
+ 169   2        }
+ 170   1      }
+ 171          
+ 172          /**
+ 173           * @brief  USCI2 SPI发送数据
+C51 COMPILER V9.60.7.0   SC92F_USCI2                                                       10/13/2026 10:46:30 PAGE 4   
+
+ 174           * @param  Data[in]:发送的数据
+ 175           * @retval None
+ 176           */ 
+ 177          void USCI2_SPI_SendData_8(uint8_t Data)
+ 178          {
+ 179   1        US2CON2 = Data;
+ 180   1      }
+ 181          
+ 182          /**
+ 183           * @brief  获得US2CON2中的值
+ 184           * @param  None
+ 185           * @retval SPI接收到的8位数据
+ 186           */
+ 187          uint8_t USCI2_SPI_ReceiveData_8(void)
+ 188          {
+ 189   1        return US2CON2;
+ 190   1      }
+ 191          
+ 192          /**
+ 193           * @brief  US2CON2 SPI发送数据
+ 194           * @param  Data[in]:发送的数据
+ 195           * @retval None
+ 196           */
+ 197          void USCI2_SPI_SendData_16(uint16_t Data)
+ 198          {
+ 199   1        US2CON3 = (uint8_t)(Data >> 8);
+ 200   1        US2CON2 = (uint8_t)Data;
+ 201   1      }
+ 202          
+ 203          /**
+ 204           * @brief  获得US2CON2中的值
+ 205           * @param  None
+ 206           * @retval SPI接收到的16位数据
+ 207           */
+ 208          uint16_t USCI2_SPI_ReceiveData_16(void)
+ 209          {
+ 210   1        uint16_t SPI_data;
+ 211   1        SPI_data = ((uint16_t)US2CON3 << 8) | US2CON2;
+ 212   1        return SPI_data;
+ 213   1      }
+ 214          /**
+ 215           * @}
+ 216           */
+ 217          /* End of USCI2_Group2. */
+ 218          
+ 219          /** @defgroup USCI2_Group3 Initialization and Configuration functions
+ 220           *  @brief Initialization and Configuration functions
+ 221           *
+ 222          @verbatim
+ 223           ====================================================================================================
+ 224                               ##### USCI2 TWI Initialization and Configuration functions #####
+ 225           ====================================================================================================
+ 226          @endverbatim
+ 227            * @{
+ 228            */
+ 229          
+ 230          /**
+ 231           * @brief  USCI2 TWI从机初始化配置函数
+ 232           * @param  TWI_Address[in]:TWI作为从机时7位从机地址配置
+ 233           * @retval None
+ 234           */
+ 235          void USCI2_TWI_Slave_Init(uint8_t TWI_Address)
+C51 COMPILER V9.60.7.0   SC92F_USCI2                                                       10/13/2026 10:46:30 PAGE 5   
+
+ 236          {
+ 237   1        TMCON = TMCON & 0X3F | 0X80;
+ 238   1        US2CON2 = TWI_Address << 1;
+ 239   1      }
+ 240          
+ 241          /**
+ 242           * @brief  USCI2 TWI主机模式下通讯速率设定
+ 243           * @param  TWI_MasterCommunicationRate[in]:TWI主机模式下通讯速率
+ 244           *              - USCI2_TWI_1024:TWI通信速率 Fhrc/1024
+ 245           *              - USCI2_TWI_512:TWI通信速率 Fhrc/512
+ 246           *              - USCI2_TWI_256:TWI通信速率 Fhrc/256
+ 247           *              - USCI2_TWI_128:TWI通信速率 Fhrc/128
+ 248           *              - USCI2_TWI_64:TWI通信速率 Fhrc/64
+ 249           *              - USCI2_TWI_32:TWI通信速率 Fhrc/32
+ 250           *              - USCI2_TWI_16:TWI通信速率 Fhrc/16
+ 251           * @retval None
+ 252           */
+ 253          void USCI2_TWI_MasterCommunicationRate(USCI2_TWI_MasterCommunicationRate_TypeDef
+ 254                                                     TWI_MasterCommunicationRate)
+ 255          {
+ 256   1        TMCON = TMCON & 0X3F | 0X80; //选择usci2为TWI
+ 257   1      
+ 258   1        US2CON1 = TWI_MasterCommunicationRate;
+ 259   1      }
+ 260          
+ 261          /**
+ 262           * @brief  USCI2 TWI 起始位
+ 263           * @param  None
+ 264           * @retval None
+ 265           */
+ 266          void USCI2_TWI_Start(void)
+ 267          {
+ 268   1        US2CON1 |= 0x20;
+ 269   1      }
+ 270          
+ 271          /**
+ 272           * @brief  USCI2 TWI主机模式停止位
+ 273           * @param  None
+ 274           * @retval None
+ 275           */
+ 276          void USCI2_TWI_MasterModeStop(void)
+ 277          {
+ 278   1        US2CON1 |= 0x10;
+ 279   1      }
+ 280          
+ 281          /**
+ 282           * @brief  USCI2 TWI从机模式时钟延长功能位
+ 283           * @param  NewState[in]: 功能启动/关闭选择
+ 284           *              - DISABLE:关闭
+ 285           *              - ENABLE:使能
+ 286           * @retval None
+ 287           */
+ 288          void USCI2_TWI_SlaveClockExtension(FunctionalState NewState)
+ 289          {
+ 290   1        TMCON = TMCON & 0X3F | 0X80;
+ 291   1      
+ 292   1        if (NewState != DISABLE)
+ 293   1        {
+ 294   2          US2CON1 |= 0x40;
+ 295   2        }
+ 296   1        else
+ 297   1        {
+C51 COMPILER V9.60.7.0   SC92F_USCI2                                                       10/13/2026 10:46:30 PAGE 6   
+
+ 298   2          US2CON1 &= 0XBF;
+ 299   2        }
+ 300   1      }
+ 301          
+ 302          /**
+ 303           * @brief  TWI接收应答使能函数
+ 304           * @param  NewState[in]: 接收应答使能/失能选择
+ 305           *              - DISABLE:关闭
+ 306           *              - ENABLE:使能
+ 307           * @retval None
+ 308           */
+ 309          void USCI2_TWI_AcknowledgeConfig(FunctionalState NewState)
+ 310          {
+ 311   1        TMCON = TMCON & 0X3F | 0X80;
+ 312   1      
+ 313   1        if (NewState != DISABLE)
+ 314   1        {
+ 315   2          US2CON0 |= 0X08;
+ 316   2        }
+ 317   1        else
+ 318   1        {
+ 319   2          US2CON0 &= 0XF7;
+ 320   2        }
+ 321   1      }
+ 322          
+ 323          /**
+ 324           * @brief  TWI通用地址响应使能函数
+ 325           * @param  NewState[in]: 通用地址响应使能/失能选择
+ 326           *              - DISABLE:关闭
+ 327           *              - ENABLE:使能
+ 328           * @retval None
+ 329           */
+ 330          void USCI2_TWI_GeneralCallCmd(FunctionalState NewState)
+ 331          {
+ 332   1        TMCON = TMCON & 0X3F | 0X80;
+ 333   1      
+ 334   1        if (NewState != DISABLE)
+ 335   1        {
+ 336   2          US2CON2 |= 0X01;
+ 337   2        }
+ 338   1        else
+ 339   1        {
+ 340   2          US2CON2 &= 0XFE;
+ 341   2        }
+ 342   1      }
+ 343          
+ 344          /**
+ 345           * @brief  获取TWI状态机
+ 346           * @param  USCI2_TWIState[in]: TWI状态机状态
+ 347           *              - USCI2_TWI_SlaveBusy:从机忙模式
+ 348           *              - USCI2_TWI_SlaveReceivedaAddress:从机接收地址
+ 349           *              - USCI2_TWI_SlaveReceivedaData:从机接收数据
+ 350           *              - USCI2_TWI_SlaveSendData:从机发送数据
+ 351           *              - USCI2_TWI_SlaveReceivedaUACK:从机接收UACK
+ 352           *              - USCI2_TWI_SlaveDisableACK:从机关闭ACK
+ 353           *              - USCI2_TWI_SlaveAddressError:从机接收地址错误
+ 354           *              - USCI2_TWI_MasterBusy:主机忙状态
+ 355           *              - USCI2_TWI_MasterSendAddress:主机发送地址
+ 356           *              - USCI2_TWI_MasterReceivedaData:主机接收数据
+ 357           *              - USCI2_TWI_MasterSendData:主机发送数据
+ 358           *              - USCI2_TWI_MasterReceivedaUACK:主机接收UACK
+ 359           * @retval USCI2_SC标志状态
+C51 COMPILER V9.60.7.0   SC92F_USCI2                                                       10/13/2026 10:46:30 PAGE 7   
+
+ 360           *              - RESET:操作不成功
+ 361           *              - SET:操作成功
+ 362           */
+ 363          FlagStatus USCI2_GetTWIStatus(USCI2_TWIState_TypeDef USCI2_TWIState)
+ 364          {
+ 365   1        if ((US2CON0 & 0x07) == USCI2_TWIState)
+ 366   1          return SET;
+ 367   1        else
+ 368   1          return RESET;
+ 369   1      }
+ 370          
+ 371          /**
+ 372           * @brief  TWI功能开关函数
+ 373           * @param  NewState[in]: 功能启动/关闭选择
+ 374           *              - DISABLE:关闭
+ 375           *              - ENABLE:使能
+ 376           * @retval None
+ 377           */
+ 378          void USCI2_TWI_Cmd(FunctionalState NewState)
+ 379          {
+ 380   1        TMCON = TMCON & 0X3F | 0X80;
+ 381   1      
+ 382   1        if (NewState != DISABLE)
+ 383   1        {
+ 384   2          US2CON0 |= 0X80;
+ 385   2        }
+ 386   1        else
+ 387   1        {
+ 388   2          US2CON0 &= (~0X80);
+ 389   2        }
+ 390   1      }
+ 391          
+ 392          /**
+ 393           * @brief  TWI发送数据
+ 394           * @param  Data[in]:发送的数据
+ 395           * @retval None
+ 396           */ 
+ 397          void USCI2_TWI_SendData(uint8_t Data)
+ 398          {
+ 399   1        US2CON3 = Data;
+ 400   1      }
+ 401          
+ 402          /**
+ 403           * @brief  TWI发送地址
+ 404           * @param  Addr[in]:待发送的地址
+ 405           * @param  RW[in]:读写模式
+ 406           *          - USCI2_TWI_Write:写操作
+ 407           *          - USCI2_TWI_Read:读操作
+ 408           * @retval None
+ 409           */ 
+ 410          void USCI2_TWI_SendAddr(uint8_t Addr, USCI2_TWI_RWType RW)
+ 411          {
+ 412   1        US2CON3 = (Addr << 1) | RW;
+ 413   1      }
+ 414          
+ 415          /**
+ 416           * @brief  获得US2CON3中的值
+ 417           * @param  None
+ 418           * @retval TWI接收到的8位数据
+ 419           */
+ 420          uint8_t USCI2_TWI_ReceiveData(void)
+ 421          {
+C51 COMPILER V9.60.7.0   SC92F_USCI2                                                       10/13/2026 10:46:30 PAGE 8   
+
+ 422   1        return US2CON3;
+ 423   1      }
+ 424          /**
+ 425           * @}
+ 426           */
+ 427          /* End of USCI2_Group4. */
+ 428          
+ 429          /** @defgroup USCI2_Group5 Base functions
+ 430           *  @brief   USCI2 functions
+ 431           *
+ 432          @verbatim
+ 433           ===============================================================================
+ 434                               ##### USCI2_UART Base functions #####
+ 435           ===============================================================================
+ 436          @endverbatim
+ 437            * @{
+ 438            */
+ 439          
+ 440          /**
+ 441           * @brief  UART初始化配置函数
+ 442           * @param  UARTFsys[in]:系统时钟频率
+ 443           * @param  BaudRate[in]:波特率
+ 444           * @param  Mode[in]:UART0工作模式
+ 445           *          - USCI2_UART_Mode_8B:UART设置为8位模式
+ 446           *          - USCI2_UART_Mode_10B:UART设置为10位模式
+ 447           *          - USCI2_UART_Mode_11B:UART设置为11位模式
+ 448           * @param  RxMode[in]:接收允许选择
+ 449           *          - USCI2_UART_RX_ENABLE:UART允许接收
+ 450           *          - USCI2_UART_RX_DISABLE:UART禁止接收
+ 451           * @retval None
+ 452           */
+ 453          void USCI2_UART_Init(uint32_t UARTFsys, uint32_t BaudRate, USCI2_UART_Mode_TypeDef Mode,
+ 454                               USCI2_UART_RX_TypeDef RxMode)
+ 455          {
+ 456   1        TMCON |= 0xC0;
+ 457   1        US2CON0 = US2CON0 & 0X0F | Mode | RxMode;
+ 458   1      
+ 459   1        if (Mode == USCI2_UART_Mode_8B)
+ 460   1        {
+ 461   2          if (BaudRate == USCI2_UART_BaudRate_FsysDIV12)
+ 462   2          {
+ 463   3            US2CON0 &= 0XDF;
+ 464   3          }
+ 465   2          else if (BaudRate == USCI2_UART_BaudRate_FsysDIV4)
+ 466   2          {
+ 467   3            US2CON0 |= 0X20;
+ 468   3          }
+ 469   2        }
+ 470   1        else
+ 471   1        {
+ 472   2          US2CON2 = UARTFsys / BaudRate / 256;
+ 473   2          US2CON1 = UARTFsys / BaudRate % 256;
+ 474   2        }
+ 475   1      }
+ 476          
+ 477          /**
+ 478           * @brief  USCI2 UART2发送8位数据
+ 479           * @param  Data[in]:发送的数据
+ 480           * @retval None
+ 481           */
+ 482          void USCI2_UART_SendData8(uint8_t Data)
+ 483          {
+C51 COMPILER V9.60.7.0   SC92F_USCI2                                                       10/13/2026 10:46:30 PAGE 9   
+
+ 484   1        US2CON3 = Data;
+ 485   1      }
+ 486          
+ 487          /**
+ 488           * @brief  获得US1CON3中的值
+ 489           * @param  None
+ 490           * @retval UART接收到的8位数据
+ 491           */
+ 492          uint8_t USCI2_UART_ReceiveData8(void)
+ 493          {
+ 494   1        return US2CON3;
+ 495   1      }
+ 496          
+ 497          /**
+ 498           * @brief  UART发送9位数据
+ 499           * @param  Data[in]:发送的数据
+ 500           * @retval None
+ 501           */
+ 502          void USCI2_UART_SendData9(uint16_t Data)
+ 503          {
+ 504   1        uint8_t Data_9Bit;
+ 505   1        Data_9Bit = (Data >> 8);
+ 506   1      
+ 507   1        if (Data_9Bit)
+ 508   1        {
+ 509   2          US2CON0 |= 0x08;
+ 510   2        }
+ 511   1        else
+ 512   1        {
+ 513   2          US2CON0 &= 0xf7;
+ 514   2        }
+ 515   1      
+ 516   1        US2CON3 = (uint8_t)Data;
+ 517   1      }
+ 518          
+ 519          /**
+ 520           * @brief  获得US1CON3中的值及第九位的值
+ 521           * @param  None
+ 522           * @retval 接收到的数据
+ 523           */
+ 524          uint16_t USCI2_UART_ReceiveData9(void)
+ 525          {
+ 526   1        uint16_t Data9;
+ 527   1        Data9 = US2CON3 + (((uint16_t)(US2CON0 & 0X04) & 0x00FF) << 6);
+ 528   1        return Data9;
+ 529   1      }
+ 530          
+ 531          /**
+ 532           * @brief  USCI2中断初始化
+ 533           * @param  NewState[in]: 断使能/关闭选择
+ 534           *              - DISABLE:关闭
+ 535           *              - ENABLE:使能
+ 536           * @param  Priority[in]: 中断优先级选择
+ 537           *              - LOW:低
+ 538           *              - HIGH:高
+ 539           * @retval None
+ 540           */ 
+ 541          void USCI2_ITConfig(FunctionalState NewState, PriorityStatus Priority)
+ 542          {
+ 543   1        if (NewState != DISABLE)
+ 544   1        {
+ 545   2          IE2 |= 0x02;
+C51 COMPILER V9.60.7.0   SC92F_USCI2                                                       10/13/2026 10:46:30 PAGE 10  
+
+ 546   2        }
+ 547   1        else
+ 548   1        {
+ 549   2          IE2 &= 0xFD;
+ 550   2        }
+ 551   1      
+ 552   1        /************************************************************/
+ 553   1        if (Priority != LOW)
+ 554   1        {
+ 555   2          IP2 |= 0x02;
+ 556   2        }
+ 557   1        else
+ 558   1        {
+ 559   2          IP2 &= 0xFD;
+ 560   2        }
+ 561   1      }
+ 562          
+ 563          /**
+ 564           * @brief  获得USCI2标志状态
+ 565           * @param  USCI2_FLAG[in]:所需获取的标志位
+ 566           *              - USCI2_SPI_FLAG_SPIF:SPI数据传送标志位SPIF
+ 567           *              - USCI2_SPI_FLAG_WCOL:SPI写入冲突标志位WCOL
+ 568           *              - USCI2_SPI_FLAG_TXE:SPI发送缓存器空标志TXE
+ 569           *              - USCI2_TWI_FLAG_TWIF:TWI中断标志位TWIF
+ 570           *              - USCI2_TWI_FLAG_GCA:TWI通用地址响应标志位GCA
+ 571           *              - USCI2_TWI_FLAG_MSTR:TWI主从标志位MSTR
+ 572           *              - USCI2_TWI_FLAG_TXRXnE:TWI发送接收标志位
+ 573           *              - USCI2_UART_FLAG_RI:UART发送中断标志位TI
+ 574           *              - USCI2_UART_FLAG_TI:UART接收中断标志位RI
+ 575           * @retval USCI2标志状态
+ 576           *              - RESET:置零
+ 577           *              - SET:置起
+ 578           */
+ 579          FlagStatus USCI2_GetFlagStatus(USCI2_Flag_TypeDef USCI2_FLAG)
+ 580          {
+ 581   1        FlagStatus bitstatus = RESET;
+ 582   1      
+ 583   1      #if defined(SC92L853x) || defined(SC92L753x) || defined(SC92F646x) || defined(SC92F546x) || defined(SC92F5
+             -42x)|| defined(SC92L840x)
+ 584   1      
+ 585   1        if ((USCI2_FLAG == USCI2_SPI_FLAG_SPIF) || (USCI2_FLAG == USCI2_SPI_FLAG_WCOL) || (USCI2_FLAG == USCI2_T
+             -WI_FLAG_TXRXnE))
+ 586   1      #endif
+ 587   1          {
+ 588   2            if ((USCI2_FLAG & US2CON1) != (uint8_t)RESET)
+ 589   2            {
+ 590   3              bitstatus = SET;
+ 591   3            }
+ 592   2            else
+ 593   2            {
+ 594   3              bitstatus = RESET;
+ 595   3            }
+ 596   2          }
+ 597   1          else
+ 598   1          {
+ 599   2            if ((USCI2_FLAG & US2CON0) != (uint8_t)RESET)
+ 600   2            {
+ 601   3              bitstatus = SET;
+ 602   3            }
+ 603   2            else
+ 604   2            {
+ 605   3              bitstatus = RESET;
+C51 COMPILER V9.60.7.0   SC92F_USCI2                                                       10/13/2026 10:46:30 PAGE 11  
+
+ 606   3            }
+ 607   2          }
+ 608   1      
+ 609   1        return bitstatus;
+ 610   1      }
+ 611          
+ 612          /**
+ 613           * @brief  清除USCI2标志状态
+ 614           * @param  USCI2_FLAG[in]:所需清除的标志位
+ 615           *              - USCI2_SPI_FLAG_SPIF:SPI数据传送标志位SPIF
+ 616           *              - USCI2_SPI_FLAG_WCOL:SPI写入冲突标志位WCOL
+ 617           *              - USCI2_SPI_FLAG_TXE:SPI发送缓存器空标志TXE
+ 618           *              - USCI2_TWI_FLAG_TWIF:TWI中断标志位TWIF
+ 619           *              - USCI2_TWI_FLAG_GCA:TWI通用地址响应标志位GCA
+ 620           *              - USCI2_TWI_FLAG_MSTR:TWI主从标志位MSTR
+ 621           *              - USCI2_TWI_FLAG_TXRXnE:TWI发送接收标志位
+ 622           *              - USCI2_UART_FLAG_RI:UART发送中断标志位TI
+ 623           *              - USCI2_UART_FLAG_TI:UART接收中断标志位RI
+ 624           * @retval None
+ 625           */
+ 626          void USCI2_ClearFlag(USCI2_Flag_TypeDef USCI2_FLAG)
+ 627          {
+ 628   1      #if defined(SC92L853x) || defined(SC92L753x) || defined(SC92F646x) || defined(SC92F546x) || defined(SC92F5
+             -42x)|| defined(SC92L840x)
+ 629   1        if ((USCI2_FLAG == USCI2_SPI_FLAG_SPIF) || (USCI2_FLAG == USCI2_SPI_FLAG_WCOL) || (USCI2_FLAG == USCI2_T
+             -WI_FLAG_TXRXnE))
+ 630   1      #endif
+ 631   1        {
+ 632   2          US2CON1 &= (~USCI2_FLAG); //操作寄存器US2CON1
+ 633   2        }
+ 634   1        else if ((USCI2_FLAG == USCI2_UART_FLAG_TI) || (USCI2_FLAG == USCI2_UART_FLAG_RI))
+ 635   1        {
+ 636   2      #if defined(SC92L853x) || defined(SC92L753x) || defined(SC92F646x) || defined(SC92F546x) || defined(SC92F5
+             -42x) || defined(SC92L840x)
+ 637   2        if((US2CON0 & USCI2_UART_FLAG_TI))
+ 638   2        {
+ 639   3          US2CON0 &=0xFE;
+ 640   3        }
+ 641   2        if((US2CON0 & USCI2_UART_FLAG_RI))
+ 642   2        {
+ 643   3          US2CON0 &=0xFD;
+ 644   3        }   //写1清零
+ 645   2      #endif
+ 646   2        }
+ 647   1        else
+ 648   1        {
+ 649   2          US2CON0 &= (~USCI2_FLAG); //操作寄存器US2CON0
+ 650   2        }
+ 651   1      }
+ 652          /**
+ 653           * @}
+ 654           */
+ 655          /* End of USCI2_Group5. */
+ 656          #endif
+ 657          /**
+ 658           * @}
+ 659           */
+ 660          
+ 661          /**
+ 662           * @}
+ 663           */
+ 664          
+C51 COMPILER V9.60.7.0   SC92F_USCI2                                                       10/13/2026 10:46:30 PAGE 12  
+
+ 665          /**
+ 666           * @}
+ 667           */
+ 668          /******************* (C) COPYRIGHT 2025 SinOne Microelectronics *****END OF FILE****/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    541    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----      17
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

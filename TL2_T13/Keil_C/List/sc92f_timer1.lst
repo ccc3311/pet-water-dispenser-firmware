@@ -1,0 +1,228 @@
+C51 COMPILER V9.60.7.0   SC92F_TIMER1                                                      10/13/2026 10:46:33 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SC92F_TIMER1
+OBJECT MODULE PLACED IN ..\Output\sc92f_timer1.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\FWLib\SC92F_Lib\src\sc92f_timer1.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE
+                    - INCDIR(..\FWLib\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L7
+                    -53x) DEBUG PRINT(..\List\sc92f_timer1.lst) TABS(2) OBJECT(..\Output\sc92f_timer1.obj)
+
+line level    source
+
+   1          /**
+   2           ******************************************************************************
+   3           * @file    sc92f_timer1.c
+   4           * @author  SOC AE Team
+   5           * @version V1.2.4
+   6           * @date    2026-2-28
+   7           * @brief   TIM1 function module
+   8           *******************************************************************************
+   9           * @attention
+  10           *
+  11           *1.This software is supplied by SinOne Microelectronics Co.,Ltd. and is only 
+  12           *intended for use with SinOne products. No other uses are authorized. This 
+  13           *software is owned by SinOne Microelectronics Co.,Ltd. and is protected under 
+  14           *all applicable laws, including copyright laws. 
+  15           *2.The software which is for guidance only aims at providing customers with 
+  16           *coding information regarding their products in order for them to save time. 
+  17           *As a result, SinOne shall not be held liable for any direct, indirect or 
+  18           *consequential damages with respect to any claims arising from the content of 
+  19           *such software and/or the use made by customers of the coding information 
+  20           *contained herein in connection with their products.
+  21           *
+  22           *  COPYRIGHT 2025 SinOne Microelectronics
+  23           ******************************************************************************
+  24           */
+  25          
+  26          /* Includes ------------------------------------------------------------------*/
+  27          #include "sc92f_timer1.h"
+  28          
+  29          /** @addtogroup sc92f_StdPeriph_Driver
+  30           * @{
+  31           */
+  32          
+  33          /** @defgroup TIM1
+  34           * @brief TIM1 driver modules
+  35           * @{
+  36           */
+  37          
+  38          /** @defgroup TIM1_Functions
+  39           * @{
+  40           */
+  41           
+  42          /** @defgroup TIM1_Group1 Configuration of the TIM1 computation unit functions
+  43           *  @brief   Configuration of the TIM1 computation unit functions
+  44           *
+  45           
+  46          @verbatim
+  47           ===============================================================================
+  48                               ##### TIM1 configuration functions #####
+  49           ===============================================================================
+  50          @endverbatim
+  51            * @{
+  52            */
+  53          
+C51 COMPILER V9.60.7.0   SC92F_TIMER1                                                      10/13/2026 10:46:33 PAGE 2   
+
+  54          /**
+  55           * @brief  TIMER1相关寄存器复位至缺省值
+  56           * @param  None
+  57           * @retval None
+  58           */ 
+  59          void TIM1_DeInit(void)
+  60          {
+  61   1        TMOD &= 0X0F;
+  62   1        TCON &= 0X37;
+  63   1        TMCON &= 0XFD;
+  64   1        TH1 = 0X00;
+  65   1        TL1 = 0X00;
+  66   1        ET1 = 0;
+  67   1        IPT1 = 0;
+  68   1      }
+  69          
+  70          /**
+  71           * @brief  TIMER0基本设置配置函数
+  72           * @param  TIM1_PrescalerSelection[in]:预分频选择
+  73           *          - TIM1_PRESSEL_FSYS_D12:TIMER1计数源来自系统时钟12分频
+  74           *          - TIM1_PRESSEL_FSYS_D1:TIMER1计数源来自系统时钟
+  75           * @param  TIM1_CountMode[in]:计数/定时模式选择
+  76           *          - TIM1_MODE_TIMER:TIMER1做定时器
+  77           *          - TIM1_MODE_COUNTER:TIMER1做计数器
+  78           * @retval None
+  79           */
+  80          void TIM1_TimeBaseInit(TIM1_PresSel_TypeDef TIM1_PrescalerSelection,
+  81                                 TIM1_CountMode_TypeDef TIM1_CountMode)
+  82          {
+  83   1        //判断是否需要进行分频
+  84   1        if(TIM1_PrescalerSelection == TIM1_PRESSEL_FSYS_D12)
+  85   1        {
+  86   2          TMCON &= 0xFD;
+  87   2        }
+  88   1        else if(TIM1_PrescalerSelection == TIM1_PRESSEL_FSYS_D1)
+  89   1        {
+  90   2          TMCON |= 0x02;
+  91   2        }
+  92   1      
+  93   1        //TIM1工作模式
+  94   1        if(TIM1_CountMode == TIM1_MODE_TIMER)
+  95   1        {
+  96   2          TMOD &= 0xBF;
+  97   2        }
+  98   1        else if(TIM1_CountMode == TIM1_MODE_COUNTER)
+  99   1        {
+ 100   2          TMOD |= 0x40;
+ 101   2        }
+ 102   1      }
+ 103          
+ 104          /**
+ 105           * @brief  TIMER1工作模式0配置函数
+ 106           * @param  TIM1_SetCounter[in]:配置计数初值
+ 107           * @retval None
+ 108           */ 
+ 109          void TIM1_WorkMode0Config(uint16_t
+ 110                                    TIM1_SetCounter)
+ 111          {
+ 112   1        TMOD &= 0XCF;
+ 113   1        TL1 = (uint8_t)TIM1_SetCounter;
+ 114   1        TH1 = (TIM1_SetCounter >> 5);
+ 115   1      }
+C51 COMPILER V9.60.7.0   SC92F_TIMER1                                                      10/13/2026 10:46:33 PAGE 3   
+
+ 116          
+ 117          /**
+ 118           * @brief  TIMER1工作模式1配置函数
+ 119           * @param  TIM1_SetCounter[in]:配置计数初值
+ 120           * @retval None
+ 121           */ 
+ 122          void TIM1_WorkMode1Config(uint16_t
+ 123                                    TIM1_SetCounter)
+ 124          {
+ 125   1        TMOD &= 0XCF;
+ 126   1        TMOD |= 0X10;
+ 127   1        TL1 = TIM1_SetCounter % 256;
+ 128   1        TH1 = TIM1_SetCounter / 256;
+ 129   1      }
+ 130          
+ 131          /**
+ 132           * @brief  TIMER1工作模式2配置函数
+ 133           * @param  TIM1_SetCounter[in]:配置计数初值
+ 134           * @retval None
+ 135           */ 
+ 136          void TIM1_WorkMode2Config(uint8_t TIM1_SetCounter)
+ 137          {
+ 138   1        TMOD &= 0XCF;
+ 139   1        TMOD |= 0X20;
+ 140   1        TL1 = TIM1_SetCounter;
+ 141   1        TH1 = TIM1_SetCounter;
+ 142   1      }
+ 143          
+ 144          /**
+ 145           * @brief  TIMER1工作模式配置函数
+ 146           * @param  TIM1_WorkMode[in]:TIMER1工作模式选择
+ 147           *          - TIM1_WORK_MODE0:TIMER1选择工作模式0
+ 148           *          - TIM1_WORK_MODE1:TIMER1选择工作模式1
+ 149           *          - TIM1_WORK_MODE2:TIMER1选择工作模式2
+ 150           * @param  TIM1_SetCounter1[in]:TIMER1计数初值配置1
+ 151           * @param  TIM1_SetCounter2[in]:TIMER1计数初值配置2
+ 152           * @retval None
+ 153           */ 
+ 154          void TIM1_WorkModeConfig(TIM1_WorkMode_TypeDef
+ 155                                   TIM1_WorkMode, uint16_t TIM1_SetCounter)
+ 156          {
+ 157   1        switch(TIM1_WorkMode)
+ 158   1        {
+ 159   2          case TIM1_WORK_MODE0:
+ 160   2            TIM1_WorkMode0Config(TIM1_SetCounter);
+ 161   2            break;
+ 162   2      
+ 163   2          case TIM1_WORK_MODE1:
+ 164   2            TIM1_WorkMode1Config(TIM1_SetCounter);
+ 165   2            break;
+ 166   2      
+ 167   2          case TIM1_WORK_MODE2:
+ 168   2            TIM1_WorkMode2Config(TIM1_SetCounter);
+ 169   2            break;
+ 170   2      
+ 171   2          default:
+ 172   2            break;
+ 173   2        }
+ 174   1      }
+ 175          /**
+ 176           * @}
+ 177           */
+C51 COMPILER V9.60.7.0   SC92F_TIMER1                                                      10/13/2026 10:46:33 PAGE 4   
+
+ 178          /* End of TIM1_Group1.  */
+ 179          
+ 180          /**
+ 181           * @}
+ 182           */
+ 183          
+ 184          /**
+ 185           * @}
+ 186           */
+ 187          
+ 188          /**
+ 189           * @}
+ 190           */
+ 191          
+ 192          
+ 193          /******************* (C) COPYRIGHT 2025 SinOne Microelectronics *****END OF FILE****/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    124    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

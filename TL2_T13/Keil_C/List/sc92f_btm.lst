@@ -1,0 +1,221 @@
+C51 COMPILER V9.60.7.0   SC92F_BTM                                                         10/13/2026 10:46:30 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SC92F_BTM
+OBJECT MODULE PLACED IN ..\Output\sc92f_btm.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\FWLib\SC92F_Lib\src\sc92f_btm.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE IN
+                    -CDIR(..\FWLib\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753x
+                    -) DEBUG PRINT(..\List\sc92f_btm.lst) TABS(2) OBJECT(..\Output\sc92f_btm.obj)
+
+line level    source
+
+   1          /**
+   2           ******************************************************************************
+   3           * @file    sc92f_btm.c
+   4           * @author  SOC AE Team
+   5           * @version V1.2.4
+   6           * @date    2026-2-28
+   7           * @brief   BTM function module
+   8           ******************************************************************************
+   9           * @attention
+  10           *
+  11           *1.This software is supplied by SinOne Microelectronics Co.,Ltd. and is only 
+  12           *intended for use with SinOne products. No other uses are authorized. This 
+  13           *software is owned by SinOne Microelectronics Co.,Ltd. and is protected under 
+  14           *all applicable laws, including copyright laws. 
+  15           *2.The software which is for guidance only aims at providing customers with 
+  16           *coding information regarding their products in order for them to save time. 
+  17           *As a result, SinOne shall not be held liable for any direct, indirect or 
+  18           *consequential damages with respect to any claims arising from the content of 
+  19           *such software and/or the use made by customers of the coding information 
+  20           *contained herein in connection with their products.
+  21           *
+  22           *  COPYRIGHT 2025 SinOne Microelectronics
+  23           ******************************************************************************
+  24           */
+  25          
+  26          /* Includes ------------------------------------------------------------------*/
+  27          #include "sc92f_btm.h"
+  28          
+  29          /** @addtogroup sc92f_StdPeriph_Driver
+  30           * @{
+  31           */
+  32          
+  33          /** @defgroup BTM
+  34           * @brief BTM driver modules
+  35           * @{
+  36           */
+  37          
+  38          /** @defgroup BTM_Exported_Functions
+  39           * @{
+  40           */
+  41           
+  42          #if defined(SC92F663x)
+              uint16_t xdata BTMCNT _at_ 0x102C; //BTM¶¨Ê±ÉèÖÃ¼Ä´æÆ÷
+              #endif
+  45          
+  46          /** @defgroup BTM_Exported_Functions_Group1 Configuration of the BTM computation unit functions
+  47           *  @brief   Configuration of the BTM computation unit functions
+  48           *
+  49           
+  50          @verbatim
+  51           ===============================================================================
+  52                               ##### BTM configuration functions #####
+  53           ===============================================================================
+C51 COMPILER V9.60.7.0   SC92F_BTM                                                         10/13/2026 10:46:30 PAGE 2   
+
+  54          @endverbatim
+  55            * @{
+  56            */
+  57          
+  58          /**
+  59           * @brief  Initialize the BTMx peripheral registers.
+  60           * @param  BTM_Timebase[in]: BTM overflow time selection
+  61           *              SC92F748x,SC92F848x,SC92F859x,SC92F759x,SC92L853x,SC92R511x,SC92F6x1x,SC92F5x1x,
+  62           *              SC92R436,SC92R439,SC92R422A,SC92F652x,SC92F637x
+  63           *                   Selection range(BTM_TIMEBASE_15_625MS - BTM_TIMEBASE_32S)
+  64           *              SC92F84Hx,SC92F83Hx
+  65           *                   Selection range(BTM_TIMEBASE_15_625MS - BTM_TIMEBASE_256S)
+  66           *              SC92F732X
+  67           *                   Selection range(BTM_TIMEBASE_15_625MS - BTM_TIMEBASE_2S)
+  68           *              SC92F663x
+  69           *                   Selection range(0 - 65535, Converted to time, it is 3.125 ms - 204.8 s)
+  70           *              else
+  71           *                   Selection range(BTM_TIMEBASE_15_625MS - BTM_TIMEBASE_4S)
+  72           *                   - BTM_TIMEBASE_15_625MS:Every 15.625 milliseconds generates one interrupt.
+  73           *                   - BTM_TIMEBASE_31_25MS:Every 31.25 milliseconds generates one interrupt.
+  74           *                   - BTM_TIMEBASE_62_5MS:Every 62.5 milliseconds generates one interrupt.
+  75           *                   - BTM_TIMEBASE_125MS:Every 125 milliseconds generates one interrupt.
+  76           *                   - BTM_TIMEBASE_250MS:Every 250 milliseconds generates one interrupt.
+  77           *                   - BTM_TIMEBASE_500MS:Every 500 milliseconds generates one interrupt.
+  78           *                   - BTM_TIMEBASE_1S:Every 1 seconds generates one interrupt.
+  79           *                   - BTM_TIMEBASE_2S:Every 2 seconds generates one interrupt.
+  80           *                   - BTM_TIMEBASE_8S:Every 8 seconds generates one interrupt.
+  81           *                   - BTM_TIMEBASE_16S:Every 16 seconds generates one interrupt.
+  82           *                   - BTM_TIMEBASE_32S:Every 32 seconds generates one interrupt.
+  83           *                   - BTM_TIMEBASE_64S:Every 64 seconds generates one interrupt.
+  84           *                   - BTM_TIMEBASE_128S:Every 128 seconds generates one interrupt.
+  85           *                   - BTM_TIMEBASE_256S:Every 256 seconds generates one interrupt.
+  86           * @retval None
+  87           */
+  88          #if defined(SC92F663x)
+              void BTM_Init(uint16_t BTM_Timebase)
+              {
+                BTMCNT = BTM_Timebase;      //configure overflow time
+              }
+              #else
+  94          void BTM_Init(BTM_Timebase_TypeDef BTM_Timebase)
+  95          {
+  96   1        BTMCON = (BTMCON & 0xF0) | BTM_Timebase;      //configure overflow time
+  97   1      }
+  98          #endif
+  99          
+ 100          /**
+ 101           * @brief  Enables or disables the specified BTM peripheral.
+ 102           * @param  NewState[in]: new state of the BTMx peripheral.
+ 103           *                  - DISABLE:Function disable
+ 104           *                  - ENABLE:Function enable 
+ 105           * @retval None
+ 106           */
+ 107          void BTM_Cmd(FunctionalState NewState)
+ 108          {
+ 109   1        if(NewState == DISABLE)
+ 110   1        {
+ 111   2          BTMCON &= 0x7f;     //Disable BTM
+ 112   2        }
+ 113   1        else
+ 114   1        {
+ 115   2          BTMCON |= 0x80;     //Enable BTM
+C51 COMPILER V9.60.7.0   SC92F_BTM                                                         10/13/2026 10:46:30 PAGE 3   
+
+ 116   2        }
+ 117   1      }
+ 118          
+ 119          /**
+ 120           * @}
+ 121           */
+ 122          /* End of BTM_Group1. */
+ 123          
+ 124          /** @defgroup BTM_Group2 Interrupts management functions
+ 125           *  @brief   Interrupts management functions
+ 126           *
+ 127          
+ 128          @verbatim
+ 129           ===============================================================================
+ 130                      ##### Interrupts management functions #####
+ 131           ===============================================================================
+ 132          @endverbatim
+ 133            * @{
+ 134            */
+ 135          
+ 136          /**
+ 137           * @brief  Enables or disables the specified BTM interrupts.
+ 138           * @param  NewState[in]: new state of the BTM interrupts.
+ 139           *                  - DISABLE:Function disable
+ 140           *                  - ENABLE:Function enable 
+ 141           * @param  Priority[in]: priority of the BTM interrupts.
+ 142           *                  - LOW:Low priority
+ 143           *                  - HIGH:High priority
+ 144           * @retval None
+ 145           */
+ 146          void BTM_ITConfig(FunctionalState NewState,
+ 147                            PriorityStatus Priority)
+ 148          {
+ 149   1        //interrupt configuration
+ 150   1        if(NewState == DISABLE)
+ 151   1        {
+ 152   2          IE1 &= 0xfb;
+ 153   2        }
+ 154   1        else
+ 155   1        {
+ 156   2          IE1 |= 0x04;
+ 157   2        }
+ 158   1      
+ 159   1        //Interrupt Priority Setting
+ 160   1        if(Priority == LOW)
+ 161   1        {
+ 162   2          IP1 &= 0xfb;
+ 163   2        }
+ 164   1        else
+ 165   1        {
+ 166   2          IP1 |= 0x04;
+ 167   2        }
+ 168   1      }
+ 169          /**
+ 170           * @}
+ 171           */
+ 172          /* End of BTM_Group2. */
+ 173          
+ 174          /**
+ 175           * @}
+ 176           */
+ 177          
+C51 COMPILER V9.60.7.0   SC92F_BTM                                                         10/13/2026 10:46:30 PAGE 4   
+
+ 178          /**
+ 179           * @}
+ 180           */
+ 181          
+ 182          /**
+ 183           * @}
+ 184           */
+ 185          
+ 186          /******************* (C) COPYRIGHT 2025 SinOne Microelectronics *****END OF FILE****/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     41    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,146 @@
+C51 COMPILER V9.60.7.0   HAL_EEPROM                                                        10/20/2026 16:39:31 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE HAL_EEPROM
+OBJECT MODULE PLACED IN ..\Output\hal_eeprom.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\Hardware\hal_eeprom.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE INCDIR(..\FW
+                    -Lib\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753x) DEBUG PR
+                    -INT(..\List\hal_eeprom.lst) TABS(2) OBJECT(..\Output\hal_eeprom.obj)
+
+line level    source
+
+   1          #include "hal_eeprom.h"
+   2          #include "HeadFiles/SysFunVarDefine.h" 
+   3          #include "app_fsm.h"   
+   4          
+   5          extern unsigned char IapWriteFlag; 
+   6          
+   7          /**
+   8           * @brief 将【清洗+滤芯】数据打包保存到单片机 EEPROM
+   9           */
+  10          void HAL_EEPROM_Save_AllData(void)
+  11          {
+  12   1          uint8_t write_buf[16]; // 精简为 16 字节
+  13   1          
+  14   1          // --- 打包清洗数据 (前 6 字节) ---
+  15   1          write_buf[0] = (uint8_t)(g_Device.target_clean_days >> 8);
+  16   1          write_buf[1] = (uint8_t)(g_Device.target_clean_days & 0xFF);
+  17   1          write_buf[2] = (uint8_t)(g_Device.last_clean_timestamp >> 24);
+  18   1          write_buf[3] = (uint8_t)(g_Device.last_clean_timestamp >> 16);
+  19   1          write_buf[4] = (uint8_t)(g_Device.last_clean_timestamp >> 8);
+  20   1          write_buf[5] = (uint8_t)(g_Device.last_clean_timestamp & 0xFF);
+  21   1          
+  22   1          // --- 打包滤芯数据 (中间 6 字节) ---
+  23   1          write_buf[6] = (uint8_t)(g_Device.target_filter_days >> 8);
+  24   1          write_buf[7] = (uint8_t)(g_Device.target_filter_days & 0xFF);
+  25   1          write_buf[8] = (uint8_t)(g_Device.last_filter_timestamp >> 24);
+  26   1          write_buf[9] = (uint8_t)(g_Device.last_filter_timestamp >> 16);
+  27   1          write_buf[10]= (uint8_t)(g_Device.last_filter_timestamp >> 8);
+  28   1          write_buf[11]= (uint8_t)(g_Device.last_filter_timestamp & 0xFF);
+  29   1      
+  30   1          /* A6 表示包含报警标志的新格式。 */
+  31   1          write_buf[12] = 0x5A;
+  32   1          write_buf[13] = 0xA6;
+  33   1          write_buf[14] = g_Device.req_clean_alarm ? 1 : 0;
+  34   1          write_buf[15] = g_Device.req_filter_alarm ? 1 : 0;
+  35   1      
+  36   1          EA = 0; // 关闭全局中断
+  37   1      
+  38   1          IapWriteFlag = 0x69; 
+  39   1          IAP_SectorErase(IAP_MEMTYPE_EEPROM, EEPROM_DATA_ADDR, EEPROM_TIME_LIMIT);
+  40   1          
+  41   1          IapWriteFlag = 0x69;
+  42   1          IAP_ProgramByteArray(EEPROM_DATA_ADDR, write_buf, 16, IAP_MEMTYPE_EEPROM, EEPROM_TIME_LIMIT);
+  43   1          
+  44   1          IapWriteFlag = 0x00; 
+  45   1          
+  46   1          EA = 1; // 恢复全局中断
+  47   1      }
+  48          
+  49          /**
+  50           * @brief 开机统一读取【清洗+滤芯】数据
+  51           */
+  52          void HAL_EEPROM_Load_AllData(void)
+  53          {
+C51 COMPILER V9.60.7.0   HAL_EEPROM                                                        10/20/2026 16:39:31 PAGE 2   
+
+  54   1          uint8_t read_buf[16]; 
+  55   1          unsigned char need_save = 0; 
+  56   1      
+  57   1          IAP_ReadByteArray(EEPROM_DATA_ADDR, read_buf, 16, IAP_MEMTYPE_EEPROM);
+  58   1      
+  59   1          // 校验魔术字
+  60   1          /* A5 是旧格式，A6 是新增报警标志的格式。 */
+  61   1          if (read_buf[12] != 0x5A ||
+  62   1              (read_buf[13] != 0xA5 && read_buf[13] != 0xA6)) {
+  63   2              App_Restore_Factory_Settings();
+  64   2              return;
+  65   2          }
+  66   1          
+  67   1          // --- 解析清洗数据 ---
+  68   1          g_Device.target_clean_days = ((unsigned int)read_buf[0] << 8) | read_buf[1];
+  69   1          g_Device.last_clean_timestamp = ((unsigned long)read_buf[2] << 24) | 
+  70   1                                          ((unsigned long)read_buf[3] << 16) | 
+  71   1                                          ((unsigned long)read_buf[4] << 8)  | 
+  72   1                                          read_buf[5];
+  73   1                                          
+  74   1          // --- 解析滤芯数据 ---
+  75   1          g_Device.target_filter_days = ((unsigned int)read_buf[6] << 8) | read_buf[7];
+  76   1          g_Device.last_filter_timestamp = ((unsigned long)read_buf[8] << 24) | 
+  77   1                                           ((unsigned long)read_buf[9] << 16) | 
+  78   1                                           ((unsigned long)read_buf[10] << 8) | 
+  79   1                                           read_buf[11];
+  80   1      
+  81   1          /* 0 天是合法状态；大于 365 也包含未初始化的 0xFFFF。 */
+  82   1          if (g_Device.target_clean_days > 365U) {
+  83   2              g_Device.target_clean_days = DEFAULT_CLEAN_DAYS;
+  84   2              g_Device.last_clean_timestamp = 0;
+  85   2              need_save = 1;
+  86   2          }
+  87   1      
+  88   1          if (g_Device.target_filter_days > 365U) {
+  89   2              g_Device.target_filter_days = DEFAULT_FILTER_DAYS;
+  90   2              g_Device.last_filter_timestamp = 0;
+  91   2              need_save = 1;
+  92   2          }
+  93   1          
+  94   1          /* 旧记录没有报警信息；新记录恢复保存的到期状态。 */
+  95   1          g_Device.req_clean_alarm = 0;
+  96   1          g_Device.req_filter_alarm = 0;
+  97   1      
+  98   1          if (read_buf[13] == 0xA6) {
+  99   2              if (g_Device.target_clean_days == 0 &&
+ 100   2                  read_buf[14] == 1) {
+ 101   3                  g_Device.req_clean_alarm = 1;
+ 102   3              }
+ 103   2      
+ 104   2              if (g_Device.target_filter_days == 0 &&
+ 105   2                  read_buf[15] == 1) {
+ 106   3                  g_Device.req_filter_alarm = 1;
+ 107   3              }
+ 108   2          }
+ 109   1      
+ 110   1          if (need_save) {
+ 111   2              HAL_EEPROM_Save_AllData();
+ 112   2          }
+ 113   1      }
+
+
+C51 COMPILER V9.60.7.0   HAL_EEPROM                                                        10/20/2026 16:39:31 PAGE 3   
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    711    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----      33
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

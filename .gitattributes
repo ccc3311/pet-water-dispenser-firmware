@@ -11,3 +11,6 @@ TL2_T12/** -text
 *.xlsx binary
 *.db binary
 *.png binary
+
+# Preserve the original T13 Wi-Fi CEN snapshot, including project/output files.
+TL2_T13/** -text

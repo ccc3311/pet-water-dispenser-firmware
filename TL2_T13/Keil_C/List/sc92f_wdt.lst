@@ -1,0 +1,158 @@
+C51 COMPILER V9.60.7.0   SC92F_WDT                                                         10/13/2026 10:46:36 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SC92F_WDT
+OBJECT MODULE PLACED IN ..\Output\sc92f_wdt.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\FWLib\SC92F_Lib\src\sc92f_wdt.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE IN
+                    -CDIR(..\FWLib\SC92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753x
+                    -) DEBUG PRINT(..\List\sc92f_wdt.lst) TABS(2) OBJECT(..\Output\sc92f_wdt.obj)
+
+line level    source
+
+   1          /**
+   2           ******************************************************************************
+   3           * @file    sc92f_wdt.c
+   4           * @author  SOC AE Team
+   5           * @version V1.2.4
+   6           * @date    2026-2-28
+   7           * @brief   WDT function module
+   8           ******************************************************************************
+   9           * @attention
+  10           *
+  11           *1.This software is supplied by SinOne Microelectronics Co.,Ltd. and is only 
+  12           *intended for use with SinOne products. No other uses are authorized. This 
+  13           *software is owned by SinOne Microelectronics Co.,Ltd. and is protected under 
+  14           *all applicable laws, including copyright laws. 
+  15           *2.The software which is for guidance only aims at providing customers with 
+  16           *coding information regarding their products in order for them to save time. 
+  17           *As a result, SinOne shall not be held liable for any direct, indirect or 
+  18           *consequential damages with respect to any claims arising from the content of 
+  19           *such software and/or the use made by customers of the coding information 
+  20           *contained herein in connection with their products.
+  21           *
+  22           *  COPYRIGHT 2025 SinOne Microelectronics
+  23           ******************************************************************************
+  24           */
+  25          
+  26          /* Includes ------------------------------------------------------------------*/
+  27          #include "sc92f_wdt.h"
+  28          
+  29          /** @addtogroup sc92f_StdPeriph_Driver
+  30           * @{
+  31           */
+  32          
+  33          /** @defgroup wdt
+  34           * @brief wdt driver modules
+  35           * @{
+  36           */
+  37          
+  38          /** @defgroup wdt_Exported_Functions
+  39           * @{
+  40           */
+  41           
+  42           /** @defgroup wdt_Exported_Functions_Group1 Configuration of the wdt computation unit functions
+  43           *  @brief   Configuration of the wdt computation unit functions
+  44           *
+  45           
+  46          @verbatim
+  47           ===============================================================================
+  48                               ##### wdt base functions #####
+  49           ===============================================================================
+  50          @endverbatim
+  51            * @{
+  52            */
+  53           /**
+C51 COMPILER V9.60.7.0   SC92F_WDT                                                         10/13/2026 10:46:36 PAGE 2   
+
+  54           * @brief  The WDT-related register is reset to the default value
+  55           * @param  None         
+  56           * @retval None
+  57           */
+  58          void WDT_DeInit(void)
+  59          {
+  60   1        WDTCON = 0X00;
+  61   1      }
+  62          
+  63          /**************************************************
+  64          *函数名称:void WDT_Init(WDT_OverflowTime_TypeDef OverflowTime)
+  65          *函数功能:WDT初始化配置函数
+  66          *入口参数:
+  67          WDT_OverflowTime_TypeDef:OverflowTime:WDT溢出时间选择
+  68          *出口参数:void
+  69          **************************************************/
+  70           /**
+  71           * @brief  WDT initialization configuration function
+  72           * @param   OverflowTime:WDT overflow time selection
+  73           *          - WDT_OverflowTime_500MS: Settings  500MS
+  74           *          - WDT_OverflowTime_250MS: Settings 250MS
+  75           *          - WDT_OverflowTime_125MS: Settings 125MS
+  76           *          - WDT_OverflowTime_62_5MS:Settings 62.5MS
+  77           *          - WDT_OverflowTime_31_5MS:Settings 31.5MS
+  78           *          - WDT_OverflowTime_15_75MS:Settings 15.75MS
+  79           *          - WDT_OverflowTime_7_88MS:Settings 7.88MS
+  80           *          - WDT_OverflowTime_3_94MS:Settings 3.94MS
+  81           * @retval None
+  82           */
+  83          void WDT_Init(WDT_OverflowTime_TypeDef
+  84                        OverflowTime)
+  85          {
+  86   1        WDTCON = (WDTCON & 0XF8) | OverflowTime;
+  87   1      }
+  88          
+  89          
+  90          /**
+  91           * @brief  WDT function switch function
+  92           * @param  NewState[in]:Function Enable/disable selection   
+  93           *              - DISABLE: disable    
+  94           *              - ENABLE:Enable    
+  95           * @retval None
+  96           */
+  97          void WDT_Cmd(FunctionalState NewState)
+  98          {
+  99   1        OPINX = 0XC1;
+ 100   1      
+ 101   1        if(NewState == DISABLE)
+ 102   1        {
+ 103   2          OPREG &= 0X7F;
+ 104   2        }
+ 105   1        else
+ 106   1        {
+ 107   2          OPREG |= 0X80;
+ 108   2        }
+ 109   1      }
+ 110          /**
+ 111           * @}
+ 112           */
+ 113          /* End of wdt_Group1. */
+ 114          /**
+ 115           * @}
+C51 COMPILER V9.60.7.0   SC92F_WDT                                                         10/13/2026 10:46:36 PAGE 3   
+
+ 116           */
+ 117          
+ 118          /**
+ 119           * @}
+ 120           */
+ 121          
+ 122          /**
+ 123           * @}
+ 124           */
+ 125          /******************* (C) COPYRIGHT 2025 SinOne Microelectronics *****END OF FILE****/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     26    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

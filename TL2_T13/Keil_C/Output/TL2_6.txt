@@ -1,0 +1,6 @@
+
+LX51 LINKER/LOCATER V4.66.100.0 - SN: K1DZC-5EWS5C
+COPYRIGHT Copyright (C) 1995-2021, Arm Limited or its Affiliates. All rights reserved.
+..\Output\main.obj, ..\Output\SC_Init.obj, ..\Output\SC_it.obj, ..\Output\SysFunVarDefine.obj, ..\Output\CompCtrlDefine.obj, ..\Output\CallBackFunction.obj, ..\Output\sc92f_gpio.obj, ..\Output\sc92f_option.obj, ..\Output\sc92f_int.obj, ..\Output\sc92f_usci2.obj, ..\Output\sc92f_adc.obj, ..\Output\STARTUP.obj TO ..\Output\TL2_6 PRINT(..\Output\TL2_6.map) WARNINGLEVEL (2) REMOVEUNUSED CLASSES(CODE(C:0X100),CONST(C:0X100)) 
+Program Size: data=19.0 xdata=0 const=0 code=1349
+LX51 RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

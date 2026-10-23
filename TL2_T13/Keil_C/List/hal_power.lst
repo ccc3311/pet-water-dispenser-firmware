@@ -1,0 +1,384 @@
+C51 COMPILER V9.60.7.0   HAL_POWER                                                         10/13/2026 10:46:41 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE HAL_POWER
+OBJECT MODULE PLACED IN ..\Output\hal_power.obj
+COMPILER INVOKED BY: E:\Keil_v5\C51\BIN\C51.EXE ..\PWR\hal_power.c LARGE OMF2 OPTIMIZE(8,SIZE) BROWSE INCDIR(..\FWLib\SC
+                    -92F_Lib\inc;..\User;..\User\inc;..\Hardware;..\Apps;..\Wifi\mcu_sdk;..\Hardware;..\PWR) DEFINE(SC92L753x) DEBUG PRINT(..
+                    -\List\hal_power.lst) TABS(2) OBJECT(..\Output\hal_power.obj)
+
+line level    source
+
+   1          #include "hal_power.h"
+   2          #include <intrins.h>     /* Keil C51：_nop_() */
+   3          
+   4          /*
+   5           * 当前Timer0配置：
+   6           * 系统时钟：32MHz
+   7           * Timer0时钟：FSYS / 1
+   8           * 计数方式：16位模式1
+   9           * 中断周期：1ms
+  10           *
+  11           * 重装值 = 65536 - 32000 = 33536
+  12           *
+  13           * 后续若修改系统时钟或Timer0分频，
+  14           * 这里必须与SC_TIM0_Init()同步修改。
+  15           */
+  16          #define POWER_TIM0_RELOAD       33536U
+  17          
+  18          /*
+  19           * IE1中断使能位：
+  20           * bit2：EBTM
+  21           * bit3：EINT2
+  22           */
+  23          #define POWER_IE1_EBTM          0x04
+  24          #define POWER_IE1_EINT2         0x08
+  25          
+  26          /*
+  27           * BTMCON：
+  28           * bit7：ENBTM，启动BTM
+  29           * bit6：BTMIF，中断标志
+  30           * bit3~0：周期选择
+  31           * 0011：125ms
+  32           */
+  33          #define POWER_BTM_ENABLE        0x80
+  34          #define POWER_BTM_PERIOD_125MS  0x03
+  35          
+  36          ///*
+  37          // * INT2输入选择：
+  38          // *
+  39          // * bit2：INT22，对应P06
+  40          // * bit3：INT23，对应P07
+  41          // * bit5：INT25，对应P21
+  42          // */
+  43          //#define POWER_INT2_INPUT_MASK   0x2C
+  44          ///* P06、P21：高有效，使用上升沿 */
+  45          //#define POWER_INT2_RISE_MASK    0x24
+  46          ///* P07：低有效，使用下降沿 */
+  47          //#define POWER_INT2_FALL_MASK    0x08
+  48          
+  49          /*
+  50           * 本模块管理 INT22～INT25：
+  51           * P0.6：红外输入，上升沿
+  52           * P0.7：主触摸输入，下降沿
+  53           * P2.0：Wi-Fi唤醒输入，上升沿
+C51 COMPILER V9.60.7.0   HAL_POWER                                                         10/13/2026 10:46:41 PAGE 2   
+
+  54           * P2.1：Wi-Fi控制输出，关闭其外部中断边沿
+  55           */
+  56          #define POWER_INT2_INPUT_MASK   0x3Cu
+  57          #define POWER_INT2_RISE_MASK    0x14u
+  58          #define POWER_INT2_FALL_MASK    0x08u
+  59          
+  60          /*
+  61           * 中断负责增加，主循环负责读取并清空。
+  62           * 8051是8位CPU，读取16位变量不是一次完成，
+  63           * 因此主循环消费它时需要短暂关闭总中断。
+  64           */
+  65          static volatile uint16_t s_btm_ticks = 0;
+  66          
+  67          
+  68          /*
+  69           * 外部输入事件锁存。
+  70           * 即使输入脉冲已经结束，标志仍保留为1，
+  71           * 直到主循环主动消费。
+  72           */
+  73          static volatile uint8_t s_input_event = 0;
+  74          
+  75          
+  76          /*
+  77           * 保存Timer0原来的运行和中断使能状态。
+  78           *
+  79           * 这些变量只由主循环使用，不需要volatile。
+  80           */
+  81          static uint8_t s_saved_tr0 = 0;
+  82          static uint8_t s_saved_et0 = 0;
+  83          
+  84          /* P5.0：低电平表示 Type-C 已插入。 */
+  85          uint8_t HAL_Power_TypeCIsPresent(void)
+  86          {
+  87   1          return (P50 == 0) ? 1 : 0;
+  88   1      }
+  89          
+  90          void HAL_Power_Init(void)
+  91          {
+  92   1          bit saved_ea;
+  93   1      
+  94   1          /*
+  95   1           * 配置多个相关寄存器时，暂时关闭中断。
+  96   1           * 完成后恢复调用前的EA状态。
+  97   1           */
+  98   1          saved_ea = EA;
+  99   1          EA = 0;
+ 100   1      
+ 101   1          s_btm_ticks = 0;
+ 102   1          s_input_event = 0;
+ 103   1      
+ 104   1          /*
+ 105   1           * 配置INT2三路输入的边沿。
+ 106   1           *
+ 107   1           * 先清除这三路的旧配置，再设置新配置。
+ 108   1           * 保留INT20、INT21、INT24的原有配置。
+ 109   1           *
+ 110   1           * INT2R：上升沿使能寄存器
+ 111   1           * INT2F：下降沿使能寄存器
+ 112   1           */
+ 113   1          INT2R =
+ 114   1              (INT2R & (uint8_t)(~POWER_INT2_INPUT_MASK)) |
+ 115   1              POWER_INT2_RISE_MASK;
+C51 COMPILER V9.60.7.0   HAL_POWER                                                         10/13/2026 10:46:41 PAGE 3   
+
+ 116   1      
+ 117   1          INT2F =
+ 118   1              (INT2F & (uint8_t)(~POWER_INT2_INPUT_MASK)) |
+ 119   1              POWER_INT2_FALL_MASK;
+ 120   1      
+ 121   1          /*
+ 122   1           * BTM配置顺序：
+ 123   1           *
+ 124   1           * 1. 关闭BTM中断；
+ 125   1           * 2. 停止BTM并设置125ms周期；
+ 126   1           * 3. 开启BTM和INT2中断；
+ 127   1           * 4. 启动BTM。
+ 128   1           */
+ 129   1      
+ 130   1          IE1 &= (uint8_t)(~POWER_IE1_EBTM);
+ 131   1      
+ 132   1          /*
+ 133   1           * ENBTM=0：停止
+ 134   1           * BTMIF=0：清除旧标志
+ 135   1           * BTMFS=0011：125ms
+ 136   1           */
+ 137   1          BTMCON = POWER_BTM_PERIOD_125MS;
+ 138   1      
+ 139   1          IE1 |= POWER_IE1_EBTM | POWER_IE1_EINT2;
+ 140   1      
+ 141   1          BTMCON |= POWER_BTM_ENABLE;
+ 142   1      
+ 143   1          /*
+ 144   1           * 不在每次STOP前重启BTM。
+ 145   1           *
+ 146   1           * BTM持续运行，才能让低频节拍包含
+ 147   1           * MCU短暂醒着巡检的时间。
+ 148   1           */
+ 149   1          EA = saved_ea;
+ 150   1      }
+ 151          
+ 152          
+ 153          /*
+ 154           * ==========================================================
+ 155           * 中断侧接口
+ 156           * ==========================================================
+ 157           */
+ 158          
+ 159          void HAL_Power_BTM_ISR(void)
+ 160          {
+ 161   1          /*
+ 162   1           * SC92L7533手册规定：
+ 163   1           * CPU响应BTM中断后，BTMIF由硬件自动清除。
+ 164   1           *
+ 165   1           * 这里只记录节拍，不执行ADC、UI或状态机。
+ 166   1           */
+ 167   1          s_btm_ticks++;
+ 168   1      }
+ 169          
+ 170          
+ 171          void HAL_Power_Input_ISR(void)
+ 172          {
+ 173   1          /*
+ 174   1           * 锁存事件。
+ 175   1           *
+ 176   1           * 此处不直接置g_Device.ir_triggered，
+ 177   1           * 因为同一个INT2入口还包含主触摸。
+C51 COMPILER V9.60.7.0   HAL_POWER                                                         10/13/2026 10:46:41 PAGE 4   
+
+ 178   1           *
+ 179   1           * 醒后交给正常扫描完成来源判断和消抖。
+ 180   1           */
+ 181   1          s_input_event = 1;
+ 182   1      }
+ 183          
+ 184          
+ 185          /*
+ 186           * ==========================================================
+ 187           * 主循环消费接口
+ 188           * ==========================================================
+ 189           */
+ 190          
+ 191          uint16_t HAL_Power_TakeTicks(void)
+ 192          {
+ 193   1          uint16_t ticks;
+ 194   1          bit saved_ea;
+ 195   1      
+ 196   1          saved_ea = EA;
+ 197   1          EA = 0;
+ 198   1      
+ 199   1          /*
+ 200   1           * 读取与清零放在同一小段临界区。
+ 201   1           * 避免中断在读取后、清零前增加的新节拍被覆盖。
+ 202   1           */
+ 203   1          ticks = s_btm_ticks;
+ 204   1          s_btm_ticks = 0;
+ 205   1      
+ 206   1          EA = saved_ea;
+ 207   1      
+ 208   1          return ticks;
+ 209   1      }
+ 210          
+ 211          
+ 212          uint8_t HAL_Power_TakeInputEvent(void)
+ 213          {
+ 214   1          uint8_t event;
+ 215   1          bit saved_ea;
+ 216   1      
+ 217   1          saved_ea = EA;
+ 218   1          EA = 0;
+ 219   1      
+ 220   1          event = s_input_event;
+ 221   1          s_input_event = 0;
+ 222   1      
+ 223   1          EA = saved_ea;
+ 224   1      
+ 225   1          return event;
+ 226   1      }
+ 227          
+ 228          
+ 229          uint8_t HAL_Power_InputPending(void)
+ 230          {
+ 231   1          /*
+ 232   1           * 仅查看，不消费。
+ 233   1           * 8位标志不需要16位变量那样的组合读取。
+ 234   1           */
+ 235   1          return s_input_event;
+ 236   1      }
+ 237          
+ 238          
+ 239          /*
+C51 COMPILER V9.60.7.0   HAL_POWER                                                         10/13/2026 10:46:41 PAGE 5   
+
+ 240           * ==========================================================
+ 241           * 暂停正常调度
+ 242           * ==========================================================
+ 243           */
+ 244          
+ 245          void HAL_Power_Prepare(void)
+ 246          {
+ 247   1          bit saved_ea;
+ 248   1      
+ 249   1          saved_ea = EA;
+ 250   1          EA = 0;
+ 251   1      
+ 252   1          /*
+ 253   1           * 保存状态。
+ 254   1           * 因此Prepare不能在尚未Resume时再次调用，
+ 255   1           * 否则会用“已停止”的状态覆盖原来的状态。
+ 256   1           */
+ 257   1          s_saved_tr0 = TR0;
+ 258   1          s_saved_et0 = ET0;
+ 259   1      
+ 260   1          /*
+ 261   1           * 顺序：
+ 262   1           * 关闭Timer0中断 → 停止计数 → 清除旧溢出标志。
+ 263   1           */
+ 264   1          ET0 = 0;
+ 265   1          TR0 = 0;
+ 266   1          TF0 = 0;
+ 267   1      
+ 268   1          /*
+ 269   1           * EA恢复后，BTM及外部中断仍能运行。
+ 270   1           *
+ 271   1           * Timer0停止后：
+ 272   1           * - 不再产生正常毫秒时间片；
+ 273   1           * - 触摸扫描暂停；
+ 274   1           * - 蜂鸣器毫秒状态机暂停。
+ 275   1           *
+ 276   1           * 所以应用层必须先确认蜂鸣器空闲、
+ 277   1           * 触摸操作已经结算。
+ 278   1           */
+ 279   1          EA = saved_ea;
+ 280   1      }
+ 281          
+ 282          
+ 283          /*
+ 284           * ==========================================================
+ 285           * 恢复正常调度
+ 286           * ==========================================================
+ 287           */
+ 288          
+ 289          void HAL_Power_Resume(void)
+ 290          {
+ 291   1          bit saved_ea;
+ 292   1      
+ 293   1          saved_ea = EA;
+ 294   1          EA = 0;
+ 295   1      
+ 296   1          /*
+ 297   1           * 从新的1ms周期开始计时。
+ 298   1           * 不沿用睡前剩余的半个Timer0周期。
+ 299   1           */
+ 300   1          TIM0_Mode1SetReloadCounter(POWER_TIM0_RELOAD);
+ 301   1      
+C51 COMPILER V9.60.7.0   HAL_POWER                                                         10/13/2026 10:46:41 PAGE 6   
+
+ 302   1          TF0 = 0;
+ 303   1      
+ 304   1          /*
+ 305   1           * 恢复原来的Timer0使能状态。
+ 306   1           * 当前工程正常情况下：
+ 307   1           * s_saved_et0=1，s_saved_tr0=1。
+ 308   1           */
+ 309   1          ET0 = s_saved_et0;
+ 310   1          TR0 = s_saved_tr0;
+ 311   1      
+ 312   1          EA = saved_ea;
+ 313   1      }
+ 314          
+ 315          
+ 316          /*
+ 317           * ==========================================================
+ 318           * 执行一次STOP
+ 319           * ==========================================================
+ 320           */
+ 321          
+ 322          /* 执行一次STOP；返回后由应用层决定巡检或恢复正常调度。 */
+ 323          void HAL_Power_StopOnce(void)
+ 324          {
+ 325   1          if (!EA) {
+ 326   2              return;
+ 327   2          }
+ 328   1      
+ 329   1          if (s_input_event || s_btm_ticks) {
+ 330   2              return;
+ 331   2          }
+ 332   1      
+ 333   1          WDT_SetReload();
+ 334   1          PCON |= 0x02;
+ 335   1      
+ 336   1          /* 保留STOP之后紧接的8条NOP。 */
+ 337   1          _nop_();
+ 338   1          _nop_();
+ 339   1          _nop_();
+ 340   1          _nop_();
+ 341   1          _nop_();
+ 342   1          _nop_();
+ 343   1          _nop_();
+ 344   1          _nop_();
+ 345   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    223    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      5    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       5
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
