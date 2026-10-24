@@ -9,7 +9,25 @@
  *
  * 打印模式只屏蔽物理UV输出，按键和APP的设置逻辑仍然运行。
  */
-#define APP_CHARGE_DEBUG  1
+/* UART0/UV硬件模式独立于应用日志开关。 */
+#define APP_DEBUG_UART_ENABLE  1
+#define APP_CHARGE_DEBUG       APP_DEBUG_UART_ENABLE
+
+/* 应用日志总开关；涂鸦SDK日志继续使用其原有开关。 */
+#define APP_LOG_ENABLE  1
+#define APP_LOG_CHARGE  0
+#define APP_LOG_WIFI    1
+#define APP_LOG_POWER   1
+#define APP_LOG_TIME    0
+
+#define APP_LOG_CHARGE_ON \
+    (APP_DEBUG_UART_ENABLE && APP_LOG_ENABLE && APP_LOG_CHARGE)
+#define APP_LOG_WIFI_ON \
+    (APP_DEBUG_UART_ENABLE && APP_LOG_ENABLE && APP_LOG_WIFI)
+#define APP_LOG_POWER_ON \
+    (APP_DEBUG_UART_ENABLE && APP_LOG_ENABLE && APP_LOG_POWER)
+#define APP_LOG_TIME_ON \
+    (APP_DEBUG_UART_ENABLE && APP_LOG_ENABLE && APP_LOG_TIME)
 
 // 提供一个简单的初始化包装接口
 void HAL_UART_Init(void);

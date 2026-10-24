@@ -676,27 +676,26 @@ u32 mcu_get_dp_download_value(const u8 value[], u16 len) {
  * @return Null
  * @note   在MCU串口处理函数中调用该函数,并将接收到的数据作为参数传入
  */
-void uart_receive_input(u8 value) {
-#ifndef CONFIG_TUYA_DISABLE_ALL_ERROR_MARCO
-//#error "请在串口接收中断中调用uart_receive_input(value),串口数据由MCU_SDK处理,用户请勿再另行处理,完成后删除该行"
-#endif
-	
-		if (WiFi_CEN_IsHeld()) {
-				return; /* 模组被复位时，丢弃残余接收字节。 */
-		}
+void uart_receive_input(u8 value)
+{
+    volatile u8 *write_ptr;
+    volatile u8 *next_ptr;
 
-    if (1 == rx_buf_out - rx_buf_in) {
-        // 串口接收缓存已满
-    } else if ((rx_buf_in > rx_buf_out) && ((unsigned long int)(rx_buf_in - rx_buf_out) >= sizeof(wifi_uart_rx_buf))) {
-        // 串口接收缓存已满
-    } else {
-        // 串口接收缓存未满
-        if (rx_buf_in >= (u8*)(wifi_uart_rx_buf + sizeof(wifi_uart_rx_buf))) {
-            rx_buf_in = (u8*)(wifi_uart_rx_buf);
-        }
-
-        *rx_buf_in++ = value;
+    if (WiFi_CEN_IsHeld()) {
+        return;
     }
+
+    write_ptr = rx_buf_in;
+    next_ptr = write_ptr + 1;
+    if (next_ptr >= wifi_uart_rx_buf + sizeof(wifi_uart_rx_buf)) {
+        next_ptr = wifi_uart_rx_buf; /* 修复：先回绕，再判断满队列。 */
+    }
+    if (next_ptr == rx_buf_out) {
+        return; /* 保留一个空位区分满和空，满时丢弃新字节。 */
+    }
+
+    *write_ptr = value;
+    rx_buf_in = next_ptr; /* 写入后发布规范化的队列指针。 */
 }
 
 /**

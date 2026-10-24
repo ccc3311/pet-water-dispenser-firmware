@@ -115,7 +115,7 @@ static u8 s_wifi_clean_days_retry_s = 0;
 static u8 s_wifi_filter_days_pending = 0;
 static u8 s_wifi_filter_days_retry_s = 0;
 
-/* 0: none; 1: wake timeout. TX failures retain the pending value. */
+/* 1：唤醒未确认，包含唤醒超时及休眠阶段发送故障。 */
 static u8 s_wifi_test_error = 0;
 
 /* 重建通信会话，保留所有业务待发位。 */
@@ -289,6 +289,193 @@ static u8 App_Wifi_DpTxSucceeded(u8 result)
             wifi_uart_last_frame_tx_ok()) ? 1 : 0;
 }
 
+/*
+ * 旧上报路径的结果处理：
+ * 成功提交影子；失败保存对应DP的待发请求。
+ * 耗材补报仍由现有服务读取最新剩余天数。
+ */
+static u8 App_Wifi_ReportResult(u8 dpid, u8 value, u8 result)
+{
+    u8 tx_ok;
+    u8 mode;
+    u8 sent_mask;
+
+    /* 修复：暂停上传时，不能把上一帧的成功标志当成本次成功。 */
+    tx_ok = (stop_update_flag != ENABLE &&
+             App_Wifi_DpTxSucceeded(result)) ? 1U : 0U;
+
+    switch (dpid) {
+    case DPID_SWITCH:
+        if (!tx_ok) {
+            /* APP请求尚未执行时，保留其已排队的目标回传。 */
+            if (!s_wifi_switch_pending ||
+                !g_Device.req_power_toggle) {
+                App_Wifi_SwitchSubmit(value);
+            }
+        } else {
+            if (!g_Device.req_power_toggle ||
+                s_wifi_switch_value == value) {
+                s_wifi_switch_pending = 0;
+            }
+
+            if (value == (g_Device.state != STATE_OFF)) {
+                g_Device_Shadow.state = g_Device.state;
+            }
+        }
+        break;
+
+    case DPID_WORK_MODE:
+    case DPID_PIR:
+    case DPID_CONTINUE:
+        sent_mask = (dpid == DPID_WORK_MODE) ? 0x01U :
+                    ((dpid == DPID_PIR) ? 0x02U : 0x04U);
+
+        mode = (dpid == DPID_CONTINUE) ?
+               (value ? 1U : 0U) : (value ? 0U : 1U);
+
+        if (s_wifi_mode_pending &&
+            s_wifi_mode_value != mode) {
+            /* 新模式替换旧模式，重新补齐三项关联DP。 */
+            s_wifi_mode_pending = 0x07U;
+        }
+
+        s_wifi_mode_value = mode;
+        s_wifi_mode_retry_s = 0;
+
+        if (tx_ok) {
+            s_wifi_mode_pending &= (u8)(~sent_mask);
+        } else {
+            /* 修复：任一帧失败，交给原模式待发服务补齐。 */
+            s_wifi_mode_pending = 0x07U;
+        }
+        break;
+
+    case DPID_HEAT:
+        s_wifi_heat_value = value;
+        s_wifi_heat_pending = tx_ok ? 0U : 1U;
+        s_wifi_heat_retry_s = 0;
+        if (tx_ok) {
+            g_Device_Shadow.heating_enabled = value;
+        }
+        break;
+
+    case DPID_UV:
+        s_wifi_uv_value = value;
+        s_wifi_uv_pending = tx_ok ? 0U : 1U;
+        s_wifi_uv_retry_s = 0;
+        if (tx_ok) {
+            g_Device_Shadow.uvc_armed = value;
+        }
+        break;
+
+    case DPID_TDS_RO:
+        s_wifi_tds_value = value;
+        s_wifi_tds_pending = tx_ok ? 0U : 1U;
+        s_wifi_tds_retry_s = 0;
+        if (tx_ok) {
+            g_Device_Shadow.water_quality =
+                value ? WATER_BAD : WATER_GOOD;
+        }
+        break;
+
+    case DPID_TEMP_CURRENT:
+        s_wifi_temp_value = value;
+        s_wifi_temp_pending = tx_ok ? 0U : 1U;
+        s_wifi_temp_retry_s = 0;
+        if (tx_ok) {
+            s_wifi_temp_last_sent = value;
+            s_wifi_temp_sent_valid = 1;
+        }
+        break;
+
+    case DPID_BAT:
+        s_wifi_bat_value = value;
+        s_wifi_bat_pending = tx_ok ? 0U : 1U;
+        s_wifi_bat_retry_s = 0;
+        break;
+
+    case DPID_BEEP:
+        s_wifi_mute_value = value;
+        s_wifi_mute_pending = tx_ok ? 0U : 1U;
+        s_wifi_mute_retry_s = 0;
+        if (tx_ok) {
+            g_Device_Shadow.mute_enabled = value;
+        }
+        break;
+
+    case DPID_TIME_CLEAN:
+        s_wifi_clean_days_pending = tx_ok ? 0U : 1U;
+        s_wifi_clean_days_retry_s = 0;
+        break;
+
+    case DPID_FILTER_LIFE:
+        s_wifi_filter_days_pending = tx_ok ? 0U : 1U;
+        s_wifi_filter_days_retry_s = 0;
+        break;
+
+    default:
+        return tx_ok ? SUCCESS : ERROR;
+    }
+
+    if (!tx_ok) {
+        /* 修复：补报完成前，继续使用原有唤醒和恢复流程。 */
+        g_wifi_allow_sleep = 0;
+    }
+
+    return tx_ok ? SUCCESS : ERROR;
+}
+
+/* 保留SDK接口，由应用层补充发送确认和失败记账。 */
+u8 App_Wifi_ReportBool(u8 dpid, u8 value)
+{
+    return App_Wifi_ReportResult(
+        dpid, value ? 1U : 0U,
+        mcu_dp_bool_update(dpid, value));
+}
+
+u8 App_Wifi_ReportEnum(u8 dpid, u8 value)
+{
+    return App_Wifi_ReportResult(
+        dpid, value,
+        mcu_dp_enum_update(dpid, value));
+}
+
+u8 App_Wifi_ReportValue(u8 dpid, u32 value)
+{
+    return App_Wifi_ReportResult(
+        dpid, (u8)value,
+        mcu_dp_value_update(dpid, value));
+}
+
+/* 三帧均本地发送成功后，才提交整组模式影子。 */
+void App_Wifi_ReportMode(void)
+{
+    u8 mode;
+    u8 tx_ok;
+
+    mode = g_Device.target_work_mode;
+    tx_ok = SUCCESS;
+
+    if (App_Wifi_ReportEnum(
+            DPID_WORK_MODE, mode == 1 ? 0 : 1) != SUCCESS) {
+        tx_ok = ERROR;
+    }
+
+    if (App_Wifi_ReportBool(
+            DPID_PIR, mode == 0) != SUCCESS) {
+        tx_ok = ERROR;
+    }
+
+    if (App_Wifi_ReportBool(
+            DPID_CONTINUE, mode == 1) != SUCCESS) {
+        tx_ok = ERROR;
+    }
+
+    if (tx_ok == SUCCESS) {
+        g_Device_Shadow.target_work_mode = mode;
+    }
+}
+
 static void App_Wifi_SwitchService(void)
 {
     u8 result;
@@ -301,11 +488,16 @@ static void App_Wifi_SwitchService(void)
 		}
 
     result = mcu_dp_bool_update(DPID_SWITCH, s_wifi_switch_value);
-    if (result == SUCCESS && wifi_uart_last_frame_tx_ok()) {
-        s_wifi_switch_pending = 0;
-    } else {
-        s_wifi_switch_retry_s = 1;
-    }
+		if (result == SUCCESS && wifi_uart_last_frame_tx_ok()) {
+				s_wifi_switch_pending = 0;
+
+				/* 修复：回传目标已实际满足时，补报成功同步提交影子。 */
+				if (s_wifi_switch_value == (g_Device.state != STATE_OFF)) {
+						g_Device_Shadow.state = g_Device.state;
+				}
+		} else {
+				s_wifi_switch_retry_s = 1;
+		}
 }
 
 static void App_Wifi_MuteService(void)
@@ -321,12 +513,13 @@ static void App_Wifi_MuteService(void)
 
 
     result = mcu_dp_bool_update(DPID_BEEP, s_wifi_mute_value);
-    if (result == SUCCESS && wifi_uart_last_frame_tx_ok()) {
-        s_wifi_mute_pending = 0;
-    } else {
-        /* Keep the value; retry on a later software second. */
-        s_wifi_mute_retry_s = 1;
-    }
+		if (result == SUCCESS && wifi_uart_last_frame_tx_ok()) {
+				s_wifi_mute_pending = 0;
+				/* 修复：成功补报后更新影子，失败继续保留原记录。 */
+				g_Device_Shadow.mute_enabled = s_wifi_mute_value;
+		} else {
+				s_wifi_mute_retry_s = 1;
+		}
 }
 
 static void App_WifiTest_Release(void)
@@ -439,6 +632,57 @@ static void App_Wifi_TdsTick1s(void)
     }
 }
 
+/* 主循环秒任务调用：限频打印休眠阶段和阻塞待办。 */
+static void App_Wifi_LpDebug1s(void)
+{
+#if APP_LOG_POWER_ON
+    static u8 divider = 0;
+    u16 pending;
+
+    if (++divider < 5U) {
+        return;
+    }
+    divider = 0;
+
+    /* 位图保留具体待办来源，便于定位是谁阻止休眠。 */
+    pending = 0;
+    if (s_wifi_reset_notify_pending) pending |= 0x0001U;
+    if (s_wifi_time_pending)         pending |= 0x0002U;
+    if (s_wifi_mute_pending)         pending |= 0x0004U;
+    if (s_wifi_switch_pending)       pending |= 0x0008U;
+    if (s_wifi_mode_pending)         pending |= 0x0010U;
+    if (s_wifi_heat_pending)         pending |= 0x0020U;
+    if (s_wifi_bat_pending)          pending |= 0x0040U;
+    if (s_wifi_water_pending)        pending |= 0x0080U;
+    if (s_wifi_temp_pending)         pending |= 0x0100U;
+    if (s_wifi_tds_pending)          pending |= 0x0200U;
+    if (s_wifi_clean_days_pending)   pending |= 0x0400U;
+    if (s_wifi_uv_pending)           pending |= 0x0800U;
+    if (s_wifi_filter_days_pending)  pending |= 0x1000U;
+
+    printf(
+        "\r\n[WLP] p=%u net=%u boot=%u lp=%u allow=%u io=%u%u\r\n",
+        (unsigned int)s_wifi_test_phase,
+        (unsigned int)mcu_get_wifi_work_state(),
+        (unsigned int)s_wifi_boot_wait_s,
+        (unsigned int)g_wifi_lp_state,
+        (unsigned int)g_wifi_allow_sleep,
+        (unsigned int)P21,
+        (unsigned int)P20);
+
+    printf(
+        "[WPD] q=%04X hold=%u rst=%u ota=%u tx=%u fault=%u last=%u ok=%u\r\n",
+        (unsigned int)pending,
+        (unsigned int)s_wifi_pairing_hold,
+        (unsigned int)g_Device.req_wifi_reset,
+        (unsigned int)stop_update_flag,
+        (unsigned int)WiFi_UART_IsTxReady(),
+        (unsigned int)WiFi_UART_HasTxFault(),
+        (unsigned int)wifi_uart_last_frame_tx_ok(),
+        (unsigned int)App_Wifi_McuStopReady());
+#endif
+}
+
 void App_WifiTest_Tick1s(void)
 {
 #if WIFI_CEN_PIN_TEST
@@ -463,16 +707,15 @@ void App_WifiTest_Tick1s(void)
     s_wifi_boot_wait_s < WIFI_BOOT_OFFLINE_WAIT_S) {
     s_wifi_boot_wait_s++; /* 未连云时也推进启动等待，避免永久停在BOOT。 */
 		}
-		App_Wifi_BatTick1s();
+		/* 离线return之前也执行诊断。 */
+        App_Wifi_LpDebug1s();
+        App_Wifi_BatTick1s();
 		App_Wifi_TdsTick1s();
 		if (s_wifi_pairing_hold && s_wifi_pairing_hold_s > 0) {
 			s_wifi_pairing_hold_s--;
 		}
 		if (s_wifi_uv_retry_s > 0) {
 				s_wifi_uv_retry_s--;
-		}
-		if (s_wifi_time_retry_s > 0) {
-    s_wifi_time_retry_s--;
 		}
 		if (s_wifi_mode_retry_s > 0) {
 			s_wifi_mode_retry_s--;
@@ -539,16 +782,26 @@ u8 wake_from_allow;
     return;
 	}
 
-	if ((s_wifi_test_phase == WIFI_TEST_BOOT ||
-			 s_wifi_test_phase == WIFI_TEST_ACTIVE ||
-			 s_wifi_test_phase == WIFI_TEST_WAIT_WAKE) &&
-			(!WiFi_UART_IsTxReady() || WiFi_UART_HasTxFault())) {
+    /* 修复：休眠相关阶段也检查UART故障，接入统一恢复流程。 */
+    if ((s_wifi_test_phase == WIFI_TEST_BOOT ||
+         s_wifi_test_phase == WIFI_TEST_ACTIVE ||
+         s_wifi_test_phase == WIFI_TEST_WAIT_WAKE ||
+         s_wifi_test_phase == WIFI_TEST_WAIT_SLEEP ||
+         s_wifi_test_phase == WIFI_TEST_SLEEP) &&
+        (!WiFi_UART_IsTxReady() || WiFi_UART_HasTxFault())) {
 
-			s_wifi_test_error =
-					(s_wifi_test_phase == WIFI_TEST_BOOT) ? 4 : 2;
-			s_wifi_test_phase = WIFI_TEST_ERROR; /* UART 故障进入恢复流程。 */
-			s_wifi_test_seconds = 0;
-	}
+        if (s_wifi_test_phase == WIFI_TEST_WAIT_SLEEP ||
+            s_wifi_test_phase == WIFI_TEST_SLEEP) {
+            s_wifi_test_error = 1; /* 休眠链路异常，按唤醒未确认处理。 */
+            g_wifi_lp_state = WIFI_LP_UNKNOWN; /* 清除旧握手，等待新的通信依据。 */
+        } else {
+            s_wifi_test_error =
+                (s_wifi_test_phase == WIFI_TEST_BOOT) ? 4 : 2;
+        }
+
+        s_wifi_test_phase = WIFI_TEST_ERROR;
+        s_wifi_test_seconds = 0; /* 从本次故障开始累计原有的30秒恢复窗口。 */
+    }
 		
 if (!s_wifi_boot_cloud_done &&
     s_wifi_test_phase == WIFI_TEST_ACTIVE &&
@@ -1310,30 +1563,72 @@ static void App_Wifi_UvService(void)
     }
 }
 
-/* 合并时间同步请求，由主循环协调唤醒和发送。 */
+#define WIFI_TIME_RETRY_INTERVAL_S  60U
+#define WIFI_TIME_TX_RETRY_S         3U
+
+/* 合并主动校时请求，重复提交不打断已有的重试间隔。 */
 void App_Wifi_TimeSyncSubmit(void)
 {
+    if (s_wifi_time_retry_s != 0U) {
+        return; /* 修复：避免重复提交绕过重试间隔。 */
+    }
+
     s_wifi_time_pending = 1;
     g_wifi_allow_sleep = 0;
 }
 
-/* 本地发送失败保留请求；时间响应仍由原有回调处理。 */
+/* BTM公共秒任务调用；只推进计时和提交待办，不执行UART发送。 */
+void App_Wifi_TimeSyncTick1s(void)
+{
+    u8 retry_due = 0;
+    u8 wifi_state;
+
+    if (s_wifi_time_retry_s > 0U) {
+        s_wifi_time_retry_s--;
+        if (s_wifi_time_retry_s == 0U) {
+            retry_due = 1;
+        }
+    }
+
+    if (g_Device.current_unix_time != 0UL) {
+        return; /* 已取得有效时间，结束首次校时的自动重试。 */
+    }
+
+    wifi_state = mcu_get_wifi_work_state();
+
+    if (wifi_state == WIFI_CONN_CLOUD ||
+        (retry_due && wifi_state == WIFI_LOW_POWER)) {
+        App_Wifi_TimeSyncSubmit(); /* 到期后通过原有待发门控唤醒模组。 */
+    }
+}
+
+/* 仅在合法时间响应已写入current_unix_time后调用。 */
+void App_Wifi_TimeSyncDone(void)
+{
+    s_wifi_time_pending = 0;
+    s_wifi_time_retry_s = 0; /* 修复：取得有效时间后清除未完成的重试。 */
+}
+
+/* 请求发出后释放通信待办；未取得时间时由公共秒任务继续补取。 */
 static void App_Wifi_TimeSyncService(void)
 {
     if (!s_wifi_time_pending || s_wifi_time_retry_s) {
         return;
     }
 
-		if (!App_Wifi_CanSendDp()) {
-				return;
-		}
+    if (!App_Wifi_CanSendDp()) {
+        return;
+    }
 
     mcu_get_green_time();
 
     if (wifi_uart_last_frame_tx_ok()) {
         s_wifi_time_pending = 0;
+        s_wifi_time_retry_s = WIFI_TIME_RETRY_INTERVAL_S;
+        /* 这里只确认请求已发出；没有有效时间时，到期仍会重新提交。 */
     } else {
-        s_wifi_time_retry_s = 1;
+        s_wifi_time_retry_s = WIFI_TIME_TX_RETRY_S;
+        /* 保留待发请求，交给原有UART恢复流程处理。 */
     }
 }
 

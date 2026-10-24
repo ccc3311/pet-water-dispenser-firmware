@@ -184,23 +184,11 @@ void App_Cloud_Sync_Reset(void)
 void App_Cloud_Sync_Task(void)
 {
     static uint8_t sync_wait_s = 0;
-    static uint8_t req_time_timer = 0;
     uint8_t is_temp_high;
     uint8_t current_temp;
 
     if (mcu_get_wifi_work_state() != WIFI_CONN_CLOUD) {
         return;
-    }
-
-    /* 尚未取得时间时，每 3 秒提交一次校时请求。 */
-    if (g_Device.current_unix_time == 0) {
-        req_time_timer++;
-        if (req_time_timer >= 3) {
-            req_time_timer = 0;
-            App_Wifi_TimeSyncSubmit();
-        }
-    } else {
-        req_time_timer = 0;
     }
 
     /* 30 秒后置同步标志；当前代码不会用该标志阻止下面的 DP 上报。 */
@@ -215,21 +203,17 @@ void App_Cloud_Sync_Task(void)
 
     /* 总开关上报：OFF 为 0，其余设备状态均为 1。 */
     if (g_Device.state != g_Device_Shadow.state) {
-        if (SUCCESS == mcu_dp_bool_update(DPID_SWITCH,
+        if (SUCCESS == App_Wifi_ReportBool(DPID_SWITCH,
                                          (g_Device.state != STATE_OFF))) {
             g_Device_Shadow.state = g_Device.state;
         }
     }
 
-    /* 内部模式 0 感应、1 持续；同时同步 WORK_MODE 和旧 PIR/CONTINUE DP。 */
-    if (g_Device.target_work_mode != g_Device_Shadow.target_work_mode) {
-        if (SUCCESS == mcu_dp_enum_update(
-                DPID_WORK_MODE, g_Device.target_work_mode == 1 ? 0 : 1)) {
-            mcu_dp_bool_update(DPID_PIR, g_Device.target_work_mode == 0);
-            mcu_dp_bool_update(DPID_CONTINUE, g_Device.target_work_mode == 1);
-            g_Device_Shadow.target_work_mode = g_Device.target_work_mode;
-        }
-    }
+    /* BOOT阶段每秒调用；本地发送成功后更新同步记录，不代表云端确认。 */
+		if (g_Device.target_work_mode != g_Device_Shadow.target_work_mode) {
+				/* 修复：三项模式DP共同确认，失败保留待发。 */
+				App_Wifi_ReportMode();
+		}
 
     /* TDS 报警沿用相同的次数、稳定时间和冷却规则；恢复正常时解除冷却并同步。 */
     if (last_water_quality == 0xFF) {
@@ -247,7 +231,7 @@ void App_Cloud_Sync_Task(void)
         tds_stable_timer_s = 0;
         tds_report_cooldown_s = 0;
         if (g_Device_Shadow.water_quality != g_Device.water_quality) {
-            if (SUCCESS == mcu_dp_enum_update(DPID_TDS_RO,
+            if (SUCCESS == App_Wifi_ReportEnum(DPID_TDS_RO,
                                              g_Device.water_quality)) {
                 g_Device_Shadow.water_quality = g_Device.water_quality;
                 tds_debounce_count = 0;
@@ -258,7 +242,7 @@ void App_Cloud_Sync_Task(void)
     if ((tds_debounce_count >= 10) || (tds_stable_timer_s >= 60)) {
         if ((g_Device.water_quality == WATER_BAD) &&
             (tds_report_cooldown_s == 0)) {
-            if (SUCCESS == mcu_dp_enum_update(DPID_TDS_RO,
+            if (SUCCESS == App_Wifi_ReportEnum(DPID_TDS_RO,
                                              g_Device.water_quality)) {
                 g_Device_Shadow.water_quality = g_Device.water_quality;
                 tds_report_cooldown_s = 1800;
@@ -273,12 +257,12 @@ void App_Cloud_Sync_Task(void)
 
     /* 同步 UVC 武装设置和加热设置。 */
     if (g_Device.uvc_armed != g_Device_Shadow.uvc_armed) {
-        if (SUCCESS == mcu_dp_bool_update(DPID_UV, g_Device.uvc_armed)) {
+        if (SUCCESS == App_Wifi_ReportBool(DPID_UV, g_Device.uvc_armed)) {
             g_Device_Shadow.uvc_armed = g_Device.uvc_armed;
         }
     }
     if (g_Device.heating_enabled != g_Device_Shadow.heating_enabled) {
-        if (SUCCESS == mcu_dp_bool_update(DPID_HEAT, g_Device.heating_enabled)) {
+        if (SUCCESS == App_Wifi_ReportBool(DPID_HEAT, g_Device.heating_enabled)) {
             g_Device_Shadow.heating_enabled = g_Device.heating_enabled;
         }
     }
@@ -290,7 +274,7 @@ void App_Cloud_Sync_Task(void)
         last_temp_state = is_temp_high;
     } else if (is_temp_high != last_temp_state) {
         last_temp_state = is_temp_high;
-        if (SUCCESS == mcu_dp_value_update(DPID_TEMP_CURRENT, (u32)current_temp)) {
+        if (SUCCESS == App_Wifi_ReportValue(DPID_TEMP_CURRENT, (u32)current_temp)) {
             last_reported_temp = current_temp;
         }
     }
@@ -298,7 +282,7 @@ void App_Cloud_Sync_Task(void)
     temp_sync_timer++;
     if (temp_sync_timer >= 60) {
         if (current_temp != last_reported_temp) {
-            if (SUCCESS == mcu_dp_value_update(DPID_TEMP_CURRENT, (u32)current_temp)) {
+            if (SUCCESS == App_Wifi_ReportValue(DPID_TEMP_CURRENT, (u32)current_temp)) {
                 last_reported_temp = current_temp;
             }
         }
@@ -311,14 +295,14 @@ void App_Cloud_Sync_Task(void)
         current_soc = HAL_ADC_Get_Battery_SOC();
 
         if (last_bat_soc == 0xFF) {
-            if (SUCCESS == mcu_dp_enum_update(DPID_BAT, current_soc)) {
+            if (SUCCESS == App_Wifi_ReportEnum(DPID_BAT, current_soc)) {
                 last_bat_soc = current_soc;
                 if (current_soc == 2) {
                     bat_report_cooldown_s = 1800;
                 }
             }
         } else if (current_soc != last_bat_soc) {
-            if (SUCCESS == mcu_dp_enum_update(DPID_BAT, current_soc)) {
+            if (SUCCESS == App_Wifi_ReportEnum(DPID_BAT, current_soc)) {
                 last_bat_soc = current_soc;
                 if (current_soc == 2) {
                     bat_report_cooldown_s = 1800;
@@ -328,7 +312,7 @@ void App_Cloud_Sync_Task(void)
 
         if (current_soc == 2) {
             if (bat_report_cooldown_s == 0) {
-                if (SUCCESS == mcu_dp_enum_update(DPID_BAT, current_soc)) {
+                if (SUCCESS == App_Wifi_ReportEnum(DPID_BAT, current_soc)) {
                     bat_report_cooldown_s = 1800;
                 }
             }
@@ -341,7 +325,7 @@ void App_Cloud_Sync_Task(void)
     }
 
     if (g_Device.mute_enabled != g_Device_Shadow.mute_enabled) {
-        if (SUCCESS == mcu_dp_bool_update(DPID_BEEP, g_Device.mute_enabled)) {
+        if (SUCCESS == App_Wifi_ReportBool(DPID_BEEP, g_Device.mute_enabled)) {
             g_Device_Shadow.mute_enabled = g_Device.mute_enabled;
         }
     }
@@ -447,6 +431,9 @@ static void App_Power_ClockTask(void)
             /* 当前在主循环中，可执行充电芯片I2C维护。 */
             sc89601_tick_1s();
 						App_FSM_BatteryTick_1s(); /* 放在睡眠分支之前，保证休眠期间也计时。 */
+				   /* 修复：水位确认和重试按秒推进，STOP巡检也执行。 */
+            App_Wifi_WaterTick1s();
+						App_Wifi_TimeSyncTick1s(); /* 修复：STOP巡检期间也推进校时重试。 */
             if (s_power_sleeping) {
                 if (g_Device.current_unix_time != 0) {
                     g_Device.current_unix_time++;
@@ -589,16 +576,17 @@ if (App_FSM_ConsumableUpdateDue()) {
 HAL_Power_StopOnce();
 }
 
-#if APP_CHARGE_DEBUG
 
-extern volatile sc_u8 g_sc89601_debug_ready;
 
 /*
  * 每100ms调用，每2秒启动一帧。
  * 先保存完整快照，再分批打印，避免一次长时间占用主循环。
  */
-static App_Charge_Debug100ms(void)
+static void App_Charge_Debug100ms(void)
 {
+#if APP_LOG_CHARGE_ON
+    extern volatile sc_u8 g_sc89601_debug_ready;
+
     static sc_u8 divider = 0u;
     static sc_u8 phase = 0u;
     static sc_u8 reg_index = 0u;
@@ -720,9 +708,8 @@ static App_Charge_Debug100ms(void)
         (unsigned int)frame.fault_current);
 
     phase = 0u;
-}
-
 #endif
+}
 
 /* 初始化硬件、协议和时基，按时间片调度业务。 */
 void main(void)
@@ -776,7 +763,6 @@ void main(void)
         wifi_uart_service();
 
         App_Power_ClockTask();
-				App_Wifi_WaterTick1s(); /* 放在睡眠分支之前，避免休眠暂停确认。 */
         if (flag_10ms) {
             flag_10ms = 0;
             HAL_IR_Scan();
@@ -794,9 +780,7 @@ void main(void)
 
 						sc89601_service_100ms(); /* 更新充电及升压确认状态。 */
 
-				#if APP_CHARGE_DEBUG
-						App_Charge_Debug100ms();
-				#endif
+				App_Charge_Debug100ms();
 
 						App_FSM_Run(); /* 先处理开关机、感应和出水请求。 */
 

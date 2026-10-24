@@ -163,8 +163,8 @@ SYSTEM_EXTERN volatile u8 wifi_data_process_buf[PROTOCOL_HEAD + WIFI_DATA_PROCES
 SYSTEM_EXTERN volatile u8 wifi_uart_rx_buf[PROTOCOL_HEAD + WIFI_UART_RECV_BUF_LMT];         //串口接收缓存
 SYSTEM_EXTERN volatile u8 wifi_uart_tx_buf[PROTOCOL_HEAD + WIFIR_UART_SEND_BUF_LMT];        //串口发送缓存
 //
-SYSTEM_EXTERN volatile u8 *rx_buf_in;
-SYSTEM_EXTERN volatile u8 *rx_buf_out;
+SYSTEM_EXTERN volatile u8 * volatile rx_buf_in;
+SYSTEM_EXTERN volatile u8 * volatile rx_buf_out;
 
 SYSTEM_EXTERN volatile u8 stop_update_flag;                                                 //ENABLE:停止一切数据上传  TY_DISABLE:恢复一切数据上传
 

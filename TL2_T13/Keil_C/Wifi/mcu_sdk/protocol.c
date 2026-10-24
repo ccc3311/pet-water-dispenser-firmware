@@ -32,7 +32,7 @@
 #include "hal_eeprom.h"  // 头部引入
 #include "hal_uart.h"
 #include "app_wifi.h"
-
+#include <stdio.h>
 /* 本次唤醒诊断：0未处理通知，1应答发送成功，2应答发送失败。 */
 u8 g_wifi_wake_diag = 0;
 extern void App_Restore_Factory_Settings(void); // 增加严格声明，防止 C51 堆栈崩溃
@@ -190,59 +190,38 @@ bool_t on_first_command_after_overflow(const u8* frame, u16 frame_len) {
  * @return Null
  * @note   此函数SDK内部需调用，MCU必须实现该函数内数据上报功能，包括只上报和可上报可下发型数据
  */
-void all_data_update(void){
-#ifndef CONFIG_TUYA_DISABLE_ALL_ERROR_MARCO
-//#error "请在此处理可下发可上报数据及只上报数据示例,处理完成后删除该行"
-#endif
-    
-	/* 全量同步也属于通信活动，建立或延长通信窗口 */
+void all_data_update(void)
+{
     App_WifiTest_OnDpReceived();
 
-    /* 以下原有影子赋值和全部 DP 上报保持原样 */
-    g_Device_Shadow.state = g_Device.state;
-    mcu_dp_bool_update(
-        DPID_SWITCH,
-        (g_Device_Shadow.state != STATE_OFF)
-    );
-	
-    // 1. 开关 (同步影子并上报)
-    g_Device_Shadow.state = g_Device.state;
-    mcu_dp_bool_update(DPID_SWITCH, (g_Device_Shadow.state != STATE_OFF));
-    
-    // 2. 模式 (包含 3 个关联的 DP 点)
-    g_Device_Shadow.target_work_mode = g_Device.target_work_mode;
-    mcu_dp_enum_update(DPID_WORK_MODE, g_Device_Shadow.target_work_mode == 1 ? 0 : 1); //DPID_WORK_MODE 为新增的110组件
-    mcu_dp_bool_update(DPID_PIR, g_Device_Shadow.target_work_mode == 0);
-    mcu_dp_bool_update(DPID_CONTINUE, g_Device_Shadow.target_work_mode == 1);
-    
-    // 3. 水位
-		App_Wifi_WaterSyncSubmit(); /* 全量同步也使用确认后的水位。 */
-    
-    // 4. UV
-    g_Device_Shadow.uvc_armed = g_Device.uvc_armed;
-    mcu_dp_bool_update(DPID_UV, g_Device_Shadow.uvc_armed);
-    
-    // 5. 加热
-    g_Device_Shadow.heating_enabled = g_Device.heating_enabled;
-    mcu_dp_bool_update(DPID_HEAT, g_Device_Shadow.heating_enabled);
-    
-    // 6. TDS 水质
-    g_Device_Shadow.water_quality = g_Device.water_quality;
-    mcu_dp_enum_update(DPID_TDS_RO, g_Device_Shadow.water_quality == WATER_GOOD ? 0 : 1);
-    
-    // 7. 模拟量与静音状态 (直接读取，无需影子拦截)
-    mcu_dp_value_update(DPID_TEMP_CURRENT, (u32)HAL_ADC_Get_Temperature_C());
-    mcu_dp_enum_update(DPID_BAT, HAL_ADC_Get_Battery_SOC());
-    mcu_dp_bool_update(DPID_BEEP, g_Device.mute_enabled);
-        
-    
-    // ========================================================
-    // 【核心修复】：必须把本地记住的“目标时长”也全量上报给 APP！
-    // 强制同步 APP 上的滑块，防止 APP 断线重连后恢复成 31 天默认值，从而反向覆盖单片机
-    // ========================================================
-    // 直接上报当前的报警时长（已经是递减后的值）
-    mcu_dp_value_update(DPID_TIME_CLEAN, g_Device.target_clean_days);
-    mcu_dp_value_update(DPID_FILTER_LIFE, g_Device.target_filter_days);
+    /* 修复：成功提交影子，失败由对应DP的待发服务补报。 */
+    App_Wifi_ReportBool(
+        DPID_SWITCH, g_Device.state != STATE_OFF);
+
+    App_Wifi_ReportMode();
+    App_Wifi_WaterSyncSubmit();
+
+    App_Wifi_ReportBool(DPID_UV, g_Device.uvc_armed);
+    App_Wifi_ReportBool(DPID_HEAT, g_Device.heating_enabled);
+
+    App_Wifi_ReportEnum(
+        DPID_TDS_RO,
+        g_Device.water_quality == WATER_GOOD ? 0 : 1);
+
+    App_Wifi_ReportValue(
+        DPID_TEMP_CURRENT, (u32)HAL_ADC_Get_Temperature_C());
+
+    App_Wifi_ReportEnum(
+        DPID_BAT, HAL_ADC_Get_Battery_SOC());
+
+    App_Wifi_ReportBool(
+        DPID_BEEP, g_Device.mute_enabled);
+
+    App_Wifi_ReportValue(
+        DPID_TIME_CLEAN, g_Device.target_clean_days);
+
+    App_Wifi_ReportValue(
+        DPID_FILTER_LIFE, g_Device.target_filter_days);
 }
 
 /******************************************************************************
@@ -262,11 +241,11 @@ void all_data_update(void){
 使用说明 : 可下发可上报类型,需要在处理完数据后上报处理结果至app
 *****************************************************************************/
 // 1. 开关下发处理
+/* 接收APP目标开关状态，由FSM统一执行开关机。 */
 static unsigned char dp_download_switch_handle(const unsigned char value[], unsigned short length)
 {
     unsigned char target_switch;
 
-    /* 恢复就地校验，本工程提取共用校验函数反而增加ROM。 */
     if (value == 0 || length != 1) {
         return ERROR;
     }
@@ -277,24 +256,13 @@ static unsigned char dp_download_switch_handle(const unsigned char value[], unsi
 
     target_switch = mcu_get_dp_download_bool(value, length);
 
-    /* 进入已验证的通信窗口 */
     App_WifiTest_OnDpReceived();
 
-    /* 保留原来的开关机请求处理 */
-    if (target_switch == 0) {
-        if (g_Device.state != STATE_OFF) {
-            g_Device.req_power_toggle = 1;
-        }
-    } else {
-        if (g_Device.state == STATE_OFF) {
-            g_Device.req_power_toggle = 1;
-        }
-    }
+    /* 修复：每条有效指令都覆盖旧请求，目标已满足时清除旧反向请求。 */
+    g_Device.req_power_toggle =
+        (target_switch != (g_Device.state != STATE_OFF)) ? 1U : 0U;
 
-    /*
-     * 保留原来的目标值回传语义，
-     * 改由主循环完成发送。
-     */
+    /* 目标值交给现有主循环上报服务发送。 */
     App_Wifi_SwitchSubmit(target_switch);
 
     return SUCCESS;
@@ -334,7 +302,6 @@ static void App_DpApplyWorkMode(uint8_t target)
 static unsigned char dp_download_work_mode_handle(const unsigned char value[], unsigned short length) {
     unsigned char work_mode;
 		uint8_t target;
-		uint8_t real_tuya_val;
 
     /* 恢复就地校验，本工程提取共用校验函数反而增加ROM。 */
     if (value == 0 || length != 1) {
@@ -355,10 +322,8 @@ static unsigned char dp_download_work_mode_handle(const unsigned char value[], u
     App_DpApplyWorkMode(target);
     
     // 【核心闭环】：强制回传 MCU 真实的意图纠正 APP，彻底删掉 DPID_PIR 等废弃节点！
-     real_tuya_val = (g_Device.target_work_mode == 1) ? 0 : 1;
-    if (SUCCESS == mcu_dp_enum_update(DPID_WORK_MODE, real_tuya_val)) {
-        g_Device_Shadow.target_work_mode = g_Device.target_work_mode;
-    }
+		/* 修复：三项模式DP共同确认后提交影子。 */
+		App_Wifi_ReportMode();
     
     return SUCCESS;
 }
@@ -395,18 +360,17 @@ static unsigned char dp_download_filter_reset_handle(const unsigned char value[]
         g_Device.target_filter_days = DEFAULT_FILTER_DAYS;
         
         // 2. 刷新时间锚点
-        if (g_Device.current_unix_time > 0) {
-            g_Device.last_filter_timestamp = g_Device.current_unix_time; 
-        }
+				/* 等待合法时间响应建立新周期起点。 */
+				g_Device.last_filter_timestamp = g_Device.current_unix_time;
         g_Device.req_filter_alarm = 0; 
         
         // 3. 保存并上报
         HAL_EEPROM_Save_AllData(); 
-        mcu_dp_value_update(DPID_FILTER_LIFE, g_Device.target_filter_days);
-        mcu_dp_value_update(DPID_FILTER_DAYS, g_Device.target_filter_days);
+        App_Wifi_ReportValue(DPID_FILTER_LIFE, g_Device.target_filter_days);
+        App_Wifi_ReportValue(DPID_FILTER_DAYS, g_Device.target_filter_days);
 //        printf("\r\n[FILTER] Reset to default: %u days", g_Device.target_filter_days);
     }
-    mcu_dp_bool_update(DPID_FILTER_RESET, 0); 
+    App_Wifi_ReportBool(DPID_FILTER_RESET, 0); 
     return SUCCESS;
 }
 /*****************************************************************************
@@ -441,18 +405,17 @@ static unsigned char dp_download_pump_reset_handle(const unsigned char value[], 
         g_Device.target_clean_days = DEFAULT_CLEAN_DAYS;
         
         // 2. 刷新时间锚点
-        if (g_Device.current_unix_time > 0) {
-            g_Device.last_clean_timestamp = g_Device.current_unix_time; 
-        }
+				/* 修复：清除旧周期起点；未校时时由后续校时回调补齐。 */
+				g_Device.last_clean_timestamp = g_Device.current_unix_time;
         g_Device.req_clean_alarm = 0; 
         
         // 3. 保存并上报 (刚复位，剩余天数 = 目标天数)
         HAL_EEPROM_Save_AllData(); 
-        mcu_dp_value_update(DPID_TIME_CLEAN, g_Device.target_clean_days);
-        mcu_dp_value_update(DPID_PUMP_TIME, g_Device.target_clean_days); 
+        App_Wifi_ReportValue(DPID_TIME_CLEAN, g_Device.target_clean_days);
+        App_Wifi_ReportValue(DPID_PUMP_TIME, g_Device.target_clean_days); 
 //        printf("\r\n[PUMP] Reset to default: %u days", g_Device.target_clean_days);
     }
-    mcu_dp_bool_update(DPID_PUMP_RESET, 0); 
+    App_Wifi_ReportBool(DPID_PUMP_RESET, 0); 
     return SUCCESS;
 }
 /*****************************************************************************
@@ -481,16 +444,16 @@ static unsigned char dp_download_filter_life_handle(const unsigned char value[],
     
     g_Device.target_filter_days = (unsigned int)filter_life;
     
-    /* 正数且时钟有效时更新锚点，0天关闭时保留原锚点。 */
-    if (filter_life > 0UL && g_Device.current_unix_time > 0UL) {
-        g_Device.last_filter_timestamp = g_Device.current_unix_time;
-    }
+		 /* 正数表示开始新周期；0天关闭提醒时保留原有处理。 */
+		if (filter_life > 0UL) {
+				g_Device.last_filter_timestamp = g_Device.current_unix_time;
+		}
 
     /* 设置周期和关闭提醒都清除报警，合并重复赋值。 */
     g_Device.req_filter_alarm = 0;
     
     HAL_EEPROM_Save_AllData();
-    mcu_dp_value_update(DPID_FILTER_LIFE, filter_life);
+    App_Wifi_ReportValue(DPID_FILTER_LIFE, filter_life);
     return SUCCESS;
 }
 /*****************************************************************************
@@ -517,16 +480,17 @@ static unsigned char dp_download_time_clean_handle(const unsigned char value[], 
     
     g_Device.target_clean_days = (unsigned int)time_clean;
     
-    /* 合并锚点更新条件，保持0天关闭时不更新时间锚点。 */
-    if (time_clean > 0UL && g_Device.current_unix_time > 0UL) {
-        g_Device.last_clean_timestamp = g_Device.current_unix_time;
-    }
+		/* 正数表示开始新周期；0天关闭提醒时保留原有处理。 */
+		if (time_clean > 0UL) {
+				/* 修复：未校时时保存0，等待首次合法校时建立新起点。 */
+				g_Device.last_clean_timestamp = g_Device.current_unix_time;
+		}
 
     /* 两种设置路径都清除报警，统一在判断后执行。 */
     g_Device.req_clean_alarm = 0;
     
     HAL_EEPROM_Save_AllData();
-    mcu_dp_value_update(DPID_TIME_CLEAN, time_clean);
+    App_Wifi_ReportValue(DPID_TIME_CLEAN, time_clean);
     return SUCCESS;
 }
 /*****************************************************************************
@@ -572,7 +536,7 @@ static unsigned char dp_download_uv_handle(const unsigned char value[], unsigned
     
 		// 【核心修复】：必须像加热逻辑一样，串口发送成功后，才允许更新影子！
     // 这样如果串口繁忙导致下发/上报撞车丢包，1秒后的 App_Cloud_Sync_Task 依然会发现影子和实际不一致，从而补发纠正UI。
-    if (SUCCESS == mcu_dp_bool_update(DPID_UV, g_Device.uvc_armed)) {
+    if (SUCCESS == App_Wifi_ReportBool(DPID_UV, g_Device.uvc_armed)) {
         g_Device_Shadow.uvc_armed = g_Device.uvc_armed;
     }
     
@@ -662,10 +626,8 @@ static unsigned char dp_download_pir_handle(const unsigned char value[], unsigne
     App_DpApplyWorkMode(target);
     
     // 【核心闭环】：强制同步影子寄存器，并一口气更新 3 个 UI 绑定的 DP 点
-    g_Device_Shadow.target_work_mode = g_Device.target_work_mode;
-    mcu_dp_enum_update(DPID_WORK_MODE, g_Device_Shadow.target_work_mode == 1 ? 0 : 1);
-    mcu_dp_bool_update(DPID_PIR, g_Device_Shadow.target_work_mode == 0);
-    mcu_dp_bool_update(DPID_CONTINUE, g_Device_Shadow.target_work_mode == 1);
+		/* 修复：完整发送三项模式DP后，才更新模式影子。 */
+		App_Wifi_ReportMode();
     
     return SUCCESS;
 }
@@ -715,7 +677,7 @@ static unsigned char dp_download_heat_handle(const unsigned char value[], unsign
 				HAL_Buzzer_Beep(2); // 条件不满足，拒绝
     }
     
-		if (SUCCESS == mcu_dp_bool_update(DPID_HEAT, g_Device.heating_enabled)) {
+		if (SUCCESS == App_Wifi_ReportBool(DPID_HEAT, g_Device.heating_enabled)) {
 				g_Device_Shadow.heating_enabled = g_Device.heating_enabled;
 		}
     
@@ -951,32 +913,52 @@ void mcu_get_greentime(u8 time[]) {
         {
             // 获取成功且合法，转化为32位时间戳赋值给系统
             g_Device.current_unix_time = Convert_To_Relative_Sec(time[1], time[2], time[3], time[4], time[5], time[6]);
-					
-					  // 【新增调试日志】
-           // 【终极修复】：强制转换为 unsigned int，并使用 %02u，彻底修复 8051 乱码！
-//            printf("\r\n[TIME] Rx Tuya Time: 20%02u-%02u-%02u %02u:%02u:%02u", 
-//                   (unsigned int)time[1], (unsigned int)time[2], (unsigned int)time[3], 
-//                   (unsigned int)time[4], (unsigned int)time[5], (unsigned int)time[6]);
-//            printf("\r\n[TIME] Timestamp: %lu", (unsigned long)g_Device.current_unix_time);
+						App_Wifi_TimeSyncDone(); /* 取得合法时间后，清除校时待办和重试计时。 */
+#if APP_LOG_TIME_ON
+            /* 新增：独立调试日志；显式转换匹配C51的printf参数宽度。 */
+            printf("\r\n[TIME] OK UTC=20%02u-%02u-%02u %02u:%02u:%02u\r\n",
+                   (unsigned int)time[1],
+                   (unsigned int)time[2],
+                   (unsigned int)time[3],
+                   (unsigned int)time[4],
+                   (unsigned int)time[5],
+                   (unsigned int)time[6]);
+
+            printf("[TIME] sec2000=%lu\r\n",
+                   (unsigned long)g_Device.current_unix_time);
+#endif
             
             // 【核心修复2】：首次开机获取到时间时，如果 EEPROM 里的记忆是空的(比如FF FF FF FF)，初始化它
             if (g_Device.last_clean_timestamp == 0xFFFFFFFF || g_Device.last_clean_timestamp == 0) {
                 g_Device.last_clean_timestamp = g_Device.current_unix_time;
-//                printf("\r\n[TIME] Init Clean Anchor: %lu", (unsigned long)g_Device.last_clean_timestamp);
                 HAL_EEPROM_Save_AllData();
             }
             if (g_Device.last_filter_timestamp == 0xFFFFFFFF || g_Device.last_filter_timestamp == 0) {
                 g_Device.last_filter_timestamp = g_Device.current_unix_time;
-//                printf("\r\n[TIME] Init Filter Anchor: %lu", (unsigned long)g_Device.last_filter_timestamp);
                 HAL_EEPROM_Save_AllData();
             }
             
             TUYA_DBG_EXEC(TUYA_PRINT("Time Sync OK: 20%02d-%02d-%02d %02d:%02d:%02d", time[1], time[2], time[3], time[4], time[5], time[6]));
         } else {
-            TUYA_DBG_EXEC(TUYA_PRINT("Got Dirty Time Data, Rejected!"));
+ #if APP_LOG_TIME_ON
+            /* 新增：记录被拒绝的字段；保持原校时重试流程。 */
+            printf("\r\n[TIME] INVALID y=%u m=%u d=%u h=%u min=%u s=%u\r\n",
+                   (unsigned int)time[1],
+                   (unsigned int)time[2],
+                   (unsigned int)time[3],
+                   (unsigned int)time[4],
+                   (unsigned int)time[5],
+                   (unsigned int)time[6]);
+#endif
+									 TUYA_DBG_EXEC(TUYA_PRINT("Got Dirty Time Data, Rejected!"));
         }
     } else {
-        // 获取格林时间出错,有可能是当前wifi模块未联网
+#if APP_LOG_TIME_ON
+        /* 新增：模组返回失败，仅打印结果标志。 */
+        printf("\r\n[TIME] RESPONSE FAIL flag=%u\r\n",
+               (unsigned int)time[0]);
+#endif
+			// 获取格林时间出错,有可能是当前wifi模块未联网
         TUYA_DBG_EXEC(TUYA_PRINT("Got Greenwich time FAILED!"));
     }
 }

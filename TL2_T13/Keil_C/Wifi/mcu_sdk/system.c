@@ -19,6 +19,7 @@
 
 #define SYSTEM_GLOBAL
 
+#include "SC_Init.h" /* EA声明先于SDK宏解析。 */
 #include "protocol.h"
 #include "wifi.h"
 #include "app_wifi.h"
@@ -897,11 +898,16 @@ void data_handle(u16 offset) {
  * @param  Null
  * @return 是否有数据
  */
-u8 with_data_rxbuff(void) {
-    if (rx_buf_in != rx_buf_out)
-        return 1;
-    else
-        return 0;
+u8 with_data_rxbuff(void)
+{
+    bit saved_ea;
+    u8 available;
+
+    saved_ea = EA;
+    EA = 0; /* 修复：8051多字节指针比较不能与接收ISR交错。 */
+    available = (rx_buf_in != rx_buf_out) ? 1U : 0U;
+    EA = saved_ea;
+    return available;
 }
 
 /**
@@ -909,18 +915,24 @@ u8 with_data_rxbuff(void) {
  * @param  Null
  * @return Read the data
  */
-u8 take_byte_rxbuff(void) {
-    u8 value = 0;
+u8 take_byte_rxbuff(void)
+{
+    bit saved_ea;
+    u8 value;
+    volatile u8 *read_ptr;
 
-    if (rx_buf_out != rx_buf_in) {
-        // 有数据
-        if (rx_buf_out >= (u8 *)(wifi_uart_rx_buf + sizeof(wifi_uart_rx_buf))) {
-            // 数据已经到末尾
-            rx_buf_out = (u8 *)(wifi_uart_rx_buf);
+    value = 0;
+    saved_ea = EA;
+    EA = 0; /* 修复：读取、回绕和发布消费指针作为同一临界区。 */
+    read_ptr = rx_buf_out;
+    if (read_ptr != rx_buf_in) {
+        value = *read_ptr;
+        read_ptr++;
+        if (read_ptr >= wifi_uart_rx_buf + sizeof(wifi_uart_rx_buf)) {
+            read_ptr = wifi_uart_rx_buf;
         }
-
-        value = *rx_buf_out++;
+        rx_buf_out = read_ptr;
     }
-
+    EA = saved_ea;
     return value;
 }

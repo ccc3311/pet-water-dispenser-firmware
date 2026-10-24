@@ -1,19 +1,19 @@
-# TL2 T13 — 带 Wi-Fi CEN 版本基线
+# TL2 T13 — 2026-10-24 修正代码基准
 
-本分支 `baseline/t13-wifi-cen` 保存 2026-10-23 用户提供的 `TL2_T13(1).7z` 原始快照，作为带 Wi-Fi CEN 恢复流程的 T13 基线。固件逻辑、调试宏、源文件编码及工程文件均按附件原样保留；本次归档未修复审查发现的问题。
+当前分支 `baseline/t13-reviewed-20261024` 保存本轮已确认的 T13 修复及分层应用日志，以 T13 原始基线 `dc3d8728c36973180560d4c14aaafdf82669a8ed` 为父提交。源码修复、验证范围和仍待处理事项见 [当前基准说明](docs/T13_CURRENT_BASELINE_2026-10-24.md)。
 
 | 版本 | 保存位置 | 工程入口 |
 | --- | --- | --- |
-| T13，带 Wi-Fi CEN | 当前独立分支 `baseline/t13-wifi-cen` | [TL2_T13/Keil_C/Project/TL2_6.uvproj](TL2_T13/Keil_C/Project/TL2_6.uvproj) |
-| 原 T12 | [main 分支](https://github.com/ccc3311/pet-water-dispenser-firmware/tree/main)，本次归档时提交为 `759b5d255c103c7ea3eb54a57930132750b1f6ab` | [T12 固定基线](https://github.com/ccc3311/pet-water-dispenser-firmware/tree/759b5d255c103c7ea3eb54a57930132750b1f6ab/TL2_T12) |
+| T13 当前修正基准 | 当前分支 `baseline/t13-reviewed-20261024` | [TL2_T13/Keil_C/Project/TL2_6.uvproj](TL2_T13/Keil_C/Project/TL2_6.uvproj) |
+| T13 原始归档 | [baseline/t13-wifi-cen](https://github.com/ccc3311/pet-water-dispenser-firmware/tree/baseline/t13-wifi-cen) | [原始基线说明](docs/T13_WIFI_CEN_BASELINE_2026-10-23.md) |
+| T12 原基准 | [main](https://github.com/ccc3311/pet-water-dispenser-firmware/tree/main) | [TL2_T12](https://github.com/ccc3311/pet-water-dispenser-firmware/tree/main/TL2_T12) |
 
-- [T13 原始压缩包](archive/TL2_T13_wifi_cen_original.7z)：与用户上传文件字节一致，仅调整归档文件名。
-- [T13 完整工程](TL2_T13/)：548 个文件，包含源码、CFG、工程配置、原有编译输出和 IDE 状态。
-- [基线说明与待处理问题](docs/T13_WIFI_CEN_BASELINE_2026-10-23.md)。
-- [T13 SHA-256 校验清单](T13_WIFI_CEN_SHA256SUMS.txt)：覆盖原始压缩包及全部 548 个解压文件。
+本轮整合水位秒任务、RX 环形队列、休眠阶段 UART 故障恢复、连续 APP 开关目标覆盖、首次校时重试、耗材复位基准、上报失败补报、跨年耗材结算，以及应用日志分层开关和已实际输出的 Wi-Fi 休眠诊断。
 
-当前分支从 T12 提交派生，保留 `TL2_T12/` 及原有根目录源码镜像供历史对照；这些镜像仍属于 T12。查看或构建 T13 时请使用 `TL2_T13/` 内的工程。原 `main` 分支未更新。
+- T13 代码和工程位于 `TL2_T13/`。根目录旧源码镜像与旧状态文档仍属于 T12 历史资料。
+- 原始压缩包 [archive/TL2_T13_wifi_cen_original.7z](archive/TL2_T13_wifi_cen_original.7z) 保持原字节。
+- [本分支 T13 校验清单](T13_REVIEWED_20261024_SHA256SUMS.txt) 覆盖当前 548 个工程文件及原始压缩包。旧 `T13_WIFI_CEN_SHA256SUMS.txt` 对应原始归档分支。
+- 用户已逐项反馈相关板级验证；本次远程整合未执行 Keil C51 重编译。保留的 `.obj`、`.lst`、`.hex` 等编译输出均来自原始快照，不能作为本提交构建产物。
+- 缺水旁路、固定 25℃ 温度等原有调试配置继续保留。UART0 调试模式仍占用 P1.3 并屏蔽 UV 物理输出；关闭应用日志不会自动切换引脚用途。
 
-T13 源码已包含 Wi-Fi CEN 拉低/释放及 UART 恢复状态机。本次未执行 Keil C51 完整重编译或上板测试；部分工程配置在附件中为不可直接解析的二进制内容，已原样保存。现有编译输出仅为附件内容，不代表本次验证结果。
-
-后续开发请从此基线另建修复分支，以便保留可回溯的原始版本。
+水泵稳定恢复候选、MCU 空闲清零原因诊断与空闲策略调整尚未完成用户验证，未纳入本基准。未知 DP 加固及蜂鸣器候选已由用户决定本轮不做。
