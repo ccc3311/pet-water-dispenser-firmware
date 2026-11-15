@@ -192,6 +192,8 @@ bool_t on_first_command_after_overflow(const u8* frame, u16 frame_len) {
  */
 void all_data_update(void)
 {
+	    u8 bat_value;
+
     App_WifiTest_OnDpReceived();
 
     /* 修复：成功提交影子，失败由对应DP的待发服务补报。 */
@@ -211,8 +213,11 @@ void all_data_update(void)
     App_Wifi_ReportValue(
         DPID_TEMP_CURRENT, (u32)HAL_ADC_Get_Temperature_C());
 
-    App_Wifi_ReportEnum(
-        DPID_BAT, HAL_ADC_Get_Battery_SOC());
+    /* 查询也使用六档映射，避免覆盖已显示的充电图标。 */
+    bat_value = App_Wifi_GetBatDpValue();
+    if (bat_value != WIFI_BAT_INVALID) {
+        App_Wifi_ReportEnum(DPID_BAT, bat_value);
+    }
 
     App_Wifi_ReportBool(
         DPID_BEEP, g_Device.mute_enabled);
@@ -287,6 +292,9 @@ static void App_DpApplyWorkMode(uint8_t target)
             g_Device.display_timer_s = 10;
             HAL_Buzzer_Beep(1);
         }
+    } else if (!App_FSM_BatteryShutdownActive()) {
+        /* 普通关机反馈APP操作；保护关机保持静默。 */
+        HAL_Buzzer_Beep(2);
     }
 }
 
@@ -914,7 +922,7 @@ void mcu_get_greentime(u8 time[]) {
             // 获取成功且合法，转化为32位时间戳赋值给系统
             g_Device.current_unix_time = Convert_To_Relative_Sec(time[1], time[2], time[3], time[4], time[5], time[6]);
 						App_Wifi_TimeSyncDone(); /* 取得合法时间后，清除校时待办和重试计时。 */
-#if APP_LOG_TIME_ON
+#if APP_LOG_TIME_ON  /* 时间打印服从日志总开关和时间分开关。 */
             /* 新增：独立调试日志；显式转换匹配C51的printf参数宽度。 */
             printf("\r\n[TIME] OK UTC=20%02u-%02u-%02u %02u:%02u:%02u\r\n",
                    (unsigned int)time[1],
@@ -940,7 +948,7 @@ void mcu_get_greentime(u8 time[]) {
             
             TUYA_DBG_EXEC(TUYA_PRINT("Time Sync OK: 20%02d-%02d-%02d %02d:%02d:%02d", time[1], time[2], time[3], time[4], time[5], time[6]));
         } else {
- #if APP_LOG_TIME_ON
+ #if APP_CHARGE_DEBUG
             /* 新增：记录被拒绝的字段；保持原校时重试流程。 */
             printf("\r\n[TIME] INVALID y=%u m=%u d=%u h=%u min=%u s=%u\r\n",
                    (unsigned int)time[1],
@@ -953,7 +961,7 @@ void mcu_get_greentime(u8 time[]) {
 									 TUYA_DBG_EXEC(TUYA_PRINT("Got Dirty Time Data, Rejected!"));
         }
     } else {
-#if APP_LOG_TIME_ON
+#if APP_CHARGE_DEBUG
         /* 新增：模组返回失败，仅打印结果标志。 */
         printf("\r\n[TIME] RESPONSE FAIL flag=%u\r\n",
                (unsigned int)time[0]);
@@ -2530,39 +2538,42 @@ void hibernate_fun(const u8 value[], u16 length)
     sub_cmd = value[0];
 
     switch (sub_cmd) {
-        case HIBERNATE_SUB_CMD_HIBERNATE_NOTIFY:
-            /*
-             * 模组请求休眠：
-             * 0：不允许，模组等待后重试。
-             * 1：允许，模组收到回复后立即休眠。
-             */
-            allow_hibernate =
-                (g_wifi_allow_sleep == 1) ? 0x01 : 0x00;
+			case HIBERNATE_SUB_CMD_HIBERNATE_NOTIFY:
+					/*
+					 * 修复：休眠许可持续有效，由新待办或唤醒流程撤销。
+					 * 升级期间禁止休眠，避免保留的许可被错误使用。
+					 */
+					allow_hibernate =
+							((g_wifi_allow_sleep == 1U) &&
+							 (stop_update_flag != ENABLE)) ? 0x01U : 0x00U;
 
-            if (allow_hibernate == 0x01) {
-                /* 先记录状态，后续业务不得继续直接发送 */
-                g_wifi_lp_state = WIFI_LP_SLEEP_PENDING;
+					if (allow_hibernate == 0x01U) {
+							/* 保留许可，让重复休眠通知仍能得到允许应答。 */
+							g_wifi_lp_state = WIFI_LP_SLEEP_PENDING;
+					}
 
-                /* 本次许可使用后清除 */
-                g_wifi_allow_sleep = 0;
-            }
+					send_len = set_wifi_uart_byte(
+							send_len, HIBERNATE_SUB_CMD_HIBERNATE_NOTIFY);
+					send_len = set_wifi_uart_byte(
+							send_len, allow_hibernate);
 
-            send_len = set_wifi_uart_byte(
-                send_len, HIBERNATE_SUB_CMD_HIBERNATE_NOTIFY);
-            send_len = set_wifi_uart_byte(
-                send_len, allow_hibernate);
+					wifi_uart_write_frame(
+							HIBERNATE_CMD, MCU_TX_VER, send_len);
 
-            wifi_uart_write_frame(
-                HIBERNATE_CMD, MCU_TX_VER, send_len);
-						if (!wifi_uart_last_frame_tx_ok()) {
-								/*
-								 * 休眠应答未正常发完，不能确定模组后续状态。
-								 * 后续由唤醒流程重新建立通信条件。
-								 */
-								g_wifi_lp_state = WIFI_LP_UNKNOWN;
-								g_wifi_allow_sleep = 0;
-						}
-            break;
+					if (!wifi_uart_last_frame_tx_ok()) {
+							/* 应答未发完：撤销许可，由原恢复流程重建通信。 */
+							g_wifi_lp_state = WIFI_LP_UNKNOWN;
+							g_wifi_allow_sleep = 0;
+					}
+
+#if APP_LOG_POWER_ON
+		printf("[W91] sub=%02X allow=%u tx=%u lp=%u\r\n",
+				(unsigned int)sub_cmd,
+				(unsigned int)allow_hibernate,
+				(unsigned int)wifi_uart_last_frame_tx_ok(),
+				(unsigned int)g_wifi_lp_state);
+#endif
+					break;
 
         case HIBERNATE_SUB_CMD_WAKEUP_NOTIFY:
             /*

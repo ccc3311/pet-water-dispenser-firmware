@@ -2,33 +2,39 @@
 #define __HAL_UART_H
 
 /*
- * 打印 / UV 功能切换，修改后重新编译整个工程：
- *
- * 1：开启充电寄存器打印，暂停UV物理输出。
- * 0：关闭调试打印，恢复UV物理输出及原MCU STOP流程。
- *
- * 打印模式只屏蔽物理UV输出，按键和APP的设置逻辑仍然运行。
+ * 硬件模式：
+ * 1：启用UART0调试串口，P1.3用于TX，屏蔽UV物理输出。
+ * 0：关闭调试串口，恢复UV物理输出。
  */
-/* UART0/UV硬件模式独立于应用日志开关。 */
 #define APP_DEBUG_UART_ENABLE  1
-#define APP_CHARGE_DEBUG       APP_DEBUG_UART_ENABLE
 
-/* 应用日志总开关；涂鸦SDK日志继续使用其原有开关。 */
+/* 兼容原有硬件配置分支，保持当前引脚行为。 */
+#define APP_CHARGE_DEBUG  APP_DEBUG_UART_ENABLE
+
+/* 我们自己的日志总开关；涂鸦SDK日志仍独立控制。 */
 #define APP_LOG_ENABLE  1
-#define APP_LOG_CHARGE  0
-#define APP_LOG_WIFI    1
-#define APP_LOG_POWER   1
-#define APP_LOG_TIME    0
 
+/* 各功能日志开关。 */
+#define APP_LOG_CHARGE  0   /* 充电状态、寄存器 */
+#define APP_LOG_WIFI    0   /* Wi-Fi状态、配网、通信 */
+#define APP_LOG_POWER   1   /* Wi-Fi休眠、MCU STOP */
+#define APP_LOG_TIME    0   /* 校时、时间戳 */
+#define APP_LOG_BAT     0   /* 当前只调试电量上报 */
+/* 最终生效条件：调试串口、总开关、分开关均开启。 */
 #define APP_LOG_CHARGE_ON \
     (APP_DEBUG_UART_ENABLE && APP_LOG_ENABLE && APP_LOG_CHARGE)
+
 #define APP_LOG_WIFI_ON \
     (APP_DEBUG_UART_ENABLE && APP_LOG_ENABLE && APP_LOG_WIFI)
+
 #define APP_LOG_POWER_ON \
     (APP_DEBUG_UART_ENABLE && APP_LOG_ENABLE && APP_LOG_POWER)
+
 #define APP_LOG_TIME_ON \
     (APP_DEBUG_UART_ENABLE && APP_LOG_ENABLE && APP_LOG_TIME)
-
+		
+#define APP_LOG_BAT_ON \
+    (APP_DEBUG_UART_ENABLE && APP_LOG_ENABLE && APP_LOG_BAT)
 // 提供一个简单的初始化包装接口
 void HAL_UART_Init(void);
 

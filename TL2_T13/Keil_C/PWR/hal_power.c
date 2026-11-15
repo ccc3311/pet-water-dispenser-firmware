@@ -1,6 +1,11 @@
 #include "hal_power.h"
 #include <intrins.h>     /* Keil C51：_nop_() */
+#include "hal_uart.h" /* 使用统一的应用日志开关。 */
 
+#if APP_LOG_POWER_ON
+static volatile uint8_t s_input_debug_pending = 0U;
+static uint8_t s_input_debug_taken = 0U;
+#endif
 /*
  * 当前Timer0配置：
  * 系统时钟：32MHz
@@ -100,7 +105,10 @@ void HAL_Power_Init(void)
 
     s_btm_ticks = 0;
     s_input_event = 0;
-
+#if APP_LOG_POWER_ON
+    s_input_debug_pending = 0U;
+    s_input_debug_taken = 0U;
+#endif
     /*
      * 配置INT2三路输入的边沿。
      *
@@ -168,17 +176,23 @@ void HAL_Power_BTM_ISR(void)
 }
 
 
+/* 锁存输入事件，并保存中断发生时的有效输入电平。 */
 void HAL_Power_Input_ISR(void)
 {
+    s_input_event = 1U;
+
+#if APP_LOG_POWER_ON
     /*
-     * 锁存事件。
-     *
-     * 此处不直接置g_Device.ir_triggered，
-     * 因为同一个INT2入口还包含主触摸。
-     *
-     * 醒后交给正常扫描完成来源判断和消抖。
+     * 多次中断合并记录，避免短脉冲在主循环打印前消失。
+     * bit7：发生过中断；bit0～3：采到的有效输入电平。
      */
-    s_input_event = 1;
+    s_input_debug_pending |= (uint8_t)(
+        0x80U |
+        (P20 ? 0x01U : 0U) |
+        (P06 ? 0x02U : 0U) |
+        ((P07 == 0) ? 0x04U : 0U) |
+        ((P11 == 0) ? 0x08U : 0U));
+#endif
 }
 
 
@@ -209,6 +223,7 @@ uint16_t HAL_Power_TakeTicks(void)
 }
 
 
+/* 原有返回值仍为0/1；诊断快照与事件一起取走。 */
 uint8_t HAL_Power_TakeInputEvent(void)
 {
     uint8_t event;
@@ -220,9 +235,24 @@ uint8_t HAL_Power_TakeInputEvent(void)
     event = s_input_event;
     s_input_event = 0;
 
-    EA = saved_ea;
+#if APP_LOG_POWER_ON
+    /* 使用原有临界区，保证取走事件时同时取走对应快照。 */
+    s_input_debug_taken = s_input_debug_pending;
+    s_input_debug_pending = 0U;
+#endif
 
+    EA = saved_ea;
     return event;
+}
+
+/* 仅读取最近一次取走的快照，不消费新到达的事件。 */
+uint8_t HAL_Power_GetInputDebug(void)
+{
+#if APP_LOG_POWER_ON
+    return s_input_debug_taken;
+#else
+    return 0U;
+#endif
 }
 
 

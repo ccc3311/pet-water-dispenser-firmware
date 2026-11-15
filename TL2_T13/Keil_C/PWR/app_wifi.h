@@ -28,6 +28,7 @@ u8 App_Wifi_ReportBool(u8 dpid, u8 value);
 u8 App_Wifi_ReportEnum(u8 dpid, u8 value);
 u8 App_Wifi_ReportValue(u8 dpid, u32 value);
 void App_Wifi_ReportMode(void);
+u8 App_Wifi_GetBatDpValue(void);
 
 
 /* Preserve the existing startup-only business/reset gates in main.c. */

@@ -113,6 +113,7 @@ uint8_t App_FSM_StopStateReady(void);
 uint8_t App_FSM_ConsumableUpdateDue(void);
 uint8_t App_FSM_BatteryPumpAllowed(void);
 
+uint8_t App_FSM_BatteryProtectActive(void);
 uint8_t App_FSM_BatteryShutdownActive(void);
 void App_FSM_BatteryTick_1s(void);
 #endif // __APP_FSM_H__

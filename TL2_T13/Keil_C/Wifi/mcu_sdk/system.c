@@ -18,8 +18,8 @@
 ******************************************************************************/
 
 #define SYSTEM_GLOBAL
+#include "SC_Init.h" /* 新增：提供EA声明，先于SDK头文件解析。 */
 
-#include "SC_Init.h" /* EA声明先于SDK宏解析。 */
 #include "protocol.h"
 #include "wifi.h"
 #include "app_wifi.h"
@@ -891,48 +891,92 @@ void data_handle(u16 offset) {
         default:
             break;
     }
+#if APP_LOG_POWER_ON
+    if (cmd_type <= WIFI_STATE_CMD ||
+        (cmd_type == HIBERNATE_CMD && total_len != 0U &&
+         data_bytes[0] <= 1U)) {
+        u8 result = wifi_uart_last_frame_tx_ok();
+
+        if (cmd_type == WIFI_STATE_CMD &&
+            (total_len != 1U || data_bytes[0] > 6U)) {
+            result = 2U;
+        }
+
+        printf("[WH] cmd=%02X r=%u\r\n",
+               (unsigned int)cmd_type,
+               (unsigned int)result);
+    }
+#endif
 }
 
-/**
- * @brief  判断串口接收缓存中是否有数据
- * @param  Null
- * @return 是否有数据
- */
+///**
+// * @brief  判断串口接收缓存中是否有数据
+// * @param  Null
+// * @return 是否有数据
+// */
+//u8 with_data_rxbuff(void) {
+//    if (rx_buf_in != rx_buf_out)
+//        return 1;
+//    else
+//        return 0;
+//}
+
+///**
+// * @brief  读取队列1字节数据
+// * @param  Null
+// * @return Read the data
+// */
+//u8 take_byte_rxbuff(void) {
+//    u8 value = 0;
+
+//    if (rx_buf_out != rx_buf_in) {
+//        // 有数据
+//        if (rx_buf_out >= (u8 *)(wifi_uart_rx_buf + sizeof(wifi_uart_rx_buf))) {
+//            // 数据已经到末尾
+//            rx_buf_out = (u8 *)(wifi_uart_rx_buf);
+//        }
+
+//        value = *rx_buf_out++;
+//    }
+
+//    return value;
+//}
+/* 主循环查询队列；保护共享指针读取，避免取得中间值。 */
 u8 with_data_rxbuff(void)
 {
     bit saved_ea;
     u8 available;
 
     saved_ea = EA;
-    EA = 0; /* 修复：8051多字节指针比较不能与接收ISR交错。 */
+    EA = 0; /* 与接收ISR互斥，完整读取共享指针。 */
     available = (rx_buf_in != rx_buf_out) ? 1U : 0U;
     EA = saved_ea;
+
     return available;
 }
 
-/**
- * @brief  读取队列1字节数据
- * @param  Null
- * @return Read the data
- */
+/* 主循环取出一个字节，读指针始终保持在数组内部。 */
 u8 take_byte_rxbuff(void)
 {
     bit saved_ea;
-    u8 value;
+    u8 value = 0;
     volatile u8 *read_ptr;
 
-    value = 0;
     saved_ea = EA;
-    EA = 0; /* 修复：读取、回绕和发布消费指针作为同一临界区。 */
+    EA = 0; /* 避免ISR在读取和更新读指针之间判满。 */
+
     read_ptr = rx_buf_out;
     if (read_ptr != rx_buf_in) {
         value = *read_ptr;
         read_ptr++;
+
         if (read_ptr >= wifi_uart_rx_buf + sizeof(wifi_uart_rx_buf)) {
-            read_ptr = wifi_uart_rx_buf;
+            read_ptr = wifi_uart_rx_buf; /* 读取后立即回绕，统一空满判断。 */
         }
+
         rx_buf_out = read_ptr;
     }
+
     EA = saved_ea;
     return value;
 }

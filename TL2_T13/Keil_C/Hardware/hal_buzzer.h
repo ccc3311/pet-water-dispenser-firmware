@@ -17,4 +17,7 @@ void HAL_Buzzer_Tick_1ms(void);
 void HAL_Buzzer_Beep_3s(void);
 
 uint8_t HAL_Buzzer_IsBusy(void);
+/* 指定单次鸣叫时长，0表示停止；受静音设置控制。 */
+void HAL_Buzzer_BeepMs(uint16_t duration_ms);
+
 #endif /* __HAL_BUZZER_H */

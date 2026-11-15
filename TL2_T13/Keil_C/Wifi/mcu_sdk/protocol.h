@@ -26,6 +26,17 @@
 
 #include "tuya_type.h"
 
+/* DP101电量枚举：顺序与涂鸦平台一致。 */
+#define WIFI_BAT_HIGH      0U  /* High */
+#define WIFI_BAT_MIDDLE    1U  /* Middle */
+#define WIFI_BAT_LOW       2U  /* Low */
+#define WIFI_BAT_CHARGE_L  3U  /* charge_L */
+#define WIFI_BAT_CHARGE_H  4U  /* charge_H */
+#define WIFI_BAT_CHARGE_M  5U  /* charge_M */
+#define WIFI_BAT_PROTECT  6U  /* Loww：低电保护已触发。 */
+/* 固件内部无效标记，不作为DP值上报。 */
+#define WIFI_BAT_INVALID   0xFFU
+
 /******************************************************************************
                            用户相关信息配置
 ******************************************************************************/

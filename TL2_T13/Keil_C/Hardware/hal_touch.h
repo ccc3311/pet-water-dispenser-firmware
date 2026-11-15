@@ -17,4 +17,7 @@ void HAL_UVCING_Stop(void);
 
 uint8_t HAL_Touch_IsBusy(void);
 
+/* P1.1长按5秒提交的重启请求，由主循环处理。 */
+uint8_t HAL_Touch_RestartRequested(void);
+
 #endif /* __HAL_TOUCH_H */

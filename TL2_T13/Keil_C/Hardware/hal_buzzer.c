@@ -94,3 +94,26 @@ uint8_t HAL_Buzzer_IsBusy(void)
 {
     return (bz_state != BZ_IDLE);
 }
+
+/* 发起一次指定时长的鸣叫，由原有Timer0的1ms任务计时。 */
+void HAL_Buzzer_BeepMs(uint16_t duration_ms)
+{
+    bit saved_ea;
+
+    saved_ea = EA;
+    EA = 0; /* Timer0也访问这些状态，保护16位计时器及状态的完整更新。 */
+
+    bz_state = BZ_IDLE;
+    bz_remains = 0U;
+    bz_timer_ms = 0U;
+    BUZZER_PIN = 0;
+
+    if ((duration_ms != 0U) && !g_Device.mute_enabled) {
+        bz_remains = 1U;
+        bz_timer_ms = duration_ms;
+        bz_state = BZ_ON;
+        BUZZER_PIN = 1;
+    }
+
+    EA = saved_ea;
+}

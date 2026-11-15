@@ -122,6 +122,12 @@ uint8_t App_FSM_BatteryPumpAllowed(void)
     return (s_bat_pump_state == APP_BAT_PUMP_ALLOWED) ? 1U : 0U;
 }
 
+/* 已确认锁泵或保护关机才返回1，未完成首次采样不算低电保护。 */
+uint8_t App_FSM_BatteryProtectActive(void)
+{
+    return (s_bat_pump_state >= APP_BAT_PUMP_LOCKED) ? 1U : 0U;
+}
+
 /* 查询是否已进入保护关机，供供电、UI和休眠逻辑使用。 */
 uint8_t App_FSM_BatteryShutdownActive(void)
 {

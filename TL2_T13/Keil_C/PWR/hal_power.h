@@ -32,6 +32,8 @@ uint16_t HAL_Power_TakeTicks(void);
  * 返回1：发生过外部输入事件。
  */
 uint8_t HAL_Power_TakeInputEvent(void);
+/* 紧接 TakeInputEvent 后读取，获取本次取走事件的诊断快照。 */
+uint8_t HAL_Power_GetInputDebug(void);
 
 /*
  * 查看外部输入事件标志，不清空。
