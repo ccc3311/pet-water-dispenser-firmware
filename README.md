@@ -2,11 +2,15 @@
 
 基于赛元 SC92L7533、涂鸦 Wi-Fi MCU SDK 和 SC89601 充电芯片的宠物饮水机项目。
 
-**最新进度：2026-10-21 同步桌面 `TL2_T12` 工程快照。** 完整工程入口为 [TL2_6.uvproj](TL2_T12/Keil_C/Project/TL2_6.uvproj)，保留桌面源码、工程配置、厂商库、生成器资料和软件履历表。原目录中的文件时间截至 2026-10-09；2026-10-21 为本次检查与上传日期。
+**最新源码基线为 T13（2026-11-15）。** [T13 源码分支](https://github.com/ccc3311/pet-water-dispenser-firmware/tree/baseline/t13-20261115) · [基线说明](https://github.com/ccc3311/pet-water-dispenser-firmware/blob/baseline/t13-20261115/docs/T13_BASELINE_2026-11-15.md)
+
+## T12 归档
+
+2026-10-21 同步桌面 `TL2_T12` 工程快照。完整工程入口为 [TL2_6.uvproj](TL2_T12/Keil_C/Project/TL2_6.uvproj)，保留桌面源码、工程配置、厂商库、生成器资料和软件履历表。原目录中的文件时间截至 2026-10-09；2026-10-21 为本次检查与上传日期。
 
 本快照保留原始源码字节和调试设置。本轮完整重编译已尝试，但 C51 启动时出现 Windows 系统 DLL 重定位错误，未完成编译与链接，也未执行上板验收。检查详情见 [工程检查报告](docs/PROJECT_REVIEW_2026-10-21.md)。
 
-## 当前需要关注
+## T12 快照配置
 
 | 项目 | 桌面快照状态 |
 | --- | --- |
@@ -39,7 +43,7 @@
 
 工程中 `Hardware/hal_power.c` 和 `PWR/hal_power.c` 同时存在；`.uvproj` 实际选择 `PWR/hal_power.c`。根目录 `HAL/hal_power.c` 镜像也指向该实现，完整快照保留两份原文件。
 
-## 与上次仓库进度相比
+## T12 快照更新记录
 
 - 补齐完整 Keil 工程、业务/HAL 头文件、`tuya_type.h`、赛元驱动与库。
 - SC89601 寄存器读取会传播 STOP 阶段的返回值；OTG 准备增加故障寄存器读取和输入存在判断，输入识别纳入 P50、PG_STAT 和状态寄存器，并增加 OTG 确认诊断输出。
