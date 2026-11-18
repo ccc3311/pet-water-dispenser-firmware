@@ -1909,6 +1909,19 @@ void App_WifiTest_Task(void)
 			return;
 	}
 
+	if (App_FSM_BatteryShutdownSyncActive()) {
+			if (s_wifi_switch_pending &&
+					s_wifi_test_phase < WIFI_TEST_ERROR &&
+					!WiFi_CEN_IsHeld() &&
+					mcu_get_wifi_work_state() == WIFI_CONN_CLOUD) {
+					s_wifi_switch_value = 0U;
+					WiFi_Module_KeepAwake();
+					App_WifiTest_RunState();
+					App_Wifi_SwitchService();
+			}
+			return;
+	}
+
 	if (s_wifi_test_phase == WIFI_TEST_BAT_OFF) {
 			/* 插电解除保护后，重新同步当前状态，不续发旧操作。 */
 			App_WifiTest_Init();

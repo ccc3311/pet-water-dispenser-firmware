@@ -56,7 +56,7 @@ static uint8_t  cached_water_quality = WATER_GOOD;
 // 负载与充电电压补偿参数
 // ==========================================
 #define PUMP_SAG_MV_OFFSET     1   // 水泵抽水时的内阻压降补偿
-#define CHARGE_RISE_MV_OFFSET  1  // 充电时 1A 电流带来的内阻压升补偿 (根据日志得出)
+#define CHARGE_RISE_MV_OFFSET  160U  // 充电期间电量判档的电压补偿 (mV)
 // 水泵满载时导致电池电压瞬间被拉低的补偿值 (单位: mV)
 // 你可以在水泵启动时，观察串口打印的电压下降了多少，填到这里
 // 用于缓存算出来的真实电池百分比 (0-100)
@@ -276,7 +276,7 @@ static uint8_t Calculate_Battery_Tier(uint16_t voltage_mv, uint8_t is_charging, 
     // 1. 动态硬件补偿 (维持原有优秀逻辑)
     if (!is_charging && pump_is_on) {
         voltage_mv += PUMP_SAG_MV_OFFSET;
-    } else if (is_charging) {
+    } else if (is_charging && App_FSM_GetChargeState() == APP_CHARGE_ACTIVE) {
         if (voltage_mv > CHARGE_RISE_MV_OFFSET) {
             voltage_mv -= CHARGE_RISE_MV_OFFSET; 
         }
