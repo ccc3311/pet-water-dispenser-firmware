@@ -14,3 +14,6 @@ TL2_T12/** -text
 
 # Preserve the original T13 Wi-Fi CEN snapshot, including project/output files.
 TL2_T13/** -text
+
+# Preserve the encodings and line endings of the reconstructed TL2 T14 project.
+TL2_T14/** -text
